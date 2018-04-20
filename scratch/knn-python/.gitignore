@@ -1,0 +1,4 @@
+glove_vocab.txt
+glove_vecs.npy
+glove_knn_exact_cosine.txt
+glove_knn_exact_cosine.npy
