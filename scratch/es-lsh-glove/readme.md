@@ -1,11 +1,15 @@
 
 ## Introduction
 
-Used [GloVe: Global Vectors for Word Representations](https://nlp.stanford.edu/projects/glove/), specifically the 6B-50D vectors with 400K terms.
+1. Use [GloVe: Global Vectors for Word Representations](https://nlp.stanford.edu/projects/glove/), specifically the 6B-50D vectors with 400K terms.
+2. Run an exact KNN with cosine distance.
+3. Run a very simple LSH on the Glove vectors, insert the hashes in ES as text documents. Try similarity search
 
 ## Results
 
-Insert hashed Glove vectors to Elasticsearch and look them up based on the hash.
+Insert hashed Glove vectors to Elasticsearch and look them up using the hash text.
+
+For example, if the hash vector is [0 1 0 1 1 1], the document has tokens ["0_0", "1_1", "2_0", "3_1", "4_1", "5_1"].
 
 Documents look like this:
 
