@@ -1,5 +1,6 @@
 from tweepy import OAuthHandler, API, Stream, StreamListener
 from threading import Thread
+from scipy.misc import imread
 from time import time
 import json
 import gzip
@@ -19,20 +20,21 @@ TWCREDS = {
 
 def download(status):
   
-  with gzip.open('%s/%d.json.gz' % (STATUSES_DIR, status.id), 'wb') as fp:
-    fp.write(json.dumps(status._json).encode())
-
   for i, item in enumerate(status.entities['media']):
+    t0 = time()
     ext = item['media_url'].split('.')[-1]
     local_path = '%s/%d_%d.%s' % (IMAGES_DIR, status.id, i, ext)
     urllib.request.urlretrieve(item['media_url'], local_path)
-    print(local_path)
+    print('%.2lf %s' % (time() - t0, local_path))
 
+  with gzip.open('%s/%d.json.gz' % (STATUSES_DIR, status.id), 'wb') as fp:
+    fp.write(json.dumps(status._json).encode())
 
 class MyStreamListener(StreamListener):
 	
   def __init__(self, **kwargs):
-    self.cnt = len(os.listdir(IMAGES_DIR))
+    self.cnt_tot = len(os.listdir(IMAGES_DIR))
+    self.cnt_run = 0
     self.t0 = time()
     super().__init__(kwargs)
 
@@ -47,11 +49,12 @@ class MyStreamListener(StreamListener):
     thr = Thread(target=download, args=(status,))
     thr.start()
 
-    self.cnt += len(status.entities['media'])
+    self.cnt_run += 1
+    self.cnt_tot += len(status.entities['media'])
 
     print('%d %d %.3lf' % (
-      self.cnt, (time() - self.t0),
-      self.cnt / ((time() - self.t0) / 60)))
+      self.cnt_tot, (time() - self.t0),
+      self.cnt_run / ((time() - self.t0) / 60)))
 
 if __name__ == "__main__":
 
