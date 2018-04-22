@@ -1,0 +1,67 @@
+from tweepy import OAuthHandler, API, Stream, StreamListener
+from threading import Thread
+from time import time
+import json
+import gzip
+import urllib.request
+import os
+import pdb
+import sys
+
+STATUSES_DIR = 'data/statuses'
+IMAGES_DIR = 'data/images'
+TWCREDS = {
+  "consumer_key": os.getenv("TWCK"),
+  "consumer_secret": os.getenv("TWCS"),
+  "access_token": os.getenv("TWAT"),
+  "token_secret": os.getenv("TWTS")
+}
+
+def download(status):
+  
+  with gzip.open('%s/%d.json.gz' % (STATUSES_DIR, status.id), 'wb') as fp:
+    fp.write(json.dumps(status._json).encode())
+
+  for i, item in enumerate(status.entities['media']):
+    ext = item['media_url'].split('.')[-1]
+    local_path = '%s/%d_%d.%s' % (IMAGES_DIR, status.id, i, ext)
+    urllib.request.urlretrieve(item['media_url'], local_path)
+    print(local_path)
+
+
+class MyStreamListener(StreamListener):
+	
+  def __init__(self, **kwargs):
+    self.cnt = len(os.listdir(IMAGES_DIR))
+    self.t0 = time()
+    super().__init__(kwargs)
+
+  def on_status(self, status):
+
+    if hasattr(status, 'possibly_sensitive') and status.possibly_sensitive:
+      return
+
+    if 'media' not in status.entities:
+      return
+      
+    thr = Thread(target=download, args=(status,))
+    thr.start()
+
+    self.cnt += len(status.entities['media'])
+
+    print('%d %d %.3lf' % (
+      self.cnt, (time() - self.t0),
+      self.cnt / ((time() - self.t0) / 60)))
+
+if __name__ == "__main__":
+
+  auth = OAuthHandler(TWCREDS['consumer_key'], TWCREDS['consumer_secret'])
+  auth.set_access_token(TWCREDS['access_token'], TWCREDS['token_secret'])
+  twitter = API(
+	auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True,
+	retry_count=10, retry_delay=1)
+
+  myStreamListener = MyStreamListener()
+  myStream = Stream(auth=twitter.auth, listener=myStreamListener)
+  myStream.sample()
+
