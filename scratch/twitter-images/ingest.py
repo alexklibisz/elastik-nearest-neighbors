@@ -1,6 +1,5 @@
 from tweepy import OAuthHandler, API, Stream, StreamListener
 from threading import Thread
-from scipy.misc import imread
 from time import time
 import json
 import gzip
@@ -34,14 +33,11 @@ class MyStreamListener(StreamListener):
 	
   def __init__(self, **kwargs):
     self.cnt_tot = len(os.listdir(IMAGES_DIR))
-    self.cnt_run = 0
+    self.cnt_new = 0
     self.t0 = time()
     super().__init__(kwargs)
 
   def on_status(self, status):
-
-    if hasattr(status, 'possibly_sensitive') and status.possibly_sensitive:
-      return
 
     if 'media' not in status.entities:
       return
@@ -49,12 +45,14 @@ class MyStreamListener(StreamListener):
     thr = Thread(target=download, args=(status,))
     thr.start()
 
-    self.cnt_run += 1
+    self.cnt_new += 1
     self.cnt_tot += len(status.entities['media'])
 
-    print('%d %d %.3lf' % (
-      self.cnt_tot, (time() - self.t0),
-      self.cnt_run / ((time() - self.t0) / 60)))
+    time_sec = time() - self.t0
+    time_day = time_sec / (24 * 60 * 60)
+
+    print('%d total, %d new, %.3lf per day' % (
+      self.cnt_tot, self.cnt_new, self.cnt_new / time_day))
 
 if __name__ == "__main__":
 
