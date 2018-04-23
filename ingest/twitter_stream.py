@@ -47,11 +47,12 @@ def ingest(status, s3_client, dynamo_table):
         fp.write(json.dumps(status._json).encode())
 
     # Upload to S3 without reading from disk.
-    status_body = json.dumps(status._json)
-    status_body = status_body.encode()
-    status_body = gzip.compress(status_body)
-    status_body = BytesIO(status_body)
-    s3_client.put_object(Body=status_body, Bucket=S3_BUCKET, Key=status_key)
+    # status_body = json.dumps(status._json)
+    # status_body = status_body.encode()
+    # status_body = gzip.compress(status_body)
+    # status_body = BytesIO(status_body)
+    # s3_client.put_object(Body=status_body, Bucket=S3_BUCKET, Key=status_key)
+    s3_client.upload_file(local_path, Bucket=S3_BUCKET, Key=status_key)
 
     # # Write item to DynamoDB.
     # item = dict(status_id=status.id,
