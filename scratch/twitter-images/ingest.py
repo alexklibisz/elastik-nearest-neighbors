@@ -1,5 +1,5 @@
 from tweepy import OAuthHandler, API, Stream, StreamListener
-from threading import Thread
+from threading import Thread, active_count
 from time import time
 import json
 import gzip
@@ -51,8 +51,8 @@ class MyStreamListener(StreamListener):
     time_sec = time() - self.t0
     time_day = time_sec / (24 * 60 * 60)
 
-    print('%d total, %d new, %.3lf per day' % (
-      self.cnt_tot, self.cnt_new, self.cnt_new / time_day))
+    print('%d total, %d new, %.3lf per day, %d active threads' % (
+      self.cnt_tot, self.cnt_new, self.cnt_new / time_day, active_count()))
 
 if __name__ == "__main__":
 
