@@ -55,10 +55,8 @@ def get_img(img_path, dim=224):
 imgs_dir = "/mnt/data/datasets/insight-twitter-images/images/"
 vecs_path = 'twitter_vectors.npy'
 
-img_paths = glob('%s/*.jpg' % imgs_dir)[:6000]
+img_paths = glob('%s/*.jpg' % imgs_dir)[:20000]
 fp_paths = open('twitter_paths.txt', 'w')
-
-pdb.set_trace()
 
 dim = 224
 batch_size = 500
@@ -80,6 +78,7 @@ for i in range(0, len(img_paths), batch_size):
     prds_batch = m2.predict(imgs_batch)
     vecs[i:i + batch_size] = prds_batch
     fp_paths.write('\n'.join(img_paths[i:i + batch_size]) + '\n')
+    np.save(vecs_path, vecs[:i+batch_size])
 
     print('%d-%d %.3lf %.3lf %.3lf' % (
         i, i + batch_size, prds_batch.min(),
