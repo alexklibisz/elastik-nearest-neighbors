@@ -1,14 +1,10 @@
 /**
- * Input: Key for of an image stored in S3 bucket.
- * Processing:
- *  - Download image from S3.
- *  - Load image into an ND-array (without writing to disk).
- *  - Compute shape.
- *  - Compute mean pixel intensity.
- * Output: String containing (Image key, Image shape, Mean pixel intensity).
+ * TODO: rewrite this to following spec
+ * - Move logic out of mapValues and into another class. This will require some renaming/repackaging.
+ * - Write binary vectors to output topic.
  */
 
-package myapps;
+package ImageSearchStreamingPipeline;
 
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -36,7 +32,7 @@ import java.io.*;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-public class ImageInfoConsumer {
+public class FeatureExtractor {
 
     public static void main(String[] args) throws Exception {
 
@@ -90,13 +86,13 @@ public class ImageInfoConsumer {
                 INDArray image = imageLoader.asMatrix(object.getObjectContent());
                 int[] shape = image.shape();
                 imageInfo = String.format(
-                    "Key = %s, shape = (%d x %d x %d), mean intensity = %.3f",
-                    imageKey, shape[2], shape[3], shape[1], image.meanNumber());
+                        "Key = %s, shape = (%d x %d x %d), mean intensity = %.3f",
+                        imageKey, shape[2], shape[3], shape[1], image.meanNumber());
                 System.out.println("Image info: " + imageInfo);
 
                 INDArray featureVector = truncatedConvNet.outputSingle(image);
                 vectorInfo = String.format("" +
-                        "Shape = %s, min = %.3f, mean = %.3f, max = %.3f",
+                                "Shape = %s, min = %.3f, mean = %.3f, max = %.3f",
                         featureVector.shapeInfoToString(), featureVector.minNumber(),
                         featureVector.meanNumber(), featureVector.maxNumber());
                 System.out.println("Vector info: " + vectorInfo);

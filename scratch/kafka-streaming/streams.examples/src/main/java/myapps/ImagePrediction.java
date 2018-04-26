@@ -9,6 +9,8 @@ package myapps;
 import org.datavec.image.loader.Java2DNativeImageLoader;
 import org.datavec.image.loader.NativeImageLoader;
 import org.deeplearning4j.nn.graph.ComputationGraph;
+import org.deeplearning4j.nn.graph.vertex.GraphVertex;
+import org.deeplearning4j.nn.transferlearning.TransferLearning;
 import org.deeplearning4j.zoo.model.ResNet50;
 import org.deeplearning4j.zoo.*;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -23,7 +25,7 @@ public class ImagePrediction {
 
         // Load pre-trained Convnet.
         ZooModel zooModel = new ResNet50();
-        ComputationGraph model = (ComputationGraph) zooModel.initPretrained(PretrainedType.IMAGENET);
+        ComputationGraph pretrained = (ComputationGraph) zooModel.initPretrained(PretrainedType.IMAGENET);
 
         // Load input image.
         final String imgPath = "../imagenet-pizza.JPEG";
@@ -40,8 +42,27 @@ public class ImagePrediction {
         ImageIO.write(outputImage, "jpg", new File("../out.JPEG"));
 
         // Make prediction and print most probable class, e.g. 963.
-        INDArray[] output = model.output(false, imageMatrix);
-        System.out.println(output[0].argMax());
+        INDArray output = pretrained.outputSingle(imageMatrix);
+        System.out.println(output.argMax());
+
+        ComputationGraph model = new TransferLearning.GraphBuilder(pretrained)
+                .removeVertexAndConnections("fc1000")
+                .setOutputs("flatten_3")
+                .build();
+
+        GraphVertex[] vertices = model.getVertices();
+        for (int i = 0; i < vertices.length; i++) {
+            GraphVertex v = vertices[i];
+            // System.out.println(String.format("%d %s", v.getVertexIndex(), v.getVertexName()));
+        }
+
+        output = model.outputSingle(imageMatrix);
+        System.out.println(output.shapeInfoToString());
+        System.out.println(String.format("%.3f %.3f %.3f",
+                output.minNumber(), output.meanNumber(), output.maxNumber()));
+
+        System.exit(0);
+
     }
 
 }
