@@ -7,6 +7,7 @@ from confluent_kafka import Consumer, KafkaError, Producer
 from time import time
 import numpy as np
 import pdb
+import os
 
 
 class SimpleLSH(object):
@@ -15,9 +16,32 @@ class SimpleLSH(object):
         self.bits = bits
         self.rng = np.random.RandomState(seed)
         self.planes = None
+        self.M = None
+        self.N = None
+        self.NdotM = None
 
-    def get_vector_hash(self, vector):
-        return self.rng.binomial(1, 0.5, size=self.bits).astype(np.uint8)
+    def save(self, model_path):
+        np.savez(model_path, self.M, self.N, self.NdotM)
+        return self
+
+    def load(self, model_path):
+        arrs = np.load(model_path)
+        self.M = arrs['arr_0']
+        self.N = arrs['arr_1']
+        self.NdotM = arrs['arr_2']
+        return self
+
+    def fit(self, X):
+        sample_ii = self.rng.choice(range(len(X)), 2 * self.bits)
+        X_sample = X[sample_ii].reshape(2, self.bits, X.shape[-1])
+        self.M = (X_sample[0, ...] + X_sample[1, ...]) / 2
+        self.N = X_sample[-1, ...] - self.M
+        self.NdotM = (self.N * self.M).sum(-1)
+        return self
+
+    def get_vector_hash(self, X):
+        XdotN = X.dot(self.N.T)
+        return (XdotN >= self.NdotM).astype(np.uint8)
 
 
 if __name__ == "__main__":
@@ -41,7 +65,14 @@ if __name__ == "__main__":
     producer = Producer({"bootstrap.servers": K_SERVER})
     consumer.subscribe([K_SUB_TOPIC])
 
-    simple_lsh = SimpleLSH()
+    simple_lsh = SimpleLSH(bits=1024, seed=865)
+    model_path = 'lsh_model.npz'
+    if os.path.exists(model_path):
+        simple_lsh.load(model_path)
+    else:
+        vecs = np.load('/home/alex/dev/approximate-vector-search/scratch/es-lsh-images/twitter_vectors.npy')
+        simple_lsh.fit(vecs)
+        simple_lsh.save(model_path)
 
     while True:
 
@@ -56,10 +87,10 @@ if __name__ == "__main__":
 
         image_key = msg.key().decode()
         vec = np.fromstring(msg.value(), dtype=np.float32)
-        hsh = simple_lsh.get_vector_hash(vec)
+        hsh = simple_lsh.get_vector_hash(vec[np.newaxis, :])
 
-        print('%s %s %.3lf %s %d' % (
-            image_key, str(vec.shape), vec.mean(), str(hsh.shape), hsh.sum()))
+        print('%s %s %.3lf %s %.3lf' % (
+            image_key, str(vec.shape), vec.mean(), str(hsh.shape), hsh.mean()))
 
         producer.produce(K_PUB_TOPIC, key=image_key, value=hsh.tostring())
 
