@@ -47,8 +47,8 @@ class SimpleLSH(object):
 if __name__ == "__main__":
 
     K_SERVER = "localhost:9092"
-    K_SUB_TOPIC = "image-feature-vectors"
-    K_PUB_TOPIC = "image-hash-vectors"
+    K_SUB_TOPIC = "glove-feature-vectors"
+    K_PUB_TOPIC = "glove-hash-vectors"
 
     settings = {
         'bootstrap.servers': K_SERVER,
@@ -65,14 +65,10 @@ if __name__ == "__main__":
     producer = Producer({"bootstrap.servers": K_SERVER})
     consumer.subscribe([K_SUB_TOPIC])
 
+    glove_dir = '/home/alex/dev/approximate-vector-search/scratch/es-lsh-glove'
+    vecs = np.load('%s/glove_vecs.npy' % glove_dir).astype(np.float32)
     simple_lsh = SimpleLSH(bits=1024, seed=865)
-    model_path = 'lsh_model.npz'
-    if os.path.exists(model_path):
-        simple_lsh.load(model_path)
-    else:
-        vecs = np.load('/home/alex/dev/approximate-vector-search/scratch/es-lsh-images/twitter_vectors.npy')
-        simple_lsh.fit(vecs)
-        simple_lsh.save(model_path)
+    simple_lsh.fit(vecs)
 
     while True:
 
@@ -85,14 +81,14 @@ if __name__ == "__main__":
             print('Error: %s' % msg.error().str())
             continue
 
-        image_key = msg.key().decode()
+        key = msg.key().decode()
         vec = np.fromstring(msg.value(), dtype=np.float32)
         hsh = simple_lsh.get_vector_hash(vec[np.newaxis, :])
 
         print('%s %s %.3lf %s %.3lf' % (
-            image_key, str(vec.shape), vec.mean(), str(hsh.shape), hsh.mean()))
+            key, str(vec.shape), vec.mean(), str(hsh.shape), hsh.mean()))
 
-        producer.produce(K_PUB_TOPIC, key=image_key, value=hsh.tostring())
+        producer.produce(K_PUB_TOPIC, key=key, value=hsh.tostring())
 
     # TODO: use atexit to make sure it flushes if the script fails.
     producer.flush()

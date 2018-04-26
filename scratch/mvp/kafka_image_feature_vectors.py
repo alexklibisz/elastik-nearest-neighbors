@@ -27,7 +27,7 @@ class ImageVectorizer(object):
     def get_feature_vector(self, s3_key):
 
         # Download image from S3 into memory.
-        obj = self.s3_client.get_object(Bucket='klibisz-twitter-stream', Key=s3_key)
+        obj = self.s3_client.get_object(Bucket='klibisz-test', Key=s3_key)
         bod = BytesIO(obj['Body'].read())
         img = imread(bod)
 

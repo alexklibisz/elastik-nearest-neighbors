@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <title>Approximate Vector Search Demo</title>
+
+        <style>
+            body {
+                font-family: Arial;
+            }
+            #similar_images > img:first-of-type {
+                border: red 10px solid;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <!-- <img id="query_image" height="250" width="auto" src="http://via.placeholder.com/400x400"/> -->
+
+        <div>
+            <h3>This really primitive web-app picks a random image indexed in ElasticSearch,
+            queries for its nearest neighbors, and shows them.</h3>
+            <p> The image outlined in red is the "query" image. The remaining are its nine
+            nearest neighbors.</p>
+            <p> There are about 6000 images total indexed in Elasticsearch, all taken from
+            the imagenet test set, downloaded from Kaggle</p>
+            <hr/>
+        </div>
+
+        <div id="similar_images"></div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/elasticsearch/14.2.2/elasticsearch.min.js" type="text/javascript"></script>
+
+        <script>
+        
+        var ELASTIC_URL = "localhost:9200"
+        var S3_URL = "https://s3.amazonaws.com/klibisz-test/"
+
+        // Make image keys for Imagenet-style file names.
+        var IMAGE_KEYS = []
+        for(var i = 0; i <= 5500; i++) {
+            var suffix = ("00000000" + (i).toString()).substr(-8,8) + ".JPEG"
+            IMAGE_KEYS.push("ILSVRC2017_test_" + suffix)
+        }
+        
+        // Pick a random one and set it to the query image..
+        var rand_i = Math.floor(Math.random()*IMAGE_KEYS.length)
+        var image_key = IMAGE_KEYS[rand_i]
+
+        // document.getElementById("query_image").setAttribute("src", S3_URL + image_key)
+
+        var es_client = new elasticsearch.Client({
+          host: ELASTIC_URL, log: 'trace'
+        });
+
+        es_client.get({
+            index: "imagenet_images",
+            type: "image",
+            id: image_key
+        }).then(function (resp) {
+            
+            var search_text = resp._source.text
+            
+            es_client.search({
+              index: 'imagenet_images',
+              type: 'image',
+              body: {
+                query: {
+                  match: {
+                    text: search_text
+                  }
+                }
+              }
+            }).then(function (resp) {
+                var hits = resp.hits.hits;
+                for (var i = 0; i < hits.length; i++) {
+                    var elm = document.getElementById("similar_images")
+                    var url = S3_URL + hits[i]._source.image_key
+                    var img = "<img height=\"224\" width=\"auto\" src=\"" + url + "\"/>"
+                    elm.innerHTML = elm.innerHTML + img
+                }
+            }, function (err) {
+                console.trace(err.message);
+            });
+
+
+        }, function (err) {
+            console.trace(err.message)
+        });
+        </script> 
+
+    </body>
+
+</html>
