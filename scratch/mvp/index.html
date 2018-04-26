@@ -82,7 +82,7 @@
                 var url = S3_URL + hits[i]._source.image_key
                 innerHTML += "<img height=\"224\" width=\"auto\" src=\"" + url + "\"/>"
             }
-            document.getElementById("similar_images").innerHTML = innerHTML
+            document.getElementById("similar_images").innerHTML += innerHTML
         }, function(err) {
             console.trace(err)
         })
