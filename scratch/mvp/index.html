@@ -50,44 +50,42 @@
         var rand_i = Math.floor(Math.random()*IMAGE_KEYS.length)
         var image_key = IMAGE_KEYS[rand_i]
 
+        var query_img = '<img src="' + S3_URL + image_key + '" height="300" width="auto"/>'
+        document.getElementById("similar_images").innerHTML += query_img
+
         var es_client = new elasticsearch.Client({
           host: ELASTIC_URL, log: 'trace'
         });
 
-        es_client.get({
+        es_client.search({
             index: "imagenet_images",
             type: "image",
-            id: image_key
-        }).then(function (resp) {
-            
-            var search_text = resp._source.text
-            
-            es_client.search({
-              index: 'imagenet_images',
-              type: 'image',
-              body: {
-                query: {
-                  match: {
-                    text: search_text
-                  }
+            body: {
+                "query": {
+                    "more_like_this" : {
+                        "fields" : ["text"],
+                        "like" : [
+                        {
+                            "_index" : "imagenet_images",
+                            "_type" : "image",
+                            "_id" : image_key
+                        }],
+                        "min_term_freq" : 1,
+                        "max_query_terms" : 1024
+                    }
                 }
-              }
-            }).then(function (resp) {
-                var hits = resp.hits.hits;
-                for (var i = 0; i < hits.length; i++) {
-                    var elm = document.getElementById("similar_images")
-                    var url = S3_URL + hits[i]._source.image_key
-                    var img = "<img height=\"224\" width=\"auto\" src=\"" + url + "\"/>"
-                    elm.innerHTML = elm.innerHTML + img
-                }
-            }, function (err) {
-                console.trace(err.message);
-            });
-
-
-        }, function (err) {
-            console.trace(err.message)
-        });
+            }
+        }).then(function(resp) {
+            var hits = resp.hits.hits
+            for (var i = 0; i < hits.length; i++) {
+                var elm = document.getElementById("similar_images")
+                var url = S3_URL + hits[i]._source.image_key
+                var img = "<img height=\"224\" width=\"auto\" src=\"" + url + "\"/>"
+                elm.innerHTML = elm.innerHTML + img
+            }
+        }, function(err) {
+            console.trace(err)
+        })
         </script> 
 
     </body>
