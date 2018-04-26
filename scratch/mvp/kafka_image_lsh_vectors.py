@@ -38,7 +38,7 @@ if __name__ == "__main__":
     K_SERVER = "localhost:9092"
     K_SUB_TOPIC = "image-feature-vectors"
     K_PUB_TOPIC = "image-hash-vectors"
-    FIT_VECS_PATH = "/home/alex/dev/approximate-vector-search/scratch/es-lsh-images/imagenet_vectors.npy"
+    FIT_VECS_PATH = "../es-lsh-images/imagenet_vectors.npy"
 
     settings = {
         'bootstrap.servers': K_SERVER,

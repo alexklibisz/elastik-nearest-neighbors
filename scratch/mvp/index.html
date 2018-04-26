@@ -77,12 +77,12 @@
             }
         }).then(function(resp) {
             var hits = resp.hits.hits
+            var innerHTML = ""
             for (var i = 0; i < hits.length; i++) {
-                var elm = document.getElementById("similar_images")
                 var url = S3_URL + hits[i]._source.image_key
-                var img = "<img height=\"224\" width=\"auto\" src=\"" + url + "\"/>"
-                elm.innerHTML = elm.innerHTML + img
+                innerHTML += "<img height=\"224\" width=\"auto\" src=\"" + url + "\"/>"
             }
+            document.getElementById("similar_images").innerHTML = innerHTML
         }, function(err) {
             console.trace(err)
         })
