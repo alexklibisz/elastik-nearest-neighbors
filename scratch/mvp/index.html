@@ -14,8 +14,6 @@
             }
         </style>
 
-        <meta http-equiv="Refresh" content="5">
-
     </head>
 
     <body>
@@ -24,13 +22,20 @@
             <h3>This really primitive web-app picks a random image indexed in ElasticSearch,
             queries for its nearest neighbors, and shows them.</h3>
             <p> The image outlined in red is the "query" image. The remaining are its nine
-            nearest neighbors. It will reload every 5 seconds to show a new query.</p>
+            nearest neighbors.</p>
             <p> There are about 6000 images total indexed in Elasticsearch, all taken from
             the imagenet test set, downloaded from Kaggle.</p>
+						<p> Below the images you can see the query response. Note how each image is
+						represented by the "text" field, which is a string of tokens corresponding to
+						the document's approximate location in the vector space of images.</p> 
             <hr/>
         </div>
 
         <div id="similar_images"></div>
+
+				<hr/>
+
+				<div id="query_response"></div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/elasticsearch/14.2.2/elasticsearch.min.js" type="text/javascript"></script>
 
@@ -83,6 +88,8 @@
                 innerHTML += "<img height=\"224\" width=\"auto\" src=\"" + url + "\"/>"
             }
             document.getElementById("similar_images").innerHTML += innerHTML
+						document.getElementById("query_response").innerHTML = "<pre>" + JSON.stringify(hits, null, "\t")+ "</pre>"
+
         }, function(err) {
             console.trace(err)
         })
