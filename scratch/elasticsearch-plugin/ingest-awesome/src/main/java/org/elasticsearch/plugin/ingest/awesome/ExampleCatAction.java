@@ -20,10 +20,9 @@ package org.elasticsearch.plugin.ingest.awesome;
 
 import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.common.Table;
+import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.rest.BytesRestResponse;
-import org.elasticsearch.rest.RestController;
-import org.elasticsearch.rest.RestRequest;
+import org.elasticsearch.rest.*;
 import org.elasticsearch.rest.action.cat.AbstractCatAction;
 import org.elasticsearch.rest.action.cat.RestTable;
 
@@ -48,6 +47,7 @@ public class ExampleCatAction extends AbstractCatAction {
 
     @Override
     protected RestChannelConsumer doCatRequest(final RestRequest request, final NodeClient client) {
+
         final String message = request.param("message", "Hello from Cat Example action - Alex Klibisz");
 
         Table table = getTableWithHeader(request);

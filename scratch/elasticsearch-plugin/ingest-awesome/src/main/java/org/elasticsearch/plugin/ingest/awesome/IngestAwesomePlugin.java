@@ -54,33 +54,10 @@ public class IngestAwesomePlugin extends Plugin implements ActionPlugin {
                                              final IndexNameExpressionResolver indexNameExpressionResolver,
                                              final Supplier<DiscoveryNodes> nodesInCluster) {
 
-        return singletonList(new ExampleCatAction(settings, restController));
+        return Arrays.asList(
+                new HelloRestAction(settings, restController),
+                new ExampleCatAction(settings, restController)
+        );
     }
 
-//    @Override
-//    public Map<String, Processor.Factory> getProcessors(Processor.Parameters parameters) {
-//        return MapBuilder.<String, Processor.Factory>newMapBuilder()
-//                .put(AwesomeProcessor.TYPE, new AwesomeProcessor.Factory())
-//                .immutableMap();
-//    }
-
 }
-
-//public class IngestAwesomePlugin extends Plugin implements IngestPlugin {
-//
-//    public static final Setting<String> YOUR_SETTING =
-//            new Setting<>("ingest.awesome.setting", "foo", (value) -> value, Setting.Property.NodeScope);
-//
-//    @Override
-//    public List<Setting<?>> getSettings() {
-//        return Arrays.asList(YOUR_SETTING);
-//    }
-//
-//    @Override
-//    public Map<String, Processor.Factory> getProcessors(Processor.Parameters parameters) {
-//        return MapBuilder.<String, Processor.Factory>newMapBuilder()
-//                .put(AwesomeProcessor.TYPE, new AwesomeProcessor.Factory())
-//                .immutableMap();
-//    }
-//
-//}
