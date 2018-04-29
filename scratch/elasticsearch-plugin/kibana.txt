@@ -1,0 +1,30 @@
+DELETE hashed_vectors
+
+POST /hashed_vectors/hashed_vector
+{
+  "description": "Vector 0",
+  "h1": 111, "h2": 110, "h3": 100
+}
+
+POST /hashed_vectors/hashed_vector
+{
+  "description": "Vector 1",
+  "h1": 110, "h2": 110, "h3": 100
+}
+
+GET /hashed_vectors/hashed_vector/_search
+
+GET /hashed_vectors/hashed_vector/_search
+{
+  "query": {
+    "bool" : {
+      "should" : [
+        { "term" : { "h1" : 110 }},
+        { "term" : { "h2" : 110 }},
+        { "term" : { "h3" : 100 }}
+      ],
+      "minimum_should_match" : 1,
+      "boost" : 1.0
+    }
+  }
+}
