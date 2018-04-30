@@ -1,27 +1,47 @@
 DELETE hashed_vectors
 
-POST /hashed_vectors/hashed_vector
+POST hashed_vectors/hashed_vector/0
 {
   "description": "Vector 0",
-  "h1": 111, "h2": 110, "h3": 100
+  "hashes": {
+    "0": 1,
+    "1": 7,
+    "2": 4
+  }
 }
 
-POST /hashed_vectors/hashed_vector
+POST hashed_vectors/hashed_vector/1
 {
   "description": "Vector 1",
-  "h1": 110, "h2": 110, "h3": 100
+  "hashes": {
+    "0": 1,
+    "1": 2,
+    "2": 4
+  }
 }
 
-GET /hashed_vectors/hashed_vector/_search
+POST hashed_vectors/hashed_vector/2
+{
+  "description": "Vector 2",
+  "hashes": {
+    "0": 1,
+    "1": 4,
+    "2": 7
+  }
+}
+
+GET hashed_vectors/hashed_vector/_search
+
+GET hashed_vectors/hashed_vector/0/_search_ann
 
 GET /hashed_vectors/hashed_vector/_search
 {
   "query": {
     "bool" : {
       "should" : [
-        { "term" : { "h1" : 110 }},
-        { "term" : { "h2" : 110 }},
-        { "term" : { "h3" : 100 }}
+        { "term" : { "hashes.0" : 1 }},
+        { "term" : { "hashes.1" : 2 }},
+        { "term" : { "hashes.2" : 4 }}
       ],
       "minimum_should_match" : 1,
       "boost" : 1.0
