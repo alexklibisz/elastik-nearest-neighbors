@@ -1,4 +1,4 @@
-package org.elasticsearch.plugin.ingest.awesome;
+package org.elasticsearch.plugin.ann;
 
 import org.apache.lucene.search.Query;
 import org.elasticsearch.action.get.GetResponse;
@@ -29,7 +29,7 @@ import java.util.*;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
 
-public class HelloRestAction extends BaseRestHandler {
+public class AnnRestAction extends BaseRestHandler {
 
     public static String NAME = "_search_ann";
     private final String HASHES_KEY = "hashes";
@@ -37,7 +37,7 @@ public class HelloRestAction extends BaseRestHandler {
     private final Integer K2_DEFAULT = 10;      // Number of documents returned based on exact KNN.
 
     @Inject
-    public HelloRestAction(Settings settings, RestController controller) {
+    public AnnRestAction(Settings settings, RestController controller) {
         super(settings);
         controller.registerHandler(GET, "/{index}/{type}/{id}/" + NAME, this);
     }

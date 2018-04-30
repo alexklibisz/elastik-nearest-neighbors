@@ -23,9 +23,9 @@ licenseFile = rootProject.file('LICENSE.txt')
 noticeFile = rootProject.file('NOTICE.txt')
 
 esplugin {
-  name 'ingest-awesome'
-  description 'Ingest processor that is doing something awesome'
-  classname 'org.elasticsearch.plugin.ingest.awesome.IngestAwesomePlugin'
+  name 'ann-plugin'
+  description 'Elasticsearc plugin for approximate nearest neighbors search'
+  classname 'org.elasticsearch.plugin.ann.AnnPlugin'
   // license of the plugin, may be different than the above license
   licenseFile rootProject.file('LICENSE.txt')
   // copyright notices, may be different than the above notice

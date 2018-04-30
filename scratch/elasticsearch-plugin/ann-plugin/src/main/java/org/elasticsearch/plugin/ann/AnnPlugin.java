@@ -15,34 +15,28 @@
  *
  */
 
-package org.elasticsearch.plugin.ingest.awesome;
+package org.elasticsearch.plugin.ann;
 
 import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
-import org.elasticsearch.common.collect.MapBuilder;
 import org.elasticsearch.common.settings.*;
-import org.elasticsearch.ingest.Processor;
 import org.elasticsearch.plugins.ActionPlugin;
-import org.elasticsearch.plugins.IngestPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
-import static java.util.Collections.singletonList;
+public class AnnPlugin extends Plugin implements ActionPlugin {
 
-public class IngestAwesomePlugin extends Plugin implements ActionPlugin {
-
-    public static final Setting<String> YOUR_SETTING =
-            new Setting<>("ingest.awesome.setting", "foo", (value) -> value, Setting.Property.NodeScope);
+    private static final Setting<String> SETTINGS =
+            new Setting<>("ann.sample.setting", "foo", (value) -> value, Setting.Property.NodeScope);
 
     @Override
     public List<Setting<?>> getSettings() {
-        return Arrays.asList(YOUR_SETTING);
+        return Arrays.asList(SETTINGS);
     }
 
     @Override
@@ -55,8 +49,7 @@ public class IngestAwesomePlugin extends Plugin implements ActionPlugin {
                                              final Supplier<DiscoveryNodes> nodesInCluster) {
 
         return Arrays.asList(
-                new HelloRestAction(settings, restController),
-                new ExampleCatAction(settings, restController)
+                new AnnRestAction(settings, restController)
         );
     }
 
