@@ -102,6 +102,10 @@ body = json.loads("""{
         },
         "hashes": {
             "properties": { %s }
+        },
+        "vector": {
+            "type": "float",
+            "index": false
         }
       }
     }
@@ -110,6 +114,8 @@ body = json.loads("""{
 
 es.indices.delete(index="glove_hashed_vectors", ignore=[400, 404])
 es.indices.create(index="glove_hashed_vectors", body=body)
+
+vecs = np.load(GLOVE_VEC_PATH)
 
 with open(LSH_HASHES_PATH) as fp:
 
@@ -123,7 +129,8 @@ with open(LSH_HASHES_PATH) as fp:
             "_id": word,
             "_source": {
                 "description": word,
-                "hashes": {str(j): int(h) for j, h in enumerate(hashes)}
+                "hashes": {str(j): int(h) for j, h in enumerate(hashes)},
+                "vector": vecs[i].tolist()
             }
         })
 
