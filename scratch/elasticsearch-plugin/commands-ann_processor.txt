@@ -1,0 +1,24 @@
+DELETE _ingest/pipeline/ann-pipeline
+
+PUT _ingest/pipeline/ann-pipeline
+{
+  "description": "A pipeline to store vectors for ANN search",
+  "processors": [
+    {
+      "ann_processor" : {
+        "vector_field" : "vector",
+        "hashes_field": "hashes"
+      }
+    }
+  ]
+}
+
+DELETE ann_ingest_test
+
+PUT /ann_ingest_test/hashed_vector/1?pipeline=ann-pipeline
+{
+  "vector" : [0.1, 1.2, 2.3, 3.4, 4.5, 5.6]
+}
+
+
+GET /ann_ingest_test/hashed_vector/1

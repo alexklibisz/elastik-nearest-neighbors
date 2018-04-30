@@ -2,3 +2,5 @@ glove_artifacts
 !glove_artifacts/glove_knn.txt
 
 __pycache__
+
+ingest-awesome

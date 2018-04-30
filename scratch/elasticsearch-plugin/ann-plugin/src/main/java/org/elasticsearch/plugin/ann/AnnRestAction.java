@@ -33,8 +33,8 @@ public class AnnRestAction extends BaseRestHandler {
 
     public static String NAME = "_search_ann";
     private final String HASHES_KEY = "hashes";
-    private final Integer K1_DEFAULT = 999;     // Number of documents returned based on hashes only.
-    private final Integer K2_DEFAULT = 10;      // Number of documents returned based on exact KNN.
+    private final Integer K1_DEFAULT = 99;     // Number of documents returned based on hashes only.
+    private final Integer K2_DEFAULT = 10;     // Number of documents returned based on exact KNN.
 
     @Inject
     public AnnRestAction(Settings settings, RestController controller) {

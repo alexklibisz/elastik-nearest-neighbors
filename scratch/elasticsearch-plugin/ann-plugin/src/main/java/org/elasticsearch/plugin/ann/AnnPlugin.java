@@ -20,16 +20,20 @@ package org.elasticsearch.plugin.ann;
 import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.common.settings.*;
+import org.elasticsearch.ingest.Processor;
 import org.elasticsearch.plugins.ActionPlugin;
+import org.elasticsearch.plugins.IngestPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
-public class AnnPlugin extends Plugin implements ActionPlugin {
+public class AnnPlugin extends Plugin implements ActionPlugin, IngestPlugin {
 
     private static final Setting<String> SETTINGS =
             new Setting<>("ann.sample.setting", "foo", (value) -> value, Setting.Property.NodeScope);
@@ -51,6 +55,11 @@ public class AnnPlugin extends Plugin implements ActionPlugin {
         return Arrays.asList(
                 new AnnRestAction(settings, restController)
         );
+    }
+
+    @Override
+    public Map<String, Processor.Factory> getProcessors(Processor.Parameters parameters) {
+        return Collections.singletonMap(AnnProcessor.TYPE, new AnnProcessor.Factory());
     }
 
 }
