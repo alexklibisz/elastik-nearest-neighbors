@@ -66,6 +66,7 @@
             index: "imagenet_images",
             type: "image",
             body: {
+								"_source": false,
                 "query": {
                     "more_like_this" : {
                         "fields" : ["text"],
@@ -84,7 +85,7 @@
             var hits = resp.hits.hits
             var innerHTML = ""
             for (var i = 0; i < hits.length; i++) {
-                var url = S3_URL + hits[i]._source.image_key
+                var url = S3_URL + hits[i]._id
                 innerHTML += "<img height=\"224\" width=\"auto\" src=\"" + url + "\"/>"
             }
             document.getElementById("similar_images").innerHTML += innerHTML

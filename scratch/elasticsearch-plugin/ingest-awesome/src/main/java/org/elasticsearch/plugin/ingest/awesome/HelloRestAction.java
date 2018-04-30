@@ -33,7 +33,7 @@ public class HelloRestAction extends BaseRestHandler {
 
     public static String NAME = "_search_ann";
     private final String HASHES_KEY = "hashes";
-    private final Integer K1_DEFAULT = 100;     // Number of documents returned based on hashes only.
+    private final Integer K1_DEFAULT = 999;     // Number of documents returned based on hashes only.
     private final Integer K2_DEFAULT = 10;      // Number of documents returned based on exact KNN.
 
     @Inject
@@ -60,6 +60,10 @@ public class HelloRestAction extends BaseRestHandler {
         // TODO: the search request should be modified such that regular query options (e.g. _source: ["description"])
         // can be included. See Carrot2 examples and docs: https://github.com/carrot2/elasticsearch-carrot2/blob/master/doc/
 
+        final Double nanosecondsInSecond = 1000000000.0;
+        Long timestamp = 0L;
+        List<Tuple<String, Double>> timing = new ArrayList<>();
+
         // Parse request parameters.
         final String index = restRequest.param("index");
         final String type = restRequest.param("type");
@@ -68,6 +72,7 @@ public class HelloRestAction extends BaseRestHandler {
         final Integer k2 = Integer.parseInt(restRequest.param("k2", K2_DEFAULT.toString()));
 
         // Retrieve the document specified by index/type/id.
+        timestamp = System.nanoTime();
         GetResponse baseGetResponse = client.prepareGet(index, type, id).get();
         Map<String, Object> baseSource = baseGetResponse.getSource();
 
@@ -76,57 +81,53 @@ public class HelloRestAction extends BaseRestHandler {
 
         @SuppressWarnings("unchecked")
         List<Double> baseVector = (List<Double>) baseSource.get("vector");
-//        logger.info(vector.toString());
-//        for (Integer i = 0; i < vector.size(); i++) {
-//            logger.info(i.toString());
-//            logger.info(vector.get(i));
-//        }
+        timing.add(Tuple.tuple("Retrieving base document", (System.nanoTime() - timestamp) / nanosecondsInSecond));
 
-        // Retrieve the documents with most matching hashes.
-        // https://stackoverflow.com/questions/10773581
+        // Retrieve the documents with most matching hashes. https://stackoverflow.com/questions/10773581
+        timestamp = System.nanoTime();
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
-
         for (Map.Entry<String, Integer> entry : baseHashes.entrySet()) {
             // TODO: using String.format() gives a forbidden APIs waring here.
             // String termKey = String.format("hashes.%s", entry.getKey());
             String termKey = HASHES_KEY + "." + entry.getKey();
             ((BoolQueryBuilder) queryBuilder).should(QueryBuilders.termQuery(termKey, entry.getValue()));
         }
+        timing.add(Tuple.tuple("Building approximate query", (System.nanoTime() - timestamp) / nanosecondsInSecond));
 
-        SearchResponse approximateNeighborsResponse = client
+        timestamp = System.nanoTime();
+        SearchResponse approximateSearchResponse = client
                 .prepareSearch(index)
                 .setTypes(type)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                // .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                 .setQuery(queryBuilder)
                 .setSize(k1)
                 .setExplain(false)
                 .get();
+        timing.add(Tuple.tuple("Executing approximate query", (System.nanoTime() - timestamp) / nanosecondsInSecond));
 
         // Compute exact KNN on the approximate neighbors.
-        logger.info("Number of hits...");
-        logger.info(approximateNeighborsResponse.getHits().getTotalHits());
-
-        SearchHits searchHits = approximateNeighborsResponse.getHits();
-        // Map<String, Double> idToDistance = new HashMap<String, Double>();
+        timestamp = System.nanoTime();
+        SearchHits searchHits = approximateSearchResponse.getHits();
         List<Tuple<String, Double>> idsAndDistances = new ArrayList<>();
-
         for (SearchHit hit : searchHits) {
             Map<String, Object> hitSource = hit.getSourceAsMap();
             @SuppressWarnings("unchecked")
             List<Double> hitVector = (List<Double>) hitSource.get("vector");
             idsAndDistances.add(Tuple.tuple(hit.getId(), euclideanDistance(baseVector, hitVector)));
-            
-//            idToDistance.put(hit.getId(), euclideanDistance(baseVector, hitVector));
         }
+        timing.add(Tuple.tuple("Computing distances", (System.nanoTime() - timestamp) / nanosecondsInSecond));
 
-//        logger.info(idToDistance.toString());
-        logger.info(idsAndDistances.toString());
+        // Sort ids by the exact distance in ascending order.
+        timestamp = System.nanoTime();
+        idsAndDistances.sort(Comparator.comparing(Tuple::v2));
+        List<Tuple<String, Double>> idsAndDistancesTopK = idsAndDistances.subList(0, k2);
+        timing.add(Tuple.tuple("Sorting by distance", (System.nanoTime() - timestamp) / nanosecondsInSecond));
 
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-//            builder.field("search_response", approximateNeighborsResponse);
-            builder.field("nearest_neighbors", idsAndDistances);
+            builder.field("nearest_neighbors", idsAndDistancesTopK);
+            builder.field("timing", timing);
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
         };

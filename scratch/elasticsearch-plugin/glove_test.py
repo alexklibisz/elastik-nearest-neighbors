@@ -9,10 +9,11 @@ import pdb
 
 from lsh_model import LSHModel
 
-N = 400000
-L = 32
-H = 12
-RAW_GLOVE_PATH = os.path.expanduser("~") + "/Downloads/glove.6B.50d.txt"
+N = 1000000    # Number of vectors.
+D = 300        # Dimension of each vector.
+L = 32         # Number of LSH models.
+H = 16         # Number of buckets in each LSH model.
+RAW_GLOVE_PATH = os.path.expanduser("~") + "/Downloads/glove.840B.300d.txt"
 GLOVE_VOC_PATH = "glove_artifacts/glove_vocab.txt"
 GLOVE_VEC_PATH = "glove_artifacts/glove_vectors.npy"
 GLOVE_KNN_PATH = "glove_artifacts/glove_knn.txt"
@@ -23,13 +24,13 @@ LSH_HASHES_PATH = "glove_artifacts/glove_lsh_hashes.txt"
 # Convert the raw glove data into a vocab file and a numpy array file.
 if not (os.path.exists(GLOVE_VOC_PATH) and os.path.exists(GLOVE_VEC_PATH)):
 
-    words, vecs = [], np.zeros((N, 50))
+    words, vecs = [], np.zeros((N, D))
 
     with open(RAW_GLOVE_PATH) as fp:
-        for i, line in tqdm(enumerate(fp), desc="Processing raw GLOVE data"):
+        for i, line in tqdm(enumerate(fp), desc="Processing raw Glove data"):
             if i == N:
                 break
-            tkns = line.split()
+            tkns = line.split(" ")
             words.append(tkns[0])
             vecs[i] = np.array(list(map(float, tkns[1:])))
 
@@ -69,8 +70,7 @@ if not os.path.exists(LSH_HASHES_PATH):
     lsh_models = [LSHModel(seed=i, H=H).fit(vecs) for i in range(L)]
 
     for i, lsh_model in enumerate(lsh_models):
-        print("model %d mean per bucket = %.3lf" %
-              (i, lsh_model.get_hash(vecs).sum(axis=-1).mean()))
+        print("model %d mean hash = %.3lf" % (i, lsh_model.get_hash(vecs).mean()))
 
     lines = []
 
@@ -120,13 +120,13 @@ vecs = np.load(GLOVE_VEC_PATH)
 with open(LSH_HASHES_PATH) as fp:
 
     for i, line in enumerate(map(str.strip, fp)):
-        tkns = line.split()
+        tkns = line.split(" ")
         word, hashes = tkns[0], tkns[1:]
 
         actions.append({
             "_index": "glove_hashed_vectors",
             "_type": "hashed_vector",
-            "_id": word,
+            "_id": word[:100],
             "_source": {
                 "description": word,
                 "hashes": {str(j): int(h) for j, h in enumerate(hashes)},
