@@ -6,7 +6,9 @@ import numpy as np
 
 ES_URL = "http://localhost:9200/_build_lsh"
 
-L, H, D = 10, 8, 5
+L, H, D = 1, 8, 3
+
+np.random.seed(100)
 
 vector_sample = [
     list(map(lambda x: float(round(x, 8)), point))
@@ -17,6 +19,8 @@ vector_sample = np.random.normal(0, 1, size=(2 * L * H, D)).astype(np.float16)
 vector_sample_csv = ""
 for vector in vector_sample:
     vector_sample_csv += ",".join(map(lambda x: "%.8lf" % x, vector)) + "\n"
+
+print(vector_sample_csv.split("\n")[-2])
 
 data = {
     "_index": "lsh_models",

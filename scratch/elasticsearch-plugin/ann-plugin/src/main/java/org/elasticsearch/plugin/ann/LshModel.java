@@ -1,15 +1,25 @@
 package org.elasticsearch.plugin.ann;
 
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.json.JSONArray;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LshModel {
 
-    private Integer nbTables;
-    private Integer nbBitsPerTable;
-    private Integer nbDimensions;
-    private List<List<List<Float>>> normalVectors;
-    private List<List<List<Float>>> midPoints;
+    public Integer nbTables;
+    public Integer nbBitsPerTable;
+    public Integer nbDimensions;
+
+    private List<RealMatrix> midpoints;
+    private List<RealMatrix> normals;
 
     public LshModel(Integer nbTables, Integer nbBitsPerTable, Integer nbDimensions) {
         this.nbTables = nbTables;
@@ -17,33 +27,50 @@ public class LshModel {
         this.nbDimensions = nbDimensions;
     }
 
-//    private class Hyperplane {
-//        public Hyperplane()
-//    }
+    public void fitFromVectorSample(RealMatrix vectorSample) throws IOException {
 
-    public void fitFromVectorSample(List<List<Float>> vectorSample) {
+        RealMatrix vectorsA, vectorsB, midpoint, normal;
+        midpoints = new ArrayList<>();
+        normals = new ArrayList<>();
 
-        this.normalVectors = new ArrayList<>();
-        this.midPoints = new ArrayList<>();
+        for (int i = 0; i < vectorSample.getRowDimension(); i += (nbBitsPerTable * 2)) {
+            // Select two subsets of nbBitsPerTable vectors.
+            vectorsA = vectorSample.getSubMatrix(i, i + nbBitsPerTable - 1, 0, nbDimensions - 1);
+            vectorsB = vectorSample.getSubMatrix(i + nbBitsPerTable, i + 2 * nbBitsPerTable - 1, 0, nbDimensions - 1);
 
-        for (int i = 0; i < vectorSample.size(); i += 2 * nbBitsPerTable) {
+            // Compute the midpoint between each pair of vectors.
+            midpoint = vectorsA.add(vectorsB).scalarMultiply(0.5);
+            midpoints.add(midpoint);
 
-            List<List<Float>> vA = vectorSample.subList(i, i + nbBitsPerTable);
-            List<List<Float>> vB = vectorSample.subList(i + nbBitsPerTable, i + 2 * nbBitsPerTable);
-
-            // Compute the midpoint for each pair of vectors.
-            // List<List<Float>> mp = List<>
-
-            System.out.println(vA.toString());
-            System.out.println(vB.toString());
-            System.out.println(">>>>>>>>>>>>>>>>");
+            // Compute the normal vectors for each pair of vectors.
+            normal = vectorsB.subtract(midpoint);
+            normals.add(normal);
         }
 
-//        System.out.println(nbTables);
-//        System.out.println(nbBitsPerTable);
-//        System.out.println(nbDimensions);
-//        System.out.println(vectorSample);
+        double[][] tmp = midpoints.get(0).getData();
+        JSONArray tmpJSON = new JSONArray(tmp);
+        System.out.println(tmpJSON.toString());
+
+//        midpoint = midpoints.get(0);
+//        double[][] tmp = midpoint.getData();
+//
+//        System.out.println(midpoints.toString());
+//        System.out.println(normals.toString());
+//        System.out.println(">>>");
+//        System.out.println(midpoints.get(0).getData().getClass());
+//        System.out.println(">>>");
+
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        ObjectOutputStream oos = new ObjectOutputStream(bos);
+//        System.out.println(bos.size());
+//        System.out.println(bos.toString());
+//        MatrixUtils.serializeRealMatrix(midpoints.get(0), oos);
+//        oos.flush();
+//        oos.close();
+//        System.out.println(bos.size());
+//        System.out.println(bos.toString());
 
     }
+
 
 }
