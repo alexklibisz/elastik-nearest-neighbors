@@ -53,7 +53,8 @@ public class AnnPlugin extends Plugin implements ActionPlugin, IngestPlugin {
                                              final Supplier<DiscoveryNodes> nodesInCluster) {
 
         return Arrays.asList(
-                new AnnRestAction(settings, restController)
+                new AnnRestAction(settings, restController),
+                new LshRestAction(settings, restController)
         );
     }
 
