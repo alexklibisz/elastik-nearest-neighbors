@@ -51,7 +51,6 @@ public class AnnPlugin extends Plugin implements ActionPlugin, IngestPlugin {
                                              final SettingsFilter settingsFilter,
                                              final IndexNameExpressionResolver indexNameExpressionResolver,
                                              final Supplier<DiscoveryNodes> nodesInCluster) {
-
         return Arrays.asList(new AnnRestAction(settings, restController));
     }
 

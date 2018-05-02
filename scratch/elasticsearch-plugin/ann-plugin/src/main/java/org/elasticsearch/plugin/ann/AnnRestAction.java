@@ -40,6 +40,8 @@ public class AnnRestAction extends BaseRestHandler {
     private final Integer K1_DEFAULT = 99;     // Number of documents returned based on hashes only.
     private final Integer K2_DEFAULT = 10;     // Number of documents returned based on exact KNN.
 
+    private final Double NANOSECONDS_PER_SECOND = 1000000000.;
+
     @Inject
     public AnnRestAction(Settings settings, RestController controller) {
         super(settings);
@@ -75,7 +77,6 @@ public class AnnRestAction extends BaseRestHandler {
         // TODO: the search request should be modified such that regular query options (e.g. _source: ["description"])
         // can be included. See Carrot2 examples and docs: https://github.com/carrot2/elasticsearch-carrot2/blob/master/doc/
 
-        final Double nanosecondsInSecond = 1000000000.0;
         Long timestamp = 0L;
         List<Tuple<String, Double>> timing = new ArrayList<>();
 
@@ -96,7 +97,7 @@ public class AnnRestAction extends BaseRestHandler {
 
         @SuppressWarnings("unchecked")
         List<Double> baseVector = (List<Double>) baseSource.get("vector");
-        timing.add(Tuple.tuple("Retrieving base document", (System.nanoTime() - timestamp) / nanosecondsInSecond));
+        timing.add(Tuple.tuple("Retrieving base document", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         // Retrieve the documents with most matching hashes. https://stackoverflow.com/questions/10773581
         timestamp = System.nanoTime();
@@ -107,7 +108,7 @@ public class AnnRestAction extends BaseRestHandler {
             String termKey = HASHES_KEY + "." + entry.getKey();
             ((BoolQueryBuilder) queryBuilder).should(QueryBuilders.termQuery(termKey, entry.getValue()));
         }
-        timing.add(Tuple.tuple("Building approximate query", (System.nanoTime() - timestamp) / nanosecondsInSecond));
+        timing.add(Tuple.tuple("Building approximate query", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         timestamp = System.nanoTime();
         SearchResponse approximateSearchResponse = client
@@ -117,7 +118,7 @@ public class AnnRestAction extends BaseRestHandler {
                 .setSize(k1)
                 .setExplain(false)
                 .get();
-        timing.add(Tuple.tuple("Executing approximate query", (System.nanoTime() - timestamp) / nanosecondsInSecond));
+        timing.add(Tuple.tuple("Executing approximate query", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         // Compute exact KNN on the approximate neighbors.
         timestamp = System.nanoTime();
@@ -129,13 +130,13 @@ public class AnnRestAction extends BaseRestHandler {
             List<Double> hitVector = (List<Double>) hitSource.get("vector");
             idsAndDistances.add(Tuple.tuple(hit.getId(), euclideanDistance(baseVector, hitVector)));
         }
-        timing.add(Tuple.tuple("Computing distances", (System.nanoTime() - timestamp) / nanosecondsInSecond));
+        timing.add(Tuple.tuple("Computing distances", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         // Sort ids by the exact distance in ascending order.
         timestamp = System.nanoTime();
         idsAndDistances.sort(Comparator.comparing(Tuple::v2));
         List<Tuple<String, Double>> idsAndDistancesTopK = idsAndDistances.subList(0, k2);
-        timing.add(Tuple.tuple("Sorting by distance", (System.nanoTime() - timestamp) / nanosecondsInSecond));
+        timing.add(Tuple.tuple("Sorting by distance", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
@@ -179,7 +180,7 @@ public class AnnRestAction extends BaseRestHandler {
         lshModel.fitFromVectorSample(vectorSample);
 
         IndexResponse indexResponse = client.prepareIndex(_index, _type, _id)
-                .setSource(lshModel.getSerializable()).get();
+                .setSource(lshModel.toMap()).get();
         logger.info("indexResponse: " + indexResponse.toString());
 
         GetResponse getResponse = client.prepareGet(_index, _type, _id).get();
@@ -206,27 +207,49 @@ public class AnnRestAction extends BaseRestHandler {
         final String _ann_uri = (String) contentMap.get("_ann_uri");
         final List<Map<String, Object>> docs = (List<Map<String, Object>>) contentMap.get("docs");
 
-        // TODO: check if the index exists.. If it does not, create a mapping which does not index the vectors.
-        // TODO: compute hashes and insert them too!
-        BulkRequestBuilder bulkRequest = client.prepareBulk();
+        // Get the ANN document.
+        logger.info(String.format("Getting ANN model from %s", _ann_uri));
+        String[] annURITokens = _ann_uri.split("/");
+        GetResponse annGetResponse = client.prepareGet(annURITokens[0], annURITokens[1], annURITokens[2]).get();
+
+        // Instantiate LSH from the source map.
+        LshModel lshModel = LshModel.fromMap(annGetResponse.getSourceAsMap());
+
+        // TODO: check if the index exists.. If it does not, create a mapping which does not index the continuous vectors.
+
+        // Prepare for batch indexing.
+        long timestamp = System.nanoTime();
+        BulkRequestBuilder bulkIndexRequest = client.prepareBulk();
         for (Map<String, Object> doc: docs) {
-            logger.info(String.format("Index %s/%s/%s", _index, _type, (String) doc.get("_id")));
-            bulkRequest.add(client
+
+            Map<String, Object> source = (Map<String, Object>) doc.get("_source");
+            List<Double> vector = (List<Double>) source.get("_aknn_vector");
+            List<Integer> hashes = lshModel.getVectorHashes(vector);
+
+//            logger.info(vector.toString());
+            logger.info(hashes.toString());
+            logger.info(">>>>");
+
+            bulkIndexRequest.add(client
                     .prepareIndex(_index, _type, (String) doc.get("_id"))
                     .setSource((Map<String, Object>) doc.get("_source"))
             );
-            logger.info(">>>");
         }
 
-        BulkResponse bulkResponse = bulkRequest.get();
+        BulkResponse bulkIndexResponse = bulkIndexRequest.get();
 
-        logger.info("hasFailures: " + bulkResponse.hasFailures());
-        logger.info(String.format("Inserted %d docs", docs.size()));
+        if (bulkIndexResponse.hasFailures())
+            logger.error(String.format("Indexing failed after %.8f seconds with message: %s",
+                    (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND,
+                    bulkIndexResponse.buildFailureMessage()));
+        else
+            logger.info(String.format("Indexed %d docs in %.8f seconds", docs.size(),
+                    (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-            builder.field("did_it_work", true);
+            // TODO: probably want some output to the user.
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
         };
