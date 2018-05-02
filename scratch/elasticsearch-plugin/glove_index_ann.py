@@ -6,13 +6,13 @@ import numpy as np
 import os
 import re
 
-ES_URL = "http://localhost:9200/_index_ann"
+ES_URL = "http://localhost:9200/_aknn_index"
 RAW_GLOVE_PATH = os.path.expanduser("~") + "/Downloads/glove.840B.300d.txt"
-BATCH_SIZE = 1
+BATCH_SIZE = 5000
 
 INDEX = 'glove_word_vectors'
 TYPE = 'word_vector'
-ANN_URI = 'ann_models/ann_model/glove_840B_300D'
+ANN_URI = 'aknn_models/aknn_model/glove_840B_300D'
 
 
 es = Elasticsearch()
@@ -55,4 +55,3 @@ for line in open(RAW_GLOVE_PATH):
         response = requests.post(ES_URL, json=data)
         print(response.json())
         data['docs'] = []
-        pdb.set_trace()

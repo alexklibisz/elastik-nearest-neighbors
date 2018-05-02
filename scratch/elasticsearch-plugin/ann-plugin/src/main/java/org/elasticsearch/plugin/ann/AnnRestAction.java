@@ -31,12 +31,13 @@ import static org.elasticsearch.rest.RestRequest.Method.POST;
 public class AnnRestAction extends BaseRestHandler {
 
     public static String NAME = "_ann";
-    private final String NAME_SEARCH = "_search_ann";
-    private final String NAME_INDEX = "_index_ann";
-    private final String NAME_CREATE = "_create_ann";
+    private final String NAME_SEARCH = "_aknn_search";
+    private final String NAME_INDEX = "_aknn_index";
+    private final String NAME_CREATE = "_aknn_create";
 
     // TODO: make these actual parameters.
-    private final String HASHES_KEY = "hashes";
+    private final String HASHES_KEY = "_aknn_hashes";
+    private final String VECTOR_KEY = "_aknn_vector";
     private final Integer K1_DEFAULT = 99;     // Number of documents returned based on hashes only.
     private final Integer K2_DEFAULT = 10;     // Number of documents returned based on exact KNN.
 
@@ -96,7 +97,7 @@ public class AnnRestAction extends BaseRestHandler {
         Map<String, Integer> baseHashes = (Map<String, Integer>) baseSource.get(HASHES_KEY);
 
         @SuppressWarnings("unchecked")
-        List<Double> baseVector = (List<Double>) baseSource.get("vector");
+        List<Double> baseVector = (List<Double>) baseSource.get(VECTOR_KEY);
         timing.add(Tuple.tuple("Retrieving base document", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         // Retrieve the documents with most matching hashes. https://stackoverflow.com/questions/10773581
@@ -127,7 +128,7 @@ public class AnnRestAction extends BaseRestHandler {
         for (SearchHit hit : searchHits) {
             Map<String, Object> hitSource = hit.getSourceAsMap();
             @SuppressWarnings("unchecked")
-            List<Double> hitVector = (List<Double>) hitSource.get("vector");
+            List<Double> hitVector = (List<Double>) hitSource.get(VECTOR_KEY);
             idsAndDistances.add(Tuple.tuple(hit.getId(), euclideanDistance(baseVector, hitVector)));
         }
         timing.add(Tuple.tuple("Computing distances", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
@@ -217,23 +218,21 @@ public class AnnRestAction extends BaseRestHandler {
 
         // TODO: check if the index exists.. If it does not, create a mapping which does not index the continuous vectors.
 
-        // Prepare for batch indexing.
+        // Prepare documents for batch indexing.
         long timestamp = System.nanoTime();
         BulkRequestBuilder bulkIndexRequest = client.prepareBulk();
         for (Map<String, Object> doc: docs) {
-
             Map<String, Object> source = (Map<String, Object>) doc.get("_source");
-            List<Double> vector = (List<Double>) source.get("_aknn_vector");
-            List<Integer> hashes = lshModel.getVectorHashes(vector);
-
-//            logger.info(vector.toString());
-            logger.info(hashes.toString());
-            logger.info(">>>>");
+            List<Double> vector = (List<Double>) source.get(VECTOR_KEY);
+            List<Long> hashes = lshModel.getVectorHashes(vector);
+            Map<String, Long> hashesAsMap = new HashMap<>();
+            for (Integer i = 0; i < hashes.size(); i++)
+                hashesAsMap.put(i.toString(), hashes.get(i));
+            source.put(HASHES_KEY, hashesAsMap);
 
             bulkIndexRequest.add(client
                     .prepareIndex(_index, _type, (String) doc.get("_id"))
-                    .setSource((Map<String, Object>) doc.get("_source"))
-            );
+                    .setSource(source));
         }
 
         BulkResponse bulkIndexResponse = bulkIndexRequest.get();

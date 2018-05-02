@@ -54,68 +54,34 @@ public class LshModel {
 
     }
 
-    public List<Integer> getVectorHashes(List<Double> vector) {
-//        XdotN = X.dot(self.N.T)
-//        H = (XdotN >= self.NdotM).astype(np.uint8)
-//        return H
-//        Integer[] hashes = new Integer[this.nbTables];
+    public List<Long> getVectorHashes(List<Double> vector) {
+
+        List<Long> hashes = new ArrayList<>();
 
         RealMatrix vectorAsMatrix = MatrixUtils.createRealMatrix(1, nbDimensions);
         for (int i = 0; i < nbDimensions; i++)
             vectorAsMatrix.setEntry(0, i, vector.get(i));
 
-        // Compute the hash for each table.
+        // Compute the hash for this vector with respect to each table.
         for (int i = 0; i < nbTables; i++) {
+
             RealMatrix normal = normals.get(i);
             RealMatrix midpoint = midpoints.get(i);
 
             RealVector thresholds = new ArrayRealVector(this.nbBitsPerTable);
-            System.out.println(thresholds.toString());
-            for (int j = 0; j < this.nbBitsPerTable; j++) {
+            for (int j = 0; j < this.nbBitsPerTable; j++)
                 thresholds.setEntry(j, normal.getRowVector(j).dotProduct(midpoint.getRowVector(j)));
-            }
 
             RealMatrix xDotNT = vectorAsMatrix.multiply(normal.transpose());
-            System.out.println(xDotNT.toString());
-            System.out.println(thresholds.toString());
-            System.out.println(String.format("%d %d %d", i, xDotNT.getRowDimension(), xDotNT.getColumnDimension()));
-
-            double[] hashes = new double[nbBitsPerTable];
-            for (int j = 0; j < nbBitsPerTable; j++) {
+            Long hash = 0L;
+            for (int j = 0; j < nbBitsPerTable; j++)
                 if (xDotNT.getEntry(0, j) >= thresholds.getEntry(j))
-                    hashes[j] = 1.0;
-                else
-                    hashes[j] = 0.0;
-            }
+                    hash += (long) Math.pow(2, j);
 
-            System.out.println(MatrixUtils.createRealVector(hashes).toString());
-            System.out.println(">>>");
-
+            hashes.add(hash);
         }
 
-        // Convert vector to RealVector.
-//        double[] vectorData = new double[this.nbDimensions];
-//        for (int i = 0; i < this.nbDimensions; i++)
-//            vectorData[i] = vector.get(i);
-//        final RealVector realVector = MatrixUtils.createRealVector(vectorData);
-//
-//        System.out.println(">>>");
-//        System.out.println(realVector);
-//        System.out.println(">>>");
-//
-//        for (int i = 0; i < this.nbTables; i++) {
-//            double[] dotProducts = new double[this.nbBitsPerTable];
-//            double s = 0.;
-//            for (int j = 0; j < this.nbBitsPerTable; j++) {
-//                dotProducts[j] = realVector.dotProduct(normals.get(i).getRowVector(j));
-//                s += dotProducts[j];
-//            }
-//            System.out.println(String.format("%d %.4f", i, s));
-//        }
-//
-//        System.out.println(">>>");
-
-        return Arrays.asList(0,1,0);
+        return hashes;
     }
 
     @SuppressWarnings("unchecked")

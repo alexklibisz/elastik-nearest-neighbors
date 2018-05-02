@@ -6,9 +6,9 @@ import numpy as np
 
 D = 300  # Dimension of each vector.
 L = 32   # Number of LSH models.
-H = 32   # Number of buckets in each LSH model.
+H = 16   # Number of buckets in each LSH model.
 
-ES_URL = "http://localhost:9200/_create_ann"
+ES_URL = "http://localhost:9200/_aknn_create"
 GLOVE_VEC_PATH = "glove-hashing-in-python/glove_artifacts/glove_vectors.npy"
 
 np.random.seed(1)
@@ -23,10 +23,10 @@ for vec in vecs_sample:
     vector_sample_csv += ",".join(map(lambda x: "%.8lf" % x, vec)) + "\n"
 
 data = {
-    "_index": "ann_models",
-    "_type": "ann_model",
+    "_index": "aknn_models",
+    "_type": "aknn_model",
     "_id": "glove_840B_300D",
-    "description": "ANN model for Glove Common Crawl 840B (Glove.840B.300d.zip)",
+    "description": "AKNN model for Glove Common Crawl 840B (Glove.840B.300d.zip)",
 
     "nb_tables": L,
     "nb_bits_per_table": H,
