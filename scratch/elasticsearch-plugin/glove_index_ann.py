@@ -8,7 +8,7 @@ import re
 
 ES_URL = "http://localhost:9200/_aknn_index"
 RAW_GLOVE_PATH = os.path.expanduser("~") + "/Downloads/glove.840B.300d.txt"
-BATCH_SIZE = 5000
+BATCH_SIZE = 10000
 
 INDEX = 'glove_word_vectors'
 TYPE = 'word_vector'

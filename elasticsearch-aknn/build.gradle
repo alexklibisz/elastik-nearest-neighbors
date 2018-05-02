@@ -10,7 +10,7 @@ buildscript {
   }
 }
 
-group = 'org.elasticsearch.plugin.ingest'
+group = 'org.elasticsearch.plugin.aknn'
 version = '0.0.1-SNAPSHOT'
 
 apply plugin: 'java'
@@ -23,9 +23,9 @@ licenseFile = rootProject.file('LICENSE.txt')
 noticeFile = rootProject.file('NOTICE.txt')
 
 esplugin {
-  name 'ann-plugin'
-  description 'Elasticsearc plugin for approximate nearest neighbors search'
-  classname 'org.elasticsearch.plugin.ann.AnnPlugin'
+  name 'elasticsearch-aknn'
+  description 'Elasticsearch plugin for approximate K-nearest-neighbors search'
+  classname 'org.elasticsearch.plugin.aknn.AknnPlugin'
   // license of the plugin, may be different than the above license
   licenseFile rootProject.file('LICENSE.txt')
   // copyright notices, may be different than the above notice
@@ -38,7 +38,6 @@ esplugin {
 dependencies {
     compile 'org.elasticsearch:elasticsearch:6.2.4'
     compile 'org.apache.commons:commons-math3:3.6.1'
-    compile 'org.json:json:20180130'
     testCompile 'org.elasticsearch.test:framework:6.2.4'
 }
 

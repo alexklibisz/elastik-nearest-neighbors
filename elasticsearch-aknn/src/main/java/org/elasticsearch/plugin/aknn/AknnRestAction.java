@@ -1,4 +1,4 @@
-package org.elasticsearch.plugin.ann;
+package org.elasticsearch.plugin.aknn;
 
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
@@ -24,13 +24,12 @@ import org.elasticsearch.search.SearchHits;
 import java.io.IOException;
 import java.util.*;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
 
-public class AnnRestAction extends BaseRestHandler {
+public class AknnRestAction extends BaseRestHandler {
 
-    public static String NAME = "_ann";
+    public static String NAME = "_aknn";
     private final String NAME_SEARCH = "_aknn_search";
     private final String NAME_INDEX = "_aknn_index";
     private final String NAME_CREATE = "_aknn_create";
@@ -44,7 +43,7 @@ public class AnnRestAction extends BaseRestHandler {
     private final Double NANOSECONDS_PER_SECOND = 1000000000.;
 
     @Inject
-    public AnnRestAction(Settings settings, RestController controller) {
+    public AknnRestAction(Settings settings, RestController controller) {
         super(settings);
         controller.registerHandler(GET, "/{index}/{type}/{id}/" + NAME_SEARCH, this);
         controller.registerHandler(POST, NAME_INDEX, this);
@@ -207,21 +206,27 @@ public class AnnRestAction extends BaseRestHandler {
         final String _type = (String) contentMap.get("_type");
         final String _ann_uri = (String) contentMap.get("_ann_uri");
         final List<Map<String, Object>> docs = (List<Map<String, Object>>) contentMap.get("docs");
+        logger.info(String.format("Received %d docs for indexing", docs.size()));
 
         // Get the ANN document.
-        logger.info(String.format("Getting ANN model from %s", _ann_uri));
+        logger.info(String.format("Getting AKNN model stored at %s", _ann_uri));
         String[] annURITokens = _ann_uri.split("/");
         GetResponse annGetResponse = client.prepareGet(annURITokens[0], annURITokens[1], annURITokens[2]).get();
+        logger.info("Done");
 
         // Instantiate LSH from the source map.
+        logger.info("Parsing AKNN model");
         LshModel lshModel = LshModel.fromMap(annGetResponse.getSourceAsMap());
+        logger.info("Done");
 
         // TODO: check if the index exists.. If it does not, create a mapping which does not index the continuous vectors.
 
         // Prepare documents for batch indexing.
+        logger.info("Preparing documents for bulk indexing");
         long timestamp = System.nanoTime();
         BulkRequestBuilder bulkIndexRequest = client.prepareBulk();
         for (Map<String, Object> doc: docs) {
+            logger.info("Preparing document with ID: " + (String) doc.get("_id"));
             Map<String, Object> source = (Map<String, Object>) doc.get("_source");
             List<Double> vector = (List<Double>) source.get(VECTOR_KEY);
             List<Long> hashes = lshModel.getVectorHashes(vector);
@@ -229,13 +234,15 @@ public class AnnRestAction extends BaseRestHandler {
             for (Integer i = 0; i < hashes.size(); i++)
                 hashesAsMap.put(i.toString(), hashes.get(i));
             source.put(HASHES_KEY, hashesAsMap);
-
             bulkIndexRequest.add(client
                     .prepareIndex(_index, _type, (String) doc.get("_id"))
                     .setSource(source));
+            logger.info("Done");
         }
 
+        logger.info("Executing bulk indexing");
         BulkResponse bulkIndexResponse = bulkIndexRequest.get();
+        logger.info("Done");
 
         if (bulkIndexResponse.hasFailures())
             logger.error(String.format("Indexing failed after %.8f seconds with message: %s",

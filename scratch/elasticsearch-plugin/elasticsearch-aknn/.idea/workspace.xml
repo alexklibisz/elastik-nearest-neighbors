@@ -1,0 +1,1146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="32a00d20-e92c-4d28-b17d-e88216eedafc" name="Default" comment="" />
+    <ignored path="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/.gradle/" />
+    <ignored path="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/build/" />
+    <ignored path="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/out/" />
+    <ignored path="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/.gradle/" />
+    <ignored path="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/build/" />
+    <ignored path="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/out/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>Getting</find>
+    </findStrings>
+  </component>
+  <component name="GradleLocalSettings">
+    <option name="myGradleHomes">
+      <map>
+        <entry key="$PROJECT_DIR$" value="$USER_HOME$/.installations/gradle-4.7" />
+      </map>
+    </option>
+    <option name="myGradleVersions">
+      <map>
+        <entry key="$PROJECT_DIR$" value="4.7" />
+      </map>
+    </option>
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="elasticsearch-aknn" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="elasticsearch-aknn" />
+                <option name="path" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="availableTasks">
+      <map>
+        <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn">
+          <value>
+            <list>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#init" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#prepareCluster.cleanShared" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the sub-projects of root project 'elasticsearch-aknn'." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="projects" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="bundlePlugin" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#stopPrevious" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Run Checkstyle analysis for test classes" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="checkstyleTest" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#configure" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Publishes Maven publication 'zipReal' to the local Maven repository." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="publishZipRealPublicationToMavenLocal" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Tests that test classes aren't misnamed or misplaced" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="namingConventions" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs elasticsearch with ':'" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Generates Gradle wrapper files." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="wrapper" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="copyPluginPropertiesTemplate" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#stopPrevious" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles a jar containing source files." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="sourcesJar" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs forbidden-apis checks on 'test' classes." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="forbiddenApisTest" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#clean" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles a jar archive containing the main classes." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="jar" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the configuration model of root project 'elasticsearch-aknn'. [incubating]" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="model" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="checkstyle" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Generates the Maven POM file for publication 'zipReal'." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="generatePomFileForZipRealPublication" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Processes main resources." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="processResources" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the tasks runnable from root project 'elasticsearch-aknn'." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="tasks" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs forbidden-apis checks." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="forbiddenApis" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Initializes a new Gradle build." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="init" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#wait" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs unit tests with the randomized testing framework" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="test" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Checks third party JAR bytecode for missing classes, use of internal APIs, and other horrors'" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="thirdPartyAudit" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Compiles main Java source." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="compileJava" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#configure" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles a jar containing javadocs." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="javadocJar" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs all checks." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="check" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays all dependencies declared in root project 'elasticsearch-aknn'." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="dependencies" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#stop" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Processes test resources." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="processTestResources" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#wait" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles and tests this project and all projects it depends on." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="buildNeeded" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#prepareCluster.cleanShared" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs CheckJarHell on file collection" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="jarHell" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the components produced by root project 'elasticsearch-aknn'. [incubating]" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="components" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#extract" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles and tests this project and all projects that depend on it." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="buildDependents" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Create a notice file from dependencies" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="generateNotice" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles main classes." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="classes" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the dependent components of components in root project 'elasticsearch-aknn'. [incubating]" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="dependentComponents" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays all buildscript dependencies declared in root project 'elasticsearch-aknn'." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="buildEnvironment" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs LoggerUsageCheck on null" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="loggerUsageCheck" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#checkPrevious" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles test classes." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="testClasses" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="dependencyLicenses" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTest" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Generates Javadoc API documentation for the main source code." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="javadoc" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs all non-test checks." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="precommit" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Run Checkstyle analysis for main classes" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="checkstyleMain" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Create a CSV file with dependencies information." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="dependenciesInfo" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="copyRestSpec" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#createCwd" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#start" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#copyPlugins" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#createCwd" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Runs forbidden-apis checks on 'main' classes." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="forbiddenApisMain" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#installElasticsearchAknnPlugin" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Generates the Maven POM file for publication 'zip'." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="generatePomFileForZipPublication" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="copyCheckstyleConf" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#extract" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the insight into a specific dependency in root project 'elasticsearch-aknn'." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="dependencyInsight" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Publishes Maven publication 'zip' to the local Maven repository." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="publishZipPublicationToMavenLocal" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Updates the sha files for the dependencyLicenses check" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="updateShas" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles the outputs of this project." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="assemble" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Deletes the build directory." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="clean" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Compiles test Java source." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="compileTestJava" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#copyPlugins" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#installElasticsearchAknnPlugin" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays a help message." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="help" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="pluginProperties" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Assembles and tests this project." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="build" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestCluster#checkPrevious" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Publishes all publications produced by this project." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="publish" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Publishes all Maven publications produced by this project to the local Maven cache." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="publishToMavenLocal" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="integTestRunner" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Checks sources for missing, incorrect, or unacceptable license headers" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="licenseHeaders" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Checks source files for invalid patterns like nocommits or tabs" />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="forbiddenPatterns" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="description" value="Displays the properties of root project 'elasticsearch-aknn'." />
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="properties" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#clean" />
+              </ExternalTaskPojo>
+              <ExternalTaskPojo>
+                <option name="linkedExternalProjectPath" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                <option name="name" value="run#start" />
+              </ExternalTaskPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="modificationStamps">
+      <map>
+        <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/.gradle" value="0" />
+        <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/build.gradle" value="3031553239" />
+        <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/settings.gradle" value="1965005818" />
+        <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/.gradle" value="0" />
+        <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/build.gradle" value="831553302" />
+        <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/settings.gradle" value="1965005818" />
+        <entry key="$PROJECT_DIR$" value="4575782758000" />
+      </map>
+    </option>
+    <option name="projectBuildClasspath">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <ExternalProjectBuildClasspathPojo>
+              <option name="modulesBuildClasspath">
+                <map>
+                  <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin">
+                    <value>
+                      <ExternalModuleBuildClasspathPojo>
+                        <option name="entries">
+                          <list>
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.elasticsearch.gradle/build-tools/6.2.4/89ca44f109194273082f27e4a8068dac2025e322/build-tools-6.2.4-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.elasticsearch.gradle/build-tools/6.2.4/d03da19909f0620ee6e447e7c4cee4e79ca21079/build-tools-6.2.4.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.carrotsearch.randomizedtesting/junit4-ant/2.5.2/e0d89d5ec425438788bf345a732e621b7ea07c80/junit4-ant-2.5.2-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.carrotsearch.randomizedtesting/junit4-ant/2.5.2/b8f91682cfeb8f9196aad56ace9c9a13330acef6/junit4-ant-2.5.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/a6c32b40bf3d76eca54e3c601e5d1470c86fcdfa/junit-4.12-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/2973d150c0dc1fefe998f834810d68f278ea58ec/junit-4.12.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-extra-configurations-plugin/3.0.3/2c018d085196069a9c085d793f6bd81c1b64c7f9/gradle-extra-configurations-plugin-3.0.3-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-extra-configurations-plugin/3.0.3/32cd905383b257b4fbd494807520c0b17617d974/gradle-extra-configurations-plugin-3.0.3.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/nebula-publishing-plugin/4.4.4/bc056fb4a0309ee92046b52c127ee356e91ea35a/nebula-publishing-plugin-4.4.4-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/nebula-publishing-plugin/4.4.4/7dbb6e9eaa6f84680bbf98f2c995da26d907ade7/nebula-publishing-plugin-4.4.4.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-info-plugin/3.0.3/d17176ead16df19fcb28187bda45ce2ceea69a9d/gradle-info-plugin-3.0.3-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-info-plugin/3.0.3/26507c144b8622489024282c6dcdb2e96f8f50da/gradle-info-plugin-3.0.3.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/3.2.0.201312181205-r/566b20b4798d9fa31fe33298c493ca9601830b6f/org.eclipse.jgit-3.2.0.201312181205-r-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/3.2.0.201312181205-r/4b99546e8c8a04597b7a4564003e3b554ec12b5c/org.eclipse.jgit-3.2.0.201312181205-r.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.perforce/p4java/2012.3.551082/def6c8ac6206dc6fba82f579d4d5b56a4fd2836d/p4java-2012.3.551082.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.thetaphi/forbiddenapis/2.4.1/7a19eef3b17624986f7f725d6eb288bd42df2055/forbiddenapis-2.4.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.thetaphi/forbiddenapis/2.4.1/4ded144503d8fa71f98c7a2f0751c2d2b43427f3/forbiddenapis-2.4.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat/0.11/ad98b825264ab1d24a5b5bdc688e4a0226847250/apache-rat-0.11.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.elasticsearch/jna/4.5.1/965bf0f4cf5b71c2b1e9bb5a8d7b6919020e0492/jna-4.5.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.elasticsearch/jna/4.5.1/da10908ae23dc59b19dc258e63aea1c44621dc3a/jna-4.5.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/ru.vyarus/gradle-animalsniffer-plugin/1.2.0/868856061581afa7155c084558c5e6e6647ac845/gradle-animalsniffer-plugin-1.2.0-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/ru.vyarus/gradle-animalsniffer-plugin/1.2.0/2858c5218f1116b2513554346596a05fa6c58c70/gradle-animalsniffer-plugin-1.2.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/1dc37250fbc78e23a65a67fbbaf71d2e9cbc3c0b/hamcrest-core-1.3-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/42a25dc3219429f0e5d060061f71acb49bf010a0/hamcrest-core-1.3.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/nebula-core/3.0.0/f81d7912cfffbbbaa922862fd63f2a20cc1d502d/nebula-core-3.0.0-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/nebula-core/3.0.0/4b3277899a3e5b69189b938061b554f07cc8205b/nebula-core-3.0.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.perforce/p4java-jfrog/2011.1.297684/1de41848e31c6428e6eb7a71e8f88b9561d35fe1/p4java-jfrog-2011.1.297684.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-contacts-plugin/2.2.0/10bcaaaf953c2d5470e8c7665475636e00ab60ae/gradle-contacts-plugin-2.2.0-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-contacts-plugin/2.2.0/b8b1480722ff7c7ebcc408a641476a5fda341454/gradle-contacts-plugin-2.2.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tmatesoft.svnkit/svnkit/1.8.5/262b91c4444928734d6aad21992091369a47502d/svnkit-1.8.5-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tmatesoft.svnkit/svnkit/1.8.5/a9600329d7e6271ab8ab7eb769c4df5adcdf503c/svnkit-1.8.5.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jzlib/1.1.1/dc910806edfb4c9a4b4c7e439a9cd3a3f0a090a9/jzlib-1.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jzlib/1.1.1/a1551373315ffc2f96130a0e5704f74e151777ba/jzlib-1.1.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat-core/0.11/b2e086721c38230f50156ca24ad2cc139ead5a3a/apache-rat-core-0.11-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat-core/0.11/c02fdc6c4fca355491c429c8134a66bf66ccdc7e/apache-rat-core-0.11.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat-tasks/0.11/a600c67cb7f479745e5abc320bcfb9ff287b651d/apache-rat-tasks-0.11-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat-tasks/0.11/ad888472d2861502b1651093e3a41685cce34cfd/apache-rat-tasks-0.11.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.2.1/77e5da73ecc389bda26f9953fd91e9b53b571a6f/commons-lang3-3.2.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.2.1/66f13681add50ca9e4546ffabafaaac7645db3cf/commons-lang3-3.2.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch/0.1.46/6d5398e8f77831e191c509599042cb974adb19dd/jsch-0.1.46-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch/0.1.46/f3a38fd1d65c32bd627b1389e7181eb294cc8a8/jsch-0.1.46.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.googlecode.javaewah/JavaEWAH/0.5.6/a8c94b75fec75e3e4f55212cea1a21773802674e/JavaEWAH-0.5.6-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.googlecode.javaewah/JavaEWAH/0.5.6/1207c0fc8552d4f5f574b50f29321d923521128e/JavaEWAH-0.5.6.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.svnkit-trilead-ssh2/0.0.7/6bf880e10d7678e5ac4897dab39860a87f8e0725/jsch.agentproxy.svnkit-trilead-ssh2-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.svnkit-trilead-ssh2/0.0.7/95015f649026507428aa2f37baba69ba8a86dc67/jsch.agentproxy.svnkit-trilead-ssh2-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/3.5.2/58843855a12b0ba9ed1efffb85dfbcd052930ad9/jna-3.5.2-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/3.5.2/f1bf9fe267e17c1a8f7d1aa2c985e7fe81a06da6/jna-3.5.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tmatesoft.sqljet/sqljet/1.1.10/5d9b195660fa3beb4bb54a102af747f4aad25b7/sqljet-1.1.10-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tmatesoft.sqljet/sqljet/1.1.10/ede7fbabd4c96d34e48fda0e8feced24c98cedca/sqljet-1.1.10.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/platform/3.5.2/bc6b5158219706865e4a527e2602301286842641/platform-3.5.2-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/platform/3.5.2/beac07d13858ef3697ceeab43897d70aeb5113c9/platform-3.5.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.connector-factory/0.0.7/88ad6b451496a46a277f56efff1858e1ef8c7eb5/jsch.agentproxy.connector-factory-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.connector-factory/0.0.7/780e0312287dd4e4f3601d401a073a081e403f2d/jsch.agentproxy.connector-factory-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.regnis.q.sequence/sequence-library/1.0.2/425b0013262dac6d0166fca53ad1a27325382599/sequence-library-1.0.2-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.regnis.q.sequence/sequence-library/1.0.2/531ae7f7a4eac050dbce729edae139c2e546464/sequence-library-1.0.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.trilead/trilead-ssh2/1.0.0-build217/718d1afa443dbaa94045a77bbad4a028e104af64/trilead-ssh2-1.0.0-build217-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.trilead/trilead-ssh2/1.0.0-build217/bd26b6a96923d5112cd20f821a16b589742ce1aa/trilead-ssh2-1.0.0-build217.jar" />
+                            <option value="$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/67313d715fbf0ea4fd0bdb69217fb77f807a8ce5/commons-lang-2.6-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/ce1edb914c94ebc388f086c6827e8bdeec71ac2/commons-lang-2.6.jar" />
+                            <option value="$MAVEN_REPOSITORY$/commons-io/commons-io/2.2/commons-io-2.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.5/d843cfe3f25612ba1b11f136e478317c81e47b69/commons-compress-1.5-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.5/d2bd2c0bd328f1dabdf33e10b6d223ebcbe93343/commons-compress-1.5.jar" />
+                            <option value="$MAVEN_REPOSITORY$/commons-cli/commons-cli/1.2/commons-cli-1.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.core/0.0.7/1e7de81afd838051022c24185751d5a96b75f1a8/jsch.agentproxy.core-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.core/0.0.7/9bcf818dc9e5247b01b1b18671a12caac293ae40/jsch.agentproxy.core-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.4/57a73190ad97f56c0cb83a6a5b6c08d5d428319b/antlr-runtime-3.4-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.4/8f011408269a8e42b8548687e137d8eeb56df4b4/antlr-runtime-3.4.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.usocket-jna/0.0.7/affe9e19df0572622d581eb099b948bc110ac3a2/jsch.agentproxy.usocket-jna-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.usocket-jna/0.0.7/98cf51ca8d7882c203729ffa48e9b7be4c50b835/jsch.agentproxy.usocket-jna-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.usocket-nc/0.0.7/c0a7d2dcae5a4a51dcae332f5116fbf86bdf81e4/jsch.agentproxy.usocket-nc-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.usocket-nc/0.0.7/aff6f0f3a68f9731580d7c48075fdf177532dfe6/jsch.agentproxy.usocket-nc-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.sshagent/0.0.7/fa4b76688b6757d62196c0c227e8426db90a55fe/jsch.agentproxy.sshagent-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.sshagent/0.0.7/5c09a3d2a0562de53cf616794f43f51a3c0a496c/jsch.agentproxy.sshagent-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.pageant/0.0.7/47d1bf5c6657bba42d49951ad8d394854526bcfd/jsch.agentproxy.pageant-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.pageant/0.0.7/b40c0d9b10d79a0683ca93e3f70360b3d8045b62/jsch.agentproxy.pageant-0.0.7.jar" />
+                          </list>
+                        </option>
+                        <option name="path" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin" />
+                      </ExternalModuleBuildClasspathPojo>
+                    </value>
+                  </entry>
+                  <entry key="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn">
+                    <value>
+                      <ExternalModuleBuildClasspathPojo>
+                        <option name="entries">
+                          <list>
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.elasticsearch.gradle/build-tools/6.2.4/89ca44f109194273082f27e4a8068dac2025e322/build-tools-6.2.4-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.elasticsearch.gradle/build-tools/6.2.4/d03da19909f0620ee6e447e7c4cee4e79ca21079/build-tools-6.2.4.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.carrotsearch.randomizedtesting/junit4-ant/2.5.2/e0d89d5ec425438788bf345a732e621b7ea07c80/junit4-ant-2.5.2-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.carrotsearch.randomizedtesting/junit4-ant/2.5.2/b8f91682cfeb8f9196aad56ace9c9a13330acef6/junit4-ant-2.5.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/a6c32b40bf3d76eca54e3c601e5d1470c86fcdfa/junit-4.12-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/2973d150c0dc1fefe998f834810d68f278ea58ec/junit-4.12.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-extra-configurations-plugin/3.0.3/2c018d085196069a9c085d793f6bd81c1b64c7f9/gradle-extra-configurations-plugin-3.0.3-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-extra-configurations-plugin/3.0.3/32cd905383b257b4fbd494807520c0b17617d974/gradle-extra-configurations-plugin-3.0.3.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/nebula-publishing-plugin/4.4.4/bc056fb4a0309ee92046b52c127ee356e91ea35a/nebula-publishing-plugin-4.4.4-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/nebula-publishing-plugin/4.4.4/7dbb6e9eaa6f84680bbf98f2c995da26d907ade7/nebula-publishing-plugin-4.4.4.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-info-plugin/3.0.3/d17176ead16df19fcb28187bda45ce2ceea69a9d/gradle-info-plugin-3.0.3-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-info-plugin/3.0.3/26507c144b8622489024282c6dcdb2e96f8f50da/gradle-info-plugin-3.0.3.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/3.2.0.201312181205-r/566b20b4798d9fa31fe33298c493ca9601830b6f/org.eclipse.jgit-3.2.0.201312181205-r-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jgit/org.eclipse.jgit/3.2.0.201312181205-r/4b99546e8c8a04597b7a4564003e3b554ec12b5c/org.eclipse.jgit-3.2.0.201312181205-r.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.perforce/p4java/2012.3.551082/def6c8ac6206dc6fba82f579d4d5b56a4fd2836d/p4java-2012.3.551082.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.thetaphi/forbiddenapis/2.4.1/7a19eef3b17624986f7f725d6eb288bd42df2055/forbiddenapis-2.4.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.thetaphi/forbiddenapis/2.4.1/4ded144503d8fa71f98c7a2f0751c2d2b43427f3/forbiddenapis-2.4.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat/0.11/ad98b825264ab1d24a5b5bdc688e4a0226847250/apache-rat-0.11.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.elasticsearch/jna/4.5.1/965bf0f4cf5b71c2b1e9bb5a8d7b6919020e0492/jna-4.5.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.elasticsearch/jna/4.5.1/da10908ae23dc59b19dc258e63aea1c44621dc3a/jna-4.5.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/ru.vyarus/gradle-animalsniffer-plugin/1.2.0/868856061581afa7155c084558c5e6e6647ac845/gradle-animalsniffer-plugin-1.2.0-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/ru.vyarus/gradle-animalsniffer-plugin/1.2.0/2858c5218f1116b2513554346596a05fa6c58c70/gradle-animalsniffer-plugin-1.2.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/1dc37250fbc78e23a65a67fbbaf71d2e9cbc3c0b/hamcrest-core-1.3-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/42a25dc3219429f0e5d060061f71acb49bf010a0/hamcrest-core-1.3.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/nebula-core/3.0.0/f81d7912cfffbbbaa922862fd63f2a20cc1d502d/nebula-core-3.0.0-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/nebula-core/3.0.0/4b3277899a3e5b69189b938061b554f07cc8205b/nebula-core-3.0.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.perforce/p4java-jfrog/2011.1.297684/1de41848e31c6428e6eb7a71e8f88b9561d35fe1/p4java-jfrog-2011.1.297684.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-contacts-plugin/2.2.0/10bcaaaf953c2d5470e8c7665475636e00ab60ae/gradle-contacts-plugin-2.2.0-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.netflix.nebula/gradle-contacts-plugin/2.2.0/b8b1480722ff7c7ebcc408a641476a5fda341454/gradle-contacts-plugin-2.2.0.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tmatesoft.svnkit/svnkit/1.8.5/262b91c4444928734d6aad21992091369a47502d/svnkit-1.8.5-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tmatesoft.svnkit/svnkit/1.8.5/a9600329d7e6271ab8ab7eb769c4df5adcdf503c/svnkit-1.8.5.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jzlib/1.1.1/dc910806edfb4c9a4b4c7e439a9cd3a3f0a090a9/jzlib-1.1.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jzlib/1.1.1/a1551373315ffc2f96130a0e5704f74e151777ba/jzlib-1.1.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat-core/0.11/b2e086721c38230f50156ca24ad2cc139ead5a3a/apache-rat-core-0.11-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat-core/0.11/c02fdc6c4fca355491c429c8134a66bf66ccdc7e/apache-rat-core-0.11.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat-tasks/0.11/a600c67cb7f479745e5abc320bcfb9ff287b651d/apache-rat-tasks-0.11-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.rat/apache-rat-tasks/0.11/ad888472d2861502b1651093e3a41685cce34cfd/apache-rat-tasks-0.11.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.2.1/77e5da73ecc389bda26f9953fd91e9b53b571a6f/commons-lang3-3.2.1-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.2.1/66f13681add50ca9e4546ffabafaaac7645db3cf/commons-lang3-3.2.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch/0.1.46/6d5398e8f77831e191c509599042cb974adb19dd/jsch-0.1.46-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch/0.1.46/f3a38fd1d65c32bd627b1389e7181eb294cc8a8/jsch-0.1.46.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.googlecode.javaewah/JavaEWAH/0.5.6/a8c94b75fec75e3e4f55212cea1a21773802674e/JavaEWAH-0.5.6-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.googlecode.javaewah/JavaEWAH/0.5.6/1207c0fc8552d4f5f574b50f29321d923521128e/JavaEWAH-0.5.6.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.svnkit-trilead-ssh2/0.0.7/6bf880e10d7678e5ac4897dab39860a87f8e0725/jsch.agentproxy.svnkit-trilead-ssh2-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.svnkit-trilead-ssh2/0.0.7/95015f649026507428aa2f37baba69ba8a86dc67/jsch.agentproxy.svnkit-trilead-ssh2-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/3.5.2/58843855a12b0ba9ed1efffb85dfbcd052930ad9/jna-3.5.2-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/3.5.2/f1bf9fe267e17c1a8f7d1aa2c985e7fe81a06da6/jna-3.5.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tmatesoft.sqljet/sqljet/1.1.10/5d9b195660fa3beb4bb54a102af747f4aad25b7/sqljet-1.1.10-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.tmatesoft.sqljet/sqljet/1.1.10/ede7fbabd4c96d34e48fda0e8feced24c98cedca/sqljet-1.1.10.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/platform/3.5.2/bc6b5158219706865e4a527e2602301286842641/platform-3.5.2-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/platform/3.5.2/beac07d13858ef3697ceeab43897d70aeb5113c9/platform-3.5.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.connector-factory/0.0.7/88ad6b451496a46a277f56efff1858e1ef8c7eb5/jsch.agentproxy.connector-factory-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.connector-factory/0.0.7/780e0312287dd4e4f3601d401a073a081e403f2d/jsch.agentproxy.connector-factory-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.regnis.q.sequence/sequence-library/1.0.2/425b0013262dac6d0166fca53ad1a27325382599/sequence-library-1.0.2-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.regnis.q.sequence/sequence-library/1.0.2/531ae7f7a4eac050dbce729edae139c2e546464/sequence-library-1.0.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.trilead/trilead-ssh2/1.0.0-build217/718d1afa443dbaa94045a77bbad4a028e104af64/trilead-ssh2-1.0.0-build217-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.trilead/trilead-ssh2/1.0.0-build217/bd26b6a96923d5112cd20f821a16b589742ce1aa/trilead-ssh2-1.0.0-build217.jar" />
+                            <option value="$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/67313d715fbf0ea4fd0bdb69217fb77f807a8ce5/commons-lang-2.6-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6/ce1edb914c94ebc388f086c6827e8bdeec71ac2/commons-lang-2.6.jar" />
+                            <option value="$MAVEN_REPOSITORY$/commons-io/commons-io/2.2/commons-io-2.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.5/d843cfe3f25612ba1b11f136e478317c81e47b69/commons-compress-1.5-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-compress/1.5/d2bd2c0bd328f1dabdf33e10b6d223ebcbe93343/commons-compress-1.5.jar" />
+                            <option value="$MAVEN_REPOSITORY$/commons-cli/commons-cli/1.2/commons-cli-1.2.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.core/0.0.7/1e7de81afd838051022c24185751d5a96b75f1a8/jsch.agentproxy.core-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.core/0.0.7/9bcf818dc9e5247b01b1b18671a12caac293ae40/jsch.agentproxy.core-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.4/57a73190ad97f56c0cb83a6a5b6c08d5d428319b/antlr-runtime-3.4-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.4/8f011408269a8e42b8548687e137d8eeb56df4b4/antlr-runtime-3.4.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.usocket-jna/0.0.7/affe9e19df0572622d581eb099b948bc110ac3a2/jsch.agentproxy.usocket-jna-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.usocket-jna/0.0.7/98cf51ca8d7882c203729ffa48e9b7be4c50b835/jsch.agentproxy.usocket-jna-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.usocket-nc/0.0.7/c0a7d2dcae5a4a51dcae332f5116fbf86bdf81e4/jsch.agentproxy.usocket-nc-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.usocket-nc/0.0.7/aff6f0f3a68f9731580d7c48075fdf177532dfe6/jsch.agentproxy.usocket-nc-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.sshagent/0.0.7/fa4b76688b6757d62196c0c227e8426db90a55fe/jsch.agentproxy.sshagent-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.sshagent/0.0.7/5c09a3d2a0562de53cf616794f43f51a3c0a496c/jsch.agentproxy.sshagent-0.0.7.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.pageant/0.0.7/47d1bf5c6657bba42d49951ad8d394854526bcfd/jsch.agentproxy.pageant-0.0.7-sources.jar" />
+                            <option value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcraft/jsch.agentproxy.pageant/0.0.7/b40c0d9b10d79a0683ca93e3f70360b3d8045b62/jsch.agentproxy.pageant-0.0.7.jar" />
+                          </list>
+                        </option>
+                        <option name="path" value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn" />
+                      </ExternalModuleBuildClasspathPojo>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="name" value="elasticsearch-aknn" />
+              <option name="projectBuildClasspath">
+                <list>
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-process-services-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-kotlin-dsl-tooling-models-0.16.3.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-logging-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-model-groovy-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-kotlin-dsl-0.16.3.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-jvm-services-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-base-services-groovy-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/groovy-all-2.4.12.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-installation-beacon-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-core-api-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-launcher-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-build-cache-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-wrapper-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/ant-1.9.9.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-build-option-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-messaging-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-cli-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-kotlin-dsl-tooling-builders-0.16.3.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-model-core-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-tooling-api-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-base-services-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-native-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-runtime-api-info-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-core-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-docs-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-persistent-cache-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/gradle-resources-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/ant-launcher-1.9.9.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-composite-builds-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-testing-junit-platform-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-resources-http-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-platform-native-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-language-java-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-resources-sftp-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-scala-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-testing-base-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-signing-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-build-comparison-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-reporting-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-resources-gcs-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-jacoco-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-language-groovy-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-build-cache-http-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-maven-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/ivy-2.2.0.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-dependency-management-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-javascript-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-ide-play-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-platform-jvm-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-ear-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-workers-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-plugins-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-code-quality-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-announce-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-test-kit-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-antlr-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-language-scala-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-build-init-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-testing-jvm-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-publish-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-diagnostics-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-plugin-use-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-resources-s3-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-ide-native-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-platform-play-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-language-native-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-language-jvm-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-ivy-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-version-control-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-ide-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-osgi-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-tooling-api-builders-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-testing-native-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-plugin-development-4.7.jar" />
+                  <option value="$USER_HOME$/.installations/gradle-4.7/lib/plugins/gradle-platform-base-4.7.jar" />
+                  <option value="$PROJECT_DIR$/buildSrc/src/main/java" />
+                  <option value="$PROJECT_DIR$/buildSrc/src/main/groovy" />
+                </list>
+              </option>
+            </ExternalProjectBuildClasspathPojo>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="projectSyncType">
+      <map>
+        <entry key="$PROJECT_DIR$" value="RE_IMPORT" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/Album.java" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/plugin-metadata/plugin-security.policy" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/LshRestAction.java" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/AnnPlugin.java" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/LshModel.java" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/AnnRestAction.java" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/AknnRestAction.java" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/settings.gradle" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/build.gradle" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/build.gradle" />
+        <option value="$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/src/main/java/org/elasticsearch/plugin/aknn/AknnPlugin.java" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="y" value="-1" />
+    <option name="width" value="1920" />
+    <option name="height" value="526" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="elasticsearch-aknn" type="b2602c69:ProjectViewProjectNode" />
+              <item name="elasticsearch-aknn" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="elasticsearch-aknn" type="b2602c69:ProjectViewProjectNode" />
+              <item name="elasticsearch-aknn" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="elasticsearch-aknn" type="b2602c69:ProjectViewProjectNode" />
+              <item name="elasticsearch-aknn" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="elasticsearch-aknn" type="b2602c69:ProjectViewProjectNode" />
+              <item name="elasticsearch-aknn" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="elasticsearch-aknn" type="b2602c69:ProjectViewProjectNode" />
+              <item name="elasticsearch-aknn" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="aknn" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.elasticsearch.plugin.ann" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="org.elasticsearch.plugin.ann" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <patterns />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <module name="ingest-awesome" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="WORKING_DIRECTORY" />
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="%MODULE_WORKING_DIR%" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <properties />
+      <listeners />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="32a00d20-e92c-4d28-b17d-e88216eedafc" name="Default" comment="" />
+      <created>1525196022084</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1525196022084</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="-1" width="1920" height="1053" extended-state="6" />
+    <layout>
+      <window_info anchor="right" id="Palette" order="3" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="sbt" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info id="Image Layers" order="2" />
+      <window_info anchor="right" id="Capture Analysis" order="3" />
+      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="right" id="Maven Projects" order="3" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Terminal" order="7" />
+      <window_info id="Capture Tool" order="2" />
+      <window_info id="Designer" order="2" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18229167" />
+      <window_info anchor="bottom" id="sbt-shell-toolwindow" order="7" />
+      <window_info anchor="right" id="Gradle" order="3" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info id="UI Designer" order="2" />
+      <window_info anchor="right" id="Theme Preview" order="3" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Build" order="7" visible="true" weight="0.32944915" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32944915" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/AknnRestAction.java</url>
+          <line>153</line>
+          <properties />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="2" />
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/settings.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="29">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1479">
+          <caret line="51" column="31" selection-start-line="51" selection-start-column="31" selection-end-line="51" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/src/main/java/org/elasticsearch/plugin/aknn/AknnPlugin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1566">
+          <caret line="54" column="5" selection-start-line="54" selection-start-column="5" selection-end-line="54" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/src/main/java/org/elasticsearch/plugin/aknn/LshModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/settings.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="29">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1479">
+          <caret line="51" column="31" lean-forward="true" selection-start-line="51" selection-start-column="31" selection-end-line="51" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/AknnPlugin.java" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/LshRestAction.java" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/AknnRestAction.java" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/Album.java" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/plugin-metadata/plugin-security.policy" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/LshRestAction.java" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/LshModel.java" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/AknnPlugin.java" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/src/main/java/org/elasticsearch/plugin/ann/AknnRestAction.java" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/settings.gradle" />
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/ann-plugin/build.gradle" />
+    <entry file="file://$PROJECT_DIR$/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="27" column="53" lean-forward="true" selection-start-line="27" selection-start-column="53" selection-end-line="27" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/settings.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="29">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1479">
+          <caret line="51" column="31" selection-start-line="51" selection-start-column="31" selection-end-line="51" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/testplugin.sh">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/src/main/java/org/elasticsearch/plugin/aknn/AknnPlugin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="25" column="2" lean-forward="true" selection-start-line="25" selection-start-column="2" selection-end-line="25" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/src/main/java/org/elasticsearch/plugin/aknn/AknnRestAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="318">
+          <caret line="11" column="46" lean-forward="true" selection-start-line="11" selection-start-column="46" selection-end-line="11" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Documents/dev/approximate-vector-search/scratch/elasticsearch-plugin/elasticsearch-aknn/src/main/java/org/elasticsearch/plugin/aknn/LshModel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="401">
+          <caret line="108" column="37" lean-forward="true" selection-start-line="108" selection-start-column="37" selection-end-line="108" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>ingest-awesome</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Gradle: com.carrotsearch.randomizedtesting:randomizedtesting-runner:2.5.2</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

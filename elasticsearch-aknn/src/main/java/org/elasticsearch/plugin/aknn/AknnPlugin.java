@@ -15,28 +15,24 @@
  *
  */
 
-package org.elasticsearch.plugin.ann;
+package org.elasticsearch.plugin.aknn;
 
 import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import org.elasticsearch.cluster.node.DiscoveryNodes;
 import org.elasticsearch.common.settings.*;
-import org.elasticsearch.ingest.Processor;
 import org.elasticsearch.plugins.ActionPlugin;
-import org.elasticsearch.plugins.IngestPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestHandler;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
-public class AnnPlugin extends Plugin implements ActionPlugin, IngestPlugin {
+public class AknnPlugin extends Plugin implements ActionPlugin {
 
     private static final Setting<String> SETTINGS =
-            new Setting<>("ann.sample.setting", "foo", (value) -> value, Setting.Property.NodeScope);
+            new Setting<>("aknn.sample.setting", "foo", (value) -> value, Setting.Property.NodeScope);
 
     @Override
     public List<Setting<?>> getSettings() {
@@ -51,12 +47,6 @@ public class AnnPlugin extends Plugin implements ActionPlugin, IngestPlugin {
                                              final SettingsFilter settingsFilter,
                                              final IndexNameExpressionResolver indexNameExpressionResolver,
                                              final Supplier<DiscoveryNodes> nodesInCluster) {
-        return Arrays.asList(new AnnRestAction(settings, restController));
+        return Arrays.asList(new AknnRestAction(settings, restController));
     }
-
-    @Override
-    public Map<String, Processor.Factory> getProcessors(Processor.Parameters parameters) {
-        return Collections.singletonMap(AnnProcessor.TYPE, new AnnProcessor.Factory());
-    }
-
 }
