@@ -4,23 +4,20 @@ import pdb
 import requests
 import numpy as np
 
+D = 300  # Dimension of each vector.
+L = 32   # Number of LSH models.
+H = 32   # Number of buckets in each LSH model.
+
 ES_URL = "http://localhost:9200/_build_lsh"
+GLOVE_VEC_PATH = "glove_artifacts/glove_vectors.npy"
 
-L, H, D = 1, 8, 3
+np.random.seed(1)
+vecs = np.load(GLOVE_VEC_PATH)
+sample_ii = np.random.permutation(len(vecs))[:2 * L * H]
 
-np.random.seed(100)
-
-vector_sample = [
-    list(map(lambda x: float(round(x, 8)), point))
-    for point in np.random.normal(0, 1, size=(2 * L * H, D))
-]
-
-vector_sample = np.random.normal(0, 1, size=(2 * L * H, D)).astype(np.float16)
 vector_sample_csv = ""
-for vector in vector_sample:
-    vector_sample_csv += ",".join(map(lambda x: "%.8lf" % x, vector)) + "\n"
-
-print(vector_sample_csv.split("\n")[-2])
+for vec in vecs[sample_ii]:
+    vector_sample_csv += ",".join(map(lambda x: "%.8lf" % x, vec)) + "\n"
 
 data = {
     "_index": "lsh_models",
@@ -35,4 +32,5 @@ data = {
     "vector_sample_csv": vector_sample_csv
 }
 
-requests.post(ES_URL, json=data)
+response = requests.post(ES_URL, json=data)
+print(response.json())

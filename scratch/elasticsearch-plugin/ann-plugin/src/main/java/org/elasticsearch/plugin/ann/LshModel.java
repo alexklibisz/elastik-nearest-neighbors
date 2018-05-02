@@ -9,22 +9,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class LshModel {
 
-    public Integer nbTables;
-    public Integer nbBitsPerTable;
-    public Integer nbDimensions;
-
+    private Integer nbTables;
+    private Integer nbBitsPerTable;
+    private Integer nbDimensions;
+    private String description;
     private List<RealMatrix> midpoints;
     private List<RealMatrix> normals;
 
-    public LshModel(Integer nbTables, Integer nbBitsPerTable, Integer nbDimensions) {
+    public LshModel(Integer nbTables, Integer nbBitsPerTable, Integer nbDimensions, String description) {
         this.nbTables = nbTables;
         this.nbBitsPerTable = nbBitsPerTable;
         this.nbDimensions = nbDimensions;
+        this.description = description;
     }
 
     public void fitFromVectorSample(RealMatrix vectorSample) throws IOException {
@@ -51,26 +52,16 @@ public class LshModel {
         JSONArray tmpJSON = new JSONArray(tmp);
         System.out.println(tmpJSON.toString());
 
-//        midpoint = midpoints.get(0);
-//        double[][] tmp = midpoint.getData();
-//
-//        System.out.println(midpoints.toString());
-//        System.out.println(normals.toString());
-//        System.out.println(">>>");
-//        System.out.println(midpoints.get(0).getData().getClass());
-//        System.out.println(">>>");
-
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        ObjectOutputStream oos = new ObjectOutputStream(bos);
-//        System.out.println(bos.size());
-//        System.out.println(bos.toString());
-//        MatrixUtils.serializeRealMatrix(midpoints.get(0), oos);
-//        oos.flush();
-//        oos.close();
-//        System.out.println(bos.size());
-//        System.out.println(bos.toString());
-
     }
 
-
+    public Map<String, Object> getSerializable() {
+        return new HashMap<String, Object>() {{
+            put("nbTables", nbTables);
+            put("nbBitsPerTable", nbBitsPerTable);
+            put("nbDimensions", nbDimensions);
+            put("description", description);
+            put("midpoints", midpoints.stream().map(realMatrix -> realMatrix.getData()).collect(Collectors.toList()));
+            put("normals", normals.stream().map(normals -> normals.getData()).collect(Collectors.toList()));
+        }};
+    }
 }
