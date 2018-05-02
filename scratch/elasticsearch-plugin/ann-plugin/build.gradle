@@ -37,16 +37,8 @@ esplugin {
 // they are just here as an example
 dependencies {
     compile 'org.elasticsearch:elasticsearch:6.2.4'
-
     compile 'org.apache.commons:commons-math3:3.6.1'
-
     compile 'org.json:json:20180130'
-
-//    compile 'com.google.code.gson:gson:2.8.4'
-//    compile "com.fasterxml.jackson.core:jackson-core:2.8.10"
-//    compile "com.fasterxml.jackson.core:jackson-annotations:2.8.10"
-//    compile "com.fasterxml.jackson.core:jackson-databind:2.8.10"
-
     testCompile 'org.elasticsearch.test:framework:6.2.4'
 }
 

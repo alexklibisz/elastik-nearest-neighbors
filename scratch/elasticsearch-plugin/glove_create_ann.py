@@ -8,7 +8,7 @@ D = 300  # Dimension of each vector.
 L = 32   # Number of LSH models.
 H = 32   # Number of buckets in each LSH model.
 
-ES_URL = "http://localhost:9200/_build_lsh"
+ES_URL = "http://localhost:9200/_create_ann"
 GLOVE_VEC_PATH = "glove_artifacts/glove_vectors.npy"
 
 np.random.seed(1)

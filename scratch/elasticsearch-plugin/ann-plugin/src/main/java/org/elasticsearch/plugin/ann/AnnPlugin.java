@@ -52,10 +52,7 @@ public class AnnPlugin extends Plugin implements ActionPlugin, IngestPlugin {
                                              final IndexNameExpressionResolver indexNameExpressionResolver,
                                              final Supplier<DiscoveryNodes> nodesInCluster) {
 
-        return Arrays.asList(
-                new AnnRestAction(settings, restController),
-                new LshRestAction(settings, restController)
-        );
+        return Arrays.asList(new AnnRestAction(settings, restController));
     }
 
     @Override
