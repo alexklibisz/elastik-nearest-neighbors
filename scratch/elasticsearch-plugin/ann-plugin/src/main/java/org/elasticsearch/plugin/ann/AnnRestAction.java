@@ -2,6 +2,8 @@ package org.elasticsearch.plugin.ann;
 
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -20,11 +22,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
 
@@ -32,7 +32,7 @@ public class AnnRestAction extends BaseRestHandler {
 
     public static String NAME = "_ann";
     private final String NAME_SEARCH = "_search_ann";
-    private final String NAME_INSERT = "_insert_ann";
+    private final String NAME_INDEX = "_index_ann";
     private final String NAME_CREATE = "_create_ann";
 
     // TODO: make these actual parameters.
@@ -44,7 +44,7 @@ public class AnnRestAction extends BaseRestHandler {
     public AnnRestAction(Settings settings, RestController controller) {
         super(settings);
         controller.registerHandler(GET, "/{index}/{type}/{id}/" + NAME_SEARCH, this);
-        controller.registerHandler(POST, NAME_INSERT, this);
+        controller.registerHandler(POST, NAME_INDEX, this);
         controller.registerHandler(POST, NAME_CREATE, this);
     }
 
@@ -64,8 +64,8 @@ public class AnnRestAction extends BaseRestHandler {
     protected RestChannelConsumer prepareRequest(RestRequest restRequest, NodeClient client) throws IOException {
         if (restRequest.path().endsWith(NAME_SEARCH))
             return handleSearchRequest(restRequest, client);
-        else if (restRequest.path().endsWith(NAME_INSERT))
-            return handleInsertRequest(restRequest, client);
+        else if (restRequest.path().endsWith(NAME_INDEX))
+            return handleIndexRequest(restRequest, client);
         else
             return handleCreateRequest(restRequest, client);
     }
@@ -194,7 +194,35 @@ public class AnnRestAction extends BaseRestHandler {
         };
     }
 
-    private RestChannelConsumer handleInsertRequest(RestRequest restRequest, NodeClient client) throws IOException {
+    @SuppressWarnings("unchecked")
+    private RestChannelConsumer handleIndexRequest(RestRequest restRequest, NodeClient client) throws IOException {
+
+        XContentParser xContentParser = XContentHelper.createParser(
+                restRequest.getXContentRegistry(), restRequest.content(), restRequest.getXContentType());
+        Map<String, Object> contentMap = xContentParser.mapOrdered();
+
+        final String _index = (String) contentMap.get("_index");
+        final String _type = (String) contentMap.get("_type");
+        final String _ann_uri = (String) contentMap.get("_ann_uri");
+        final List<Map<String, Object>> docs = (List<Map<String, Object>>) contentMap.get("docs");
+
+        // TODO: check if the index exists.. If it does not, create a mapping which does not index the vectors.
+        // TODO: compute hashes and insert them too!
+        BulkRequestBuilder bulkRequest = client.prepareBulk();
+        for (Map<String, Object> doc: docs) {
+            logger.info(String.format("Index %s/%s/%s", _index, _type, (String) doc.get("_id")));
+            bulkRequest.add(client
+                    .prepareIndex(_index, _type, (String) doc.get("_id"))
+                    .setSource((Map<String, Object>) doc.get("_source"))
+            );
+            logger.info(">>>");
+        }
+
+        BulkResponse bulkResponse = bulkRequest.get();
+
+        logger.info("hasFailures: " + bulkResponse.hasFailures());
+        logger.info(String.format("Inserted %d docs", docs.size()));
+
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
