@@ -148,6 +148,7 @@ public class AknnRestAction extends BaseRestHandler {
         };
     }
 
+    @SuppressWarnings("unchecked")
     private RestChannelConsumer handleCreateRequest(RestRequest restRequest, NodeClient client) throws IOException {
 
         logger.info("params: " + restRequest.params().toString());
@@ -156,24 +157,16 @@ public class AknnRestAction extends BaseRestHandler {
         XContentParser xContentParser = XContentHelper.createParser(
                 restRequest.getXContentRegistry(), restRequest.content(), restRequest.getXContentType());
         Map<String, Object> contentMap = xContentParser.mapOrdered();
+        Map<String, Object> sourceMap = (Map<String, Object>) contentMap.get("_source");
 
         final String _index = (String) contentMap.get("_index");
         final String _type = (String) contentMap.get("_type");
         final String _id = (String) contentMap.get("_id");
-        final String description = (String) contentMap.get("description");
-        final Integer nbTables = (Integer) contentMap.get("nb_tables");
-        final Integer nbBitsPerTable = (Integer) contentMap.get("nb_bits_per_table");
-        final Integer nbDimensions = (Integer) contentMap.get("nb_dimensions");
-        final String vectorSampleCSV = (String) contentMap.get("vector_sample_csv");
-
-        // TODO: ask someone who actually knows Java how to simplify this parsing.
-        int i = 0, j = 0;
-        RealMatrix vectorSample = MatrixUtils.createRealMatrix(2 * nbTables * nbBitsPerTable, nbDimensions);
-        for (String line : vectorSampleCSV.split("\n")) {
-            for (String token: line.split(","))
-                vectorSample.setEntry(i, j++, Double.parseDouble(token));
-            j = 0; i += 1;
-        }
+        final String description = (String) sourceMap.get("_aknn_description");
+        final Integer nbTables = (Integer) sourceMap.get("_aknn_nb_tables");
+        final Integer nbBitsPerTable = (Integer) sourceMap.get("_aknn_bits_per_table");
+        final Integer nbDimensions = (Integer) sourceMap.get("_aknn_nb_dimensions");
+        final List<List<Double>> vectorSample = (List<List<Double>>) contentMap.get("_aknn_vector_sample");
 
         // Fit a set of normal hyperplanes from the given vectors
         LshModel lshModel = new LshModel(nbTables, nbBitsPerTable, nbDimensions, description);
@@ -204,8 +197,8 @@ public class AknnRestAction extends BaseRestHandler {
 
         final String _index = (String) contentMap.get("_index");
         final String _type = (String) contentMap.get("_type");
-        final String _ann_uri = (String) contentMap.get("_ann_uri");
-        final List<Map<String, Object>> docs = (List<Map<String, Object>>) contentMap.get("docs");
+        final String _ann_uri = (String) contentMap.get("_aknn_uri");
+        final List<Map<String, Object>> docs = (List<Map<String, Object>>) contentMap.get("_aknn_docs");
         logger.info(String.format("Received %d docs for indexing", docs.size()));
 
         // Get the ANN document.
@@ -237,7 +230,6 @@ public class AknnRestAction extends BaseRestHandler {
             bulkIndexRequest.add(client
                     .prepareIndex(_index, _type, (String) doc.get("_id"))
                     .setSource(source));
-            logger.info("Done");
         }
 
         logger.info("Executing bulk indexing");
@@ -255,7 +247,8 @@ public class AknnRestAction extends BaseRestHandler {
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-            // TODO: probably want some output to the user.
+            builder.field("nb_seconds_elapsed", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND);
+            builder.field("nb_docs_index", docs.size());
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
         };

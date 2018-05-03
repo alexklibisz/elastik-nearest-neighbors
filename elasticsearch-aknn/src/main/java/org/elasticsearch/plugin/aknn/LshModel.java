@@ -30,14 +30,20 @@ public class LshModel {
         this.normals = new ArrayList<>();
     }
 
-    public void fitFromVectorSample(RealMatrix vectorSample) throws IOException {
+    public void fitFromVectorSample(List<List<Double>> vectorSample) {
 
-        RealMatrix vectorsA, vectorsB, midpoint, normal;
+        RealMatrix vectorsA, vectorsB, midpoint, normal, vectorSampleMatrix;
+        vectorSampleMatrix = MatrixUtils.createRealMatrix(vectorSample.size(), this.nbDimensions);
 
-        for (int i = 0; i < vectorSample.getRowDimension(); i += (nbBitsPerTable * 2)) {
+        for (int i = 0; i < vectorSample.size(); i++)
+            for (int j = 0; j < this.nbDimensions; j++)
+                vectorSampleMatrix.setEntry(i, j, vectorSample.get(i).get(j));
+
+
+        for (int i = 0; i < vectorSampleMatrix.getRowDimension(); i += (nbBitsPerTable * 2)) {
             // Select two subsets of nbBitsPerTable vectors.
-            vectorsA = vectorSample.getSubMatrix(i, i + nbBitsPerTable - 1, 0, nbDimensions - 1);
-            vectorsB = vectorSample.getSubMatrix(i + nbBitsPerTable, i + 2 * nbBitsPerTable - 1, 0, nbDimensions - 1);
+            vectorsA = vectorSampleMatrix.getSubMatrix(i, i + nbBitsPerTable - 1, 0, nbDimensions - 1);
+            vectorsB = vectorSampleMatrix.getSubMatrix(i + nbBitsPerTable, i + 2 * nbBitsPerTable - 1, 0, nbDimensions - 1);
 
             // Compute the midpoint between each pair of vectors.
             midpoint = vectorsA.add(vectorsB).scalarMultiply(0.5);
@@ -84,12 +90,12 @@ public class LshModel {
     public static LshModel fromMap(Map<String, Object> serialized) {
 
         LshModel lshModel = new LshModel(
-                (Integer) serialized.get("nbTables"), (Integer) serialized.get("nbBitsPerTable"),
-                (Integer) serialized.get("nbDimensions"), (String) serialized.get("description"));
+                (Integer) serialized.get("_aknn_nb_tables"), (Integer) serialized.get("_aknn_bits_per_table"),
+                (Integer) serialized.get("_aknn_nb_dimensions"), (String) serialized.get("_aknn_description"));
 
         // TODO: figure out how to cast directly to List<double[][]> or double[][][] and use MatrixUtils.createRealMatrix.
-        List<List<List<Double>>> midpointsRaw = (List<List<List<Double>>>) serialized.get("midpoints");
-        List<List<List<Double>>> normalsRaw = (List<List<List<Double>>>) serialized.get("normals");
+        List<List<List<Double>>> midpointsRaw = (List<List<List<Double>>>) serialized.get("_aknn_midpoints");
+        List<List<List<Double>>> normalsRaw = (List<List<List<Double>>>) serialized.get("_aknn_normals");
         for (int i = 0; i < lshModel.nbTables; i++) {
             RealMatrix midpoint = MatrixUtils.createRealMatrix(lshModel.nbBitsPerTable, lshModel.nbDimensions);
             RealMatrix normal = MatrixUtils.createRealMatrix(lshModel.nbBitsPerTable, lshModel.nbDimensions);
@@ -107,12 +113,12 @@ public class LshModel {
 
     public Map<String, Object> toMap() {
         return new HashMap<String, Object>() {{
-            put("nbTables", nbTables);
-            put("nbBitsPerTable", nbBitsPerTable);
-            put("nbDimensions", nbDimensions);
-            put("description", description);
-            put("midpoints", midpoints.stream().map(realMatrix -> realMatrix.getData()).collect(Collectors.toList()));
-            put("normals", normals.stream().map(normals -> normals.getData()).collect(Collectors.toList()));
+            put("_aknn_nb_tables", nbTables);
+            put("_aknn_bits_per_table", nbBitsPerTable);
+            put("_aknn_nb_dimensions", nbDimensions);
+            put("_aknn_description", description);
+            put("_aknn_midpoints", midpoints.stream().map(realMatrix -> realMatrix.getData()).collect(Collectors.toList()));
+            put("_aknn_normals", normals.stream().map(normals -> normals.getData()).collect(Collectors.toList()));
         }};
     }
 }
