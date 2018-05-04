@@ -7,8 +7,7 @@ import pdb
 import random
 
 KAFKA_SERVER = "ip-172-31-19-114.ec2.internal:9092"
-KAFKA_TOPIC = "aknn-demo-twitter-images-base64"
-KAFKA_TOPIC = "test-r1-p10"
+KAFKA_PUB_TOPIC = "aknn-demo-twitter-images-base64"
 
 if __name__ == "__main__":
 	
@@ -22,7 +21,7 @@ if __name__ == "__main__":
 	for image_fname in pbar:
 		with open("%s/%s" % (images_dir, image_fname), "rb") as fp:
 			b64 = base64.b64encode(fp.read())
-		producer.send(KAFKA_TOPIC, key=image_fname.encode(), value=b64)
+		producer.send(KAFKA_PUB_TOPIC, key=image_fname.encode(), value=b64)
 		pbar.set_description(image_fname)
 
 	producer.flush()
