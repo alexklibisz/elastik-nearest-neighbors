@@ -1,0 +1,7 @@
+kafka-python
+keras
+tensorflow
+numpy
+scipy
+scikit-image
+tqdm
