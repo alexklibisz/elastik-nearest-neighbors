@@ -2,5 +2,6 @@ boto3
 kafka-python
 lycon
 numpy
+pillow
 scipy
 tqdm
