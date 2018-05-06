@@ -1,7 +1,5 @@
 kafka-python
-keras
-tensorflow
+lycon
 numpy
 scipy
-scikit-image
 tqdm
