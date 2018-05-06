@@ -1,17 +1,16 @@
 from argparse import ArgumentParser
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
 from kafka import KafkaConsumer, KafkaProducer
 from io import BytesIO
 from multiprocessing import Pool, cpu_count
 from scipy.misc import imread, imsave
 from lycon import resize
 from time import time
-from tqdm import tqdm
 import boto3
+import gzip
 import json
 import numpy as np
 import pdb
-import sys
 
 from keras.models import Model
 from keras.applications import MobileNet
@@ -59,6 +58,12 @@ def _get_img_bytes_from_s3(args):
     obj = s3_client.get_object(Bucket=bucket, Key=key)
     return BytesIO(obj['Body'].read())
 
+def _gzip_str(s):
+    b = s.encode()
+    g = gzip.compress(b)
+    return BytesIO(g)
+
+
 if __name__ == "__main__":
 
     ap = ArgumentParser(description="See script header")
@@ -67,14 +72,16 @@ if __name__ == "__main__":
                     default="aknn-demo.image-objects")
     ap.add_argument("--kafka_pub_topic", 
                     help="Name of topic to which feature vectors get produced", 
-                    default="aknn-demo.convnet-features")
+                    default="aknn-demo.feature-objects")
+    ap.add_argument("--s3_pub_bucket",
+                    help="Name of bucket to which feature vectors get saved",
+                    default="klibisz-aknn-demo")
     ap.add_argument("--kafka_servers", 
                     help="Bootstrap servers for Kafka",
-                    default="ip-172-31-19-114.ec2.internal:9092,ip-172-31-18-192.ec2.internal:9092,ip-172-31-20-205.ec2.internal:9092")
+                    default="ip-172-31-19-114.ec2.internal:9092")
     ap.add_argument("--kafka_group",
                     help="Group ID for Kafka consumer", 
                     default="aknn-demo.comput-convnet-features")
-    ap.add_argument("-b", "--batch_size", type=int, default=100)
 
     args = vars(ap.parse_args())
 
@@ -85,12 +92,17 @@ if __name__ == "__main__":
         auto_offset_reset="earliest",
         key_deserializer=lambda k: k.decode(),
         value_deserializer=lambda v: json.loads(v.decode())
-    )
+    )    
+    producer = KafkaProducer(
+        bootstrap_servers=args["kafka_servers"],
+        compression_type='gzip',
+        key_serializer=str.encode,
+        value_serializer=str.encode)
     
     s3_client = boto3.client('s3')
 
-#    producer = KafkaProducer(bootstrap_servers=",".join(KAFKA_SERVERS))
     convnet = Convnet()
+
     pool = Pool(cpu_count())
     tpex = ThreadPoolExecutor(max_workers=12)
 
@@ -110,14 +122,24 @@ if __name__ == "__main__":
 
         t0 = time()
         labels, vecs = convnet.get_labels_and_vecs(imgs_iter)
-        print("Compute", time() - t0)
+        print("Compute features", time() - t0)
+
+        t0 = time()
+        s3_futures = []
+        for img_obj, label, vec in zip(msg.value, labels, vecs):
+            features_dict = dict(img_obj=img_obj, label=label, vec=list(map(float, vec)))
+            features_str = json.dumps(features_dict)
+            features_body = _gzip_str(features_str)
+            features_key = "img-features-%s.json.gz" % (img_obj["key"].split('.')[0])
+            s3_futures.append(tpex.submit(s3_client.put_object, 
+                Body=features_body, Bucket=args["s3_pub_bucket"], Key=features_key))
+            value = json.dumps(dict(bucket=args["s3_pub_bucket"], key=features_key))
+            producer.send(args["kafka_pub_topic"], key=features_key, value=value)
+
+        wait(s3_futures)
+        print("Upload features", time() - t0)
         
         print("%s: %s %.2lf, %.2lf, %d" \
             % (msg.key, str(vecs.shape), vecs.mean(), vecs.std(), time() - T0))
 
-        #np.save("/home/ubuntu/tmp/%s.npy" % msg.key.split('.')[0], vecs.astype(np.float16))
-        #with open("/home/ubuntu/tmp/%s.txt" % msg.key.split('.')[0],"w") as fp:
-        #    fp.write("\n".join([m.key for m in batch]))
-        
-        #batch = []
-
+    producer.flush()
