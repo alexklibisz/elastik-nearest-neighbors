@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     for msg in consumer:
     
-        print("%d images in batch" % len(msg.value))
+        print("Received batch with id %s containing %d images" % (msg.key, len(msg.value)))
         T0 = time()
 
         t0 = time()
