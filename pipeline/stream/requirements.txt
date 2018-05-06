@@ -3,5 +3,5 @@ kafka-python
 lycon
 numpy
 pillow
-scipy
+imageio
 tqdm

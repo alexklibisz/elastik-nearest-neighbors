@@ -1,3 +1,9 @@
+"""
+Produces pointers to images in S3 to a Kafka Topic.
+Each pointer contains the information necessary for a downstream
+consumer to retrieve the specific image from S3.
+"""
+
 from argparse import ArgumentParser
 from kafka import KafkaProducer
 from time import time
@@ -6,20 +12,25 @@ import boto3
 import json
 import pdb
 
+
+def S3Pointer(id, s3_bucket, s3_key):
+    return dict(id=id, s3_bucket=s3_bucket, s3_key=s3_key)
+
+
 if __name__ == "__main__":
-    
+
     ap = ArgumentParser(description="See script")
-    ap.add_argument("--bucket", help="S3 bucket name", 
+    ap.add_argument("--bucket", help="S3 bucket name",
                     default="klibisz-twitter-stream")
-    ap.add_argument("--kafka_pub_topic", 
-                    help="Topic to which image events get published", 
-                    default="aknn-demo.image-objects")
-    ap.add_argument("--kafka_server", 
-                    help="Bootstrap server for producer", 
+    ap.add_argument("--kafka_pub_topic",
+                    help="Topic to which image events get published",
+                    default="aknn-demo.image-pointers")
+    ap.add_argument("--kafka_server",
+                    help="Bootstrap server for producer",
                     default="ip-172-31-19-114.ec2.internal:9092")
     ap.add_argument("-b", "--batch_size", type=int, default=1000,
                     help="Size of batches produced")
-    
+
     args = vars(ap.parse_args())
 
     bucket = boto3.resource("s3").Bucket(args["bucket"])
@@ -40,12 +51,14 @@ if __name__ == "__main__":
         if obj.key.endswith(".json.gz"):
             continue
 
-        batch.append(dict(bucket=obj.bucket_name, key=obj.key))
+        batch.append(S3Pointer(
+            id=obj.key.split('.')[0],
+            s3_bucket=obj.bucket_name, s3_key=obj.key))
 
         if len(batch) < args["batch_size"]:
             continue
-    
-        key = "batch-%d" % (time() * 1000)
+
+        key = "batch-%s-%s" % (batch[0]['id'], batch[-1]['id'])
         value = json.dumps(batch)
         producer.send(args["kafka_pub_topic"], key=key, value=value)
         nb_produced += len(batch)
