@@ -25,7 +25,9 @@ if __name__ == "__main__":
     bucket = boto3.resource("s3").Bucket(args["bucket"])
     producer = KafkaProducer(
         bootstrap_servers=args["kafka_server"],
-        compression_type="gzip")
+        compression_type="gzip",
+        key_serializer=str.encode,
+        value_serializer=str.encode)
 
     t0 = time()
     nb_produced = 0
@@ -43,8 +45,9 @@ if __name__ == "__main__":
         if len(batch) < args["batch_size"]:
             continue
     
-        value = json.dumps(batch).encode()
-        producer.send(args["kafka_pub_topic"], value)
+        key = "batch-%d" % (time() * 1000)
+        value = json.dumps(batch)
+        producer.send(args["kafka_pub_topic"], key=key, value=value)
         nb_produced += len(batch)
         batch = []
 
