@@ -1,4 +1,4 @@
-"""Create the Elasticsearch index from 
+"""Create Elasticsearch-aknn model from feature documents on disk or S3.
 """
 
 from argparse import ArgumentParser
@@ -16,17 +16,17 @@ import random
 import requests
 
 
-def iter_feature_docs(src):
+def iter_feature_docs(source_str):
 
-    if src.startswith("s3://"):
-        bucket = boto3.resource("s3").Bucket(src.replace("s3://", ''))
+    if source_str.startswith("s3://"):
+        bucket = boto3.resource("s3").Bucket(source_str.replace("s3://", ''))
         for obj in bucket.objects.all():
             body = obj.get().get('Body')
             buff = BytesIO(body.read())
             with gzip.open(buff) as fp:
                 yield json.loads(fp.read().decode())
     else:
-        for fobj in os.scandir(src):
+        for fobj in os.scandir(source_str):
             with gzip.open(fobj.path) as fp:
                 yield json.loads(fp.read().decode())
 
@@ -34,23 +34,22 @@ def iter_feature_docs(src):
 if __name__ == "__main__":
 
     ap = ArgumentParser(description="See script")
-    ap.add_argument("features_src",
+    ap.add_argument("features_source",
                     help="Directory or S3 bucket containing image feature docs.")
     ap.add_argument("--es_host", default="http://localhost:9200",
                     help="URL of single elasticsearch server.")
-    ap.add_argument("-b", "--batch_size", type=int, default=1000,
-                    help="Batch size for elasticsearch indexing.")
-    ap.add_argument("--aknn_tables", type=int, default=64)
-    ap.add_argument("--aknn_bits", type=int, default=16)
+    ap.add_argument("--aknn_tables", type=int, default=16)
+    ap.add_argument("--aknn_bits", type=int, default=8)
     ap.add_argument("--aknn_dimensions", type=int, default=1000)
-    ap.add_argument("-p", type=float, default=0.5)
+    ap.add_argument("-p", type=float, default=0.5,
+                    help="Prob. of accepting a feature document as a sample.")
     args = vars(ap.parse_args())
 
     # Prepare the document structure.
     model_doc = {
         "_index": "aknn_models",
         "_type": "aknn_model",
-        "_id": "twitter_1000",
+        "_id": "twitter_images",
         "_source": {
             "_aknn_description": "AKNN model for images on the twitter public stream",
             "_aknn_nb_dimensions": args["aknn_dimensions"],
@@ -63,14 +62,15 @@ if __name__ == "__main__":
     }
 
     # Create an iterable over the feature documents.
-    feature_docs = iter_feature_docs(args["features_src"])
+    feature_docs = iter_feature_docs(args["features_source"])
 
     # Populate the vector sample by randomly sampling vectors from iterable.
     nb_samples = 2 * args["aknn_bits"] * args["aknn_tables"]
-    print("Taking sample of %d feature vectors" % nb_samples)
+    print("Taking sample of %d feature vectors from %s" % (
+        nb_samples, args["features_source"]))
     while len(model_doc["_aknn_vector_sample"]) < nb_samples:
         vec = next(feature_docs)["feature_vector"]
-        if random.random() < args["p"]:
+        if random.random() <= args["p"]:
             model_doc["_aknn_vector_sample"].append(vec)
 
     print("Sample mean, std = %.3lf, %.3lf" % (
