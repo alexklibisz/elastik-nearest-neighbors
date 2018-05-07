@@ -11,6 +11,7 @@ import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.common.collect.Tuple;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentParser;
@@ -23,6 +24,7 @@ import org.elasticsearch.search.SearchHits;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
@@ -37,10 +39,12 @@ public class AknnRestAction extends BaseRestHandler {
     // TODO: make these actual parameters.
     private final String HASHES_KEY = "_aknn_hashes";
     private final String VECTOR_KEY = "_aknn_vector";
+    private final String DISTANCE_KEY = "_aknn_distance";
     private final Integer K1_DEFAULT = 99;     // Number of documents returned based on hashes only.
     private final Integer K2_DEFAULT = 10;     // Number of documents returned based on exact KNN.
 
-    private final Double NANOSECONDS_PER_SECOND = 1000000000.;
+    private final Double NANOSECONDS_PER_SECOND = 1000000000d;
+    private final Double NANOSECONDS_PER_MILLISECOND = 1000000d;
 
     @Inject
     public AknnRestAction(Settings settings, RestController controller) {
@@ -72,10 +76,8 @@ public class AknnRestAction extends BaseRestHandler {
             return handleCreateRequest(restRequest, client);
     }
 
+    @SuppressWarnings("unchecked")
     private RestChannelConsumer handleSearchRequest(RestRequest restRequest, NodeClient client) throws IOException {
-
-        // TODO: the search request should be modified such that regular query options (e.g. _source: ["description"])
-        // can be included. See Carrot2 examples and docs: https://github.com/carrot2/elasticsearch-carrot2/blob/master/doc/
 
         Long timestamp = 0L;
         List<Tuple<String, Double>> timing = new ArrayList<>();
@@ -103,9 +105,7 @@ public class AknnRestAction extends BaseRestHandler {
         timestamp = System.nanoTime();
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
         for (Map.Entry<String, Integer> entry : baseHashes.entrySet()) {
-            // TODO: using String.format() gives a forbidden APIs waring here.
-            // String termKey = String.format("hashes.%s", entry.getKey());
-            String termKey = HASHES_KEY + "." + entry.getKey();
+             String termKey = String.format("%s.%s", HASHES_KEY, entry.getKey());
             ((BoolQueryBuilder) queryBuilder).should(QueryBuilders.termQuery(termKey, entry.getValue()));
         }
         timing.add(Tuple.tuple("Building approximate query", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
@@ -121,28 +121,38 @@ public class AknnRestAction extends BaseRestHandler {
         timing.add(Tuple.tuple("Executing approximate query", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         // Compute exact KNN on the approximate neighbors.
+        // Recreate the SearchHit structure, but remove the vector and hashes.
         timestamp = System.nanoTime();
-        SearchHits searchHits = approximateSearchResponse.getHits();
-        List<Tuple<String, Double>> idsAndDistances = new ArrayList<>();
-        for (SearchHit hit : searchHits) {
+        List<Map<String, Object>> modifiedSortedHits = new ArrayList<>();
+        for (SearchHit hit: approximateSearchResponse.getHits()) {
             Map<String, Object> hitSource = hit.getSourceAsMap();
-            @SuppressWarnings("unchecked")
             List<Double> hitVector = (List<Double>) hitSource.get(VECTOR_KEY);
-            idsAndDistances.add(Tuple.tuple(hit.getId(), euclideanDistance(baseVector, hitVector)));
+            hitSource.remove(VECTOR_KEY);
+            hitSource.remove(HASHES_KEY);
+            modifiedSortedHits.add(new HashMap<String, Object>() {{
+                put("_index", hit.getIndex());
+                put("_id", hit.getId());
+                put("_type", hit.getType());
+                put("_score", euclideanDistance(baseVector, hitVector));
+                put("_source", hitSource);
+            }});
         }
         timing.add(Tuple.tuple("Computing distances", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
-        // Sort ids by the exact distance in ascending order.
         timestamp = System.nanoTime();
-        idsAndDistances.sort(Comparator.comparing(Tuple::v2));
-        List<Tuple<String, Double>> idsAndDistancesTopK = idsAndDistances.subList(0, k2);
+        modifiedSortedHits.sort(Comparator.comparingDouble(x -> (Double) x.get("_score")));
         timing.add(Tuple.tuple("Sorting by distance", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-            builder.field("nearest_neighbors", idsAndDistancesTopK);
-            builder.field("timing", timing);
+            builder.field("took", 0);
+            builder.field("timed_out", false);
+            builder.startObject("hits");
+            builder.field("total", k2);
+            builder.field("max_score", 0);
+            builder.field("hits", modifiedSortedHits.subList(0, k2));
+            builder.endObject();
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
         };

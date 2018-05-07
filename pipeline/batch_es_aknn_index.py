@@ -63,14 +63,19 @@ if __name__ == "__main__":
     feature_docs = iter_feature_docs(args["features_src"])
 
     for fd in feature_docs:
-        payload["_aknn_docs"].append({
+
+        doc = {
             "_id": fd["id"],
             "_source": {
                 "twitter_url": "https://twitter.com/statuses/%s" % fd["id"],
                 "imagenet_labels": fd["imagenet_labels"],
+                "s3_url": "https://s3.amazonaws.com/%s/%s" % (
+                    fd["img_pointer"]["s3_bucket"], fd["img_pointer"]["s3_key"]),
                 "_aknn_vector": fd["feature_vector"]
             }
-        })
+        }
+
+        payload["_aknn_docs"].append(doc)
 
         if len(payload["_aknn_docs"]) < args["batch_size"]:
             continue
