@@ -28,10 +28,14 @@ from keras.applications.imagenet_utils import preprocess_input, decode_predictio
 
 
 def S3Pointer(id, s3_bucket, s3_key):
+    """Function to formalize the structure of an S3 pointer as a dictionary
+    which can be serialized and passed to Kafka or S3."""
     return dict(id=id, s3_bucket=s3_bucket, s3_key=s3_key)
 
 
 def FeaturesObject(id, img_pointer, imagenet_labels, feature_vector):
+    """Function to formalize the structure of a feature object as a dictionary
+    which can be serialized and passed to Kafka or S3."""
     if not isinstance(feature_vector, list):
         feature_vector = list(map(float, feature_vector))
     return dict(id=id, img_pointer=img_pointer,
@@ -40,6 +44,8 @@ def FeaturesObject(id, img_pointer, imagenet_labels, feature_vector):
 
 
 class Convnet(object):
+    """Wrapper around a Keras network; produces image labels and floating-point
+    feature vectors."""
 
     def __init__(self):
         self.preprocess_mode = 'tf'
@@ -48,6 +54,23 @@ class Convnet(object):
             model.input, [model.output, model.get_layer('conv_preds').output])
 
     def get_labels_and_vecs(self, imgs_iter):
+    """Compute the labels and floating-point feature vectors for a batch of
+    images.
+
+    Arguments
+    imgs_iter: an iterable of numpy array images which have been pre-processed
+        to a size useable with the Keras model. An iterable is used because it
+        allows the calling code to pass a map(f, data) which this function
+        executes over, or a regular list of already extracted images.
+    
+    Returns
+    labels: a list of strings, one per image. Each string contains the ten most
+        probable labels for the image, separated by spaces.
+    vecs: a numpy array with shape (number of images, feature vector shape). 
+        For example, a batch of 512 images with a feature vector shape (1000,)
+        would mean vecs has shape (512, 1000).
+
+    """
 
         imgs = np.array(imgs_iter)
         imgs = preprocess_input(imgs.astype(np.float32),
@@ -62,12 +85,37 @@ class Convnet(object):
 
 
 def _get_img_bytes_from_s3(args):
+    """Download the raw image bytes from S3.
+
+    It's generally safe and much faster to call this function from a 
+    thread pool of 10 - 20 threads.
+
+    Arguments
+    args: a tuple containing the bucket (string), key (string), and  s3client 
+        (boto3 client). Using a tuple to support calling this method via 
+        parallelized map() function.
+
+    Returns
+    object body: bytes from the object downloaded from S3.
+    """
     bucket, key, s3client = args
     obj = s3client.get_object(Bucket=bucket, Key=key)
     return obj['Body'].read()
 
 
 def _preprocess_img(img_bytes):
+    """Load and transform image from its raw bytes to a keras-friendly np array.
+
+    If the image cannot be read, it prints an error message and returns an 
+    array of all zeros.
+
+    Arguments
+    img_bytes: a Bytes object containing the bytes for a single image.
+
+    Returns
+    img: numpy array with shape (224, 224, 3).
+
+    """
 
     # Read from bytes to numpy array.
     try:
@@ -77,7 +125,7 @@ def _preprocess_img(img_bytes):
         print("Error reading image, returning zeros:", ex, file=stderr)
         return np.zeros((224, 224, 3), dtype=np.uint8)
 
-    # Extremely fast resize using lycon.
+    # Extremely fast resize using lycon library.
     img = resize(img, 224, 224, interpolation=0)
 
     # Regular image: return.
@@ -93,6 +141,8 @@ def _preprocess_img(img_bytes):
 
 
 def _str_to_gzipped_bytes(s):
+    """Convert a single string to compressed Gzipped bytes, useful for uploading
+    to S3."""
     b = s.encode()
     g = gzip.compress(b)
     return BytesIO(g)
@@ -123,6 +173,7 @@ if __name__ == "__main__":
     args = vars(ap.parse_args())
     print("Parsed command-line arguments:\n%s" % pformat(args))
 
+    # Kafka consumer/producer setup.
     consumer = KafkaConsumer(
         args["kafka_sub_topic"],
         bootstrap_servers=args["kafka_servers"],
@@ -137,10 +188,13 @@ if __name__ == "__main__":
         key_serializer=str.encode,
         value_serializer=str.encode)
 
+    # S3 connection.
     s3client = boto3.client('s3')
 
+    # Convolutional network for feature extraction.
     convnet = Convnet()
 
+    # Process pool and thread pool for parallelism.
     pool = Pool(cpu_count())
     tpex = ThreadPoolExecutor(max_workers=min(cpu_count() * 4, 20))
 
@@ -155,7 +209,7 @@ if __name__ == "__main__":
         # Download images from S3 into memory using thread parallelism.
         t0 = time()
         try:
-            f = lambda p: (p['s3_bucket'], p['s3_key'], s3client)
+            def f(p): return (p['s3_bucket'], p['s3_key'], s3client)
             data = map(f, msg.value)
             imgs_bytes = list(tpex.map(_get_img_bytes_from_s3, data))
         except Exception as ex:
@@ -223,8 +277,8 @@ if __name__ == "__main__":
         except Exception as ex:
             print("Error resolving upload futures:", ex, file=stderr)
             continue
-        print("Upload features", time() - t0)
+        print("Upload features: %.2lf seconds", (time() - t0))
 
-        print("Finished batch %s in %d seconds" % (msg.key, time() - T0))
+        print("Finished batch %s: %.2lf seconds" % (msg.key, time() - T0))
 
     producer.flush()
