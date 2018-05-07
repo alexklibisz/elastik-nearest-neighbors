@@ -1,0 +1,99 @@
+<html>
+    <head>
+        <title>Approximate Vector Search Demo</title>
+
+        <style>
+            
+            body {
+                font-family: Arial;
+            }
+
+            #imgs div {
+                padding: 5px;
+            }
+            #imgs img {
+                border: gray 8px solid;
+            }
+            #imgs div:first-of-type > img {
+                border: red 8px solid;
+            }
+            #imgs img {
+                height: 300px;
+                width: 300px;
+            }
+            #imgs > div {
+                float: left;
+            }
+            /*#imgs > div:first-of-type {
+                float: none;
+            }*/
+        </style>
+
+    </head>
+
+    <body>
+        <main>
+            <div>
+                <h1>Elasticsearch-Aknn Demo</h1>
+                <p>The images below consist of a query image (outlined in red)
+                    and its 9 nearest neighbors from a feature space                     constructed by running each image through a convolutional
+                    neural network and storing the penultimate 1000-dimensional
+                    floating-point feature vector.
+                </p>
+                <p>The convolutional network uses the MobileNet architecture
+                    and was trained on the ImageNet dataset.</p>
+                <p>The images were collected from the Twitter public stream,
+                    and the complete corpus contains <b><span id="corpus_count"></span></b>
+                    images.</p>
+                <p>Elasticsearch and the Elasticsearch-Aknn plugin are used
+                    to store the feature vectors and run the approximate
+                    nearest neighbors computation.</p>
+            </div>
+            <div id="imgs"></div>
+        </main>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/elasticsearch/14.2.2/elasticsearch.min.js" type="text/javascript"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="/sample_ids.js"></script>
+
+        <script>
+        
+        var ES_URL = "http://localhost:9200/twitter_images/twitter_image/"
+        var S3_URL = "https://s3.amazonaws.com/klibisz-twitter-stream/"
+
+        var count_URL = ES_URL + "_count"
+        axios.get(count_URL)
+            .then(response => {
+                var count = response.data.count
+                document.getElementById("corpus_count").innerHTML = count
+            })
+
+        var random_index = Math.floor(Math.random() * SAMPLE_IDS.length)
+        var random_id = SAMPLE_IDS[random_index]
+
+        var search_URL = ES_URL
+        search_URL +=  random_id + "/_aknn_search"
+        search_URL += "?k1=1000&k2=10"
+
+        axios.get(search_URL)
+            .then(response => {
+                var hits = response.data.hits.hits
+                var html = hits.map(hit => {
+                    var s = '<div>'
+                    s += '<img src="' + hit._source.s3_url + '"/>'
+                    s += '<p><a href="' + hit._source.twitter_url + '">'
+                    s += 'Twitter Status</a>'
+                    s += ', ' + Math.round(hit._score * 100) / 100 + '</p>'
+                    return s + '</div>'
+                }).join("\n")
+                document.getElementById("imgs").innerHTML = html
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+        </script> 
+
+    </body>
+
+</html>
