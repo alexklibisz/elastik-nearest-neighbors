@@ -27,7 +27,7 @@ re_letters_only = re.compile("[^a-zA-Z]")
 
 for line in open(RAW_GLOVE_PATH):
     tkns = line.split(" ")
-    word, vector = tkns[0], list(map(float, tkns[1:]))
+    word, vector = tkns[0], list(map(lambda x: round(float(x), 4), tkns[1:]))
     word = re_letters_only.sub("", word)
     if len(word) == 0:
         continue
@@ -45,10 +45,11 @@ for line in open(RAW_GLOVE_PATH):
         print("Posting %d docs to Elasticsearch" % BATCH_SIZE)
         t0 = time()
         response = requests.post(ES_POST_URL, json=data)
-        print(response.json(), time() - t0)
+        print(response.json())
         data["_aknn_docs"] = []
 
         print("Getting neighbors for word %s" % word)
         response = requests.get("%s/%s/%s/%s/_aknn_search?k2=3" % (
             ES_BASE_URL, data['_index'], data['_type'], word))
-        print("%s -> %s" % (word, ", ".join([x["_id"] for x in response.json().get("hits").get("hits")])))
+        print("%s -> %s" % (word, ", ".join([
+            x["_id"] for x in response.json().get("hits").get("hits")])))

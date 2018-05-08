@@ -1,3 +1,19 @@
+/*
+ * Copyright [2018] [Alex Klibisz]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.elasticsearch.plugin.aknn;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -5,7 +21,6 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,38 +74,29 @@ public class LshModel {
 
     }
 
-    public List<Long> getVectorHashes(List<Double> vector) {
+    public Map<String, Integer> getVectorHashes(List<Double> vector) {
 
-        RealMatrix normalTranspose, xDotNT;
+        RealMatrix xDotNT, vectorAsMatrix;
         RealVector threshold;
-        List<Long> hashes = new ArrayList<>();
+        Map<String, Integer> hashes = new HashMap<>();
+        Integer hash, i, j;
 
-//        long timestamp = System.nanoTime();
-        RealMatrix vectorAsMatrix = MatrixUtils.createRealMatrix(1, nbDimensions);
-        for (int i = 0; i < nbDimensions; i++)
+        // Have to convert the vector to a matrix to support multiplication below.
+        // TODO: if the List<Double> vector argument can be changed to an Array double[] or float[], this would be faster.
+        vectorAsMatrix = MatrixUtils.createRealMatrix(1, nbDimensions);
+        for (i = 0; i < nbDimensions; i++)
             vectorAsMatrix.setEntry(0, i, vector.get(i));
-//        System.out.println(String.format("   %d", System.nanoTime() - timestamp));
 
-//        timestamp = System.nanoTime();
         // Compute the hash for this vector with respect to each table.
-        for (int i = 0; i < nbTables; i++) {
-//            timestamp = System.nanoTime();
-            normalTranspose = normalsTransposed.get(i);
-            xDotNT = vectorAsMatrix.multiply(normalTranspose);
-            System.out.println(String.format("(%d %d) (%d %d)",
-                    xDotNT.getRowDimension(), xDotNT.getColumnDimension(),
-                    normalTranspose.getRowDimension(), normalTranspose.getColumnDimension()));
-//            System.out.println(String.format("  0   %d", System.nanoTime() - timestamp));
-//            timestamp = System.nanoTime();
+        for (i = 0; i < nbTables; i++) {
+            xDotNT = vectorAsMatrix.multiply(normalsTransposed.get(i));
             threshold = thresholds.get(i);
-            Long hash = 0L;
-            for (int j = 0; j < nbBitsPerTable; j++)
-                if (xDotNT.getEntry(0, j) >= threshold.getEntry(j))
-                    hash += (long) Math.pow(2, j);
-            hashes.add(hash);
-//            System.out.println(String.format("  1   %d", System.nanoTime() - timestamp));
+            hash = 0;
+            for (j = 0; j < nbBitsPerTable; j++)
+                if (xDotNT.getEntry(0, j) > threshold.getEntry(j))
+                    hash += (int) Math.pow(2, j);
+            hashes.put(i.toString(), hash);
         }
-//        System.out.println(String.format("   %d", System.nanoTime() - timestamp));
 
         return hashes;
     }

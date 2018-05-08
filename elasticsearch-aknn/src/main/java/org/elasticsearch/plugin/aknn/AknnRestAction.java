@@ -1,30 +1,49 @@
+/*
+ * Copyright [2018] [Alex Klibisz]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package org.elasticsearch.plugin.aknn;
 
-import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealMatrix;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.node.NodeClient;
-import org.elasticsearch.common.collect.Tuple;
+import org.elasticsearch.common.StopWatch;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.rest.*;
+import org.elasticsearch.rest.BaseRestHandler;
+import org.elasticsearch.rest.BytesRestResponse;
+import org.elasticsearch.rest.RestController;
+import org.elasticsearch.rest.RestRequest;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
@@ -36,14 +55,14 @@ public class AknnRestAction extends BaseRestHandler {
     private final String NAME_INDEX = "_aknn_index";
     private final String NAME_CREATE = "_aknn_create";
 
-    // TODO: make these actual parameters.
+    // TODO: check how parameters should be defined at the plugin level.
     private final String HASHES_KEY = "_aknn_hashes";
     private final String VECTOR_KEY = "_aknn_vector";
-    private final Integer K1_DEFAULT = 99;     // Number of documents returned based on hashes only.
-    private final Integer K2_DEFAULT = 10;     // Number of documents returned based on exact KNN.
+    private final Integer K1_DEFAULT = 99;
+    private final Integer K2_DEFAULT = 10;
 
-    private final Double NANOSECONDS_PER_SECOND = 1000000000d;
-    private final Double NANOSECONDS_PER_MILLISECOND = 1000000d;
+    // TODO: add an option to the index endpoint handler that empties the cache.
+    private Map<String, LshModel> lshModelCache = new HashMap<>();
 
     @Inject
     public AknnRestAction(Settings settings, RestController controller) {
@@ -58,13 +77,6 @@ public class AknnRestAction extends BaseRestHandler {
         return NAME;
     }
 
-    public static Double euclideanDistance(List<Double> A, List<Double> B) {
-        Double squaredDistance = 0.;
-        for (Integer i = 0; i < A.size(); i++)
-            squaredDistance += Math.pow(A.get(i) - B.get(i), 2);
-        return Math.sqrt(squaredDistance);
-    }
-
     @Override
     protected RestChannelConsumer prepareRequest(RestRequest restRequest, NodeClient client) throws IOException {
         if (restRequest.path().endsWith(NAME_SEARCH))
@@ -75,56 +87,76 @@ public class AknnRestAction extends BaseRestHandler {
             return handleCreateRequest(restRequest, client);
     }
 
-    @SuppressWarnings("unchecked")
+    public static Double euclideanDistance(List<Double> A, List<Double> B) {
+        Double squaredDistance = 0.;
+        for (Integer i = 0; i < A.size(); i++)
+            squaredDistance += Math.pow(A.get(i) - B.get(i), 2);
+        return Math.sqrt(squaredDistance);
+    }
+
     private RestChannelConsumer handleSearchRequest(RestRequest restRequest, NodeClient client) throws IOException {
 
-        Long timestamp = 0L;
-        List<Tuple<String, Double>> timing = new ArrayList<>();
+        StopWatch stopWatch = new StopWatch("StopWatch to Time Search Request");
 
         // Parse request parameters.
+        stopWatch.start("Parse request parameters");
         final String index = restRequest.param("index");
         final String type = restRequest.param("type");
         final String id = restRequest.param("id");
-        final Integer k1 = Integer.parseInt(restRequest.param("k1", K1_DEFAULT.toString()));
-        final Integer k2 = Integer.parseInt(restRequest.param("k2", K2_DEFAULT.toString()));
+        final Integer k1 = restRequest.paramAsInt("k1", K1_DEFAULT);
+        final Integer k2 = restRequest.paramAsInt("k2", K2_DEFAULT);
+        stopWatch.stop();
 
-        // Retrieve the document specified by index/type/id.
-        timestamp = System.nanoTime();
-        GetResponse baseGetResponse = client.prepareGet(index, type, id).get();
-        Map<String, Object> baseSource = baseGetResponse.getSource();
+        logger.info("Get query document at {}/{}/{}", index, type, id);
+        stopWatch.start("Get query document");
+        GetResponse queryGetResponse = client.prepareGet(index, type, id)
+                .setFetchSource(HASHES_KEY, "").get();
+        stopWatch.stop();
 
+        logger.info("Parse query document hashes");
+        stopWatch.start("Parse query document hashes");
+        Map<String, Object> baseSource = queryGetResponse.getSource();
         @SuppressWarnings("unchecked")
-        Map<String, Integer> baseHashes = (Map<String, Integer>) baseSource.get(HASHES_KEY);
-
-        @SuppressWarnings("unchecked")
-        List<Double> baseVector = (List<Double>) baseSource.get(VECTOR_KEY);
-        timing.add(Tuple.tuple("Retrieving base document", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
+        Map<String, Integer> queryHashes = (Map<String, Integer>) baseSource.get(HASHES_KEY);
+        stopWatch.stop();
 
         // Retrieve the documents with most matching hashes. https://stackoverflow.com/questions/10773581
-        timestamp = System.nanoTime();
+        logger.info("Build boolean query from hashes");
+        stopWatch.start("Build boolean query from hashes");
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        for (Map.Entry<String, Integer> entry : baseHashes.entrySet()) {
-             String termKey = String.format("%s.%s", HASHES_KEY, entry.getKey());
+        for (Map.Entry<String, Integer> entry : queryHashes.entrySet()) {
+            String termKey = HASHES_KEY + "." + entry.getKey();
             ((BoolQueryBuilder) queryBuilder).should(QueryBuilders.termQuery(termKey, entry.getValue()));
         }
-        timing.add(Tuple.tuple("Building approximate query", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
+        stopWatch.stop();
 
-        timestamp = System.nanoTime();
+        logger.info("Execute boolean search");
+        stopWatch.start("Execute boolean search");
         SearchResponse approximateSearchResponse = client
                 .prepareSearch(index)
                 .setTypes(type)
+                .setFetchSource("*", HASHES_KEY)
                 .setQuery(queryBuilder)
                 .setSize(k1)
-                .setExplain(false)
                 .get();
-        timing.add(Tuple.tuple("Executing approximate query", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
+        stopWatch.stop();
+
+        // The zeroth search hit is going to be the query document; parse its vector.
+        logger.info("Parse query document vector");
+        stopWatch.start("Parse query document vector");
+        @SuppressWarnings("unchecked")
+        List<Double> queryVector = (List<Double>) approximateSearchResponse.getHits()
+                .getAt(0).getSourceAsMap().get(VECTOR_KEY);
+        stopWatch.stop();
 
         // Compute exact KNN on the approximate neighbors.
         // Recreate the SearchHit structure, but remove the vector and hashes.
-        timestamp = System.nanoTime();
+        logger.info("Compute exact distance and construct search hits");
+        stopWatch.start("Compute exact distance and construct search hits");
         List<Map<String, Object>> modifiedSortedHits = new ArrayList<>();
         for (SearchHit hit: approximateSearchResponse.getHits()) {
             Map<String, Object> hitSource = hit.getSourceAsMap();
+            @SuppressWarnings("unchecked")
             List<Double> hitVector = (List<Double>) hitSource.get(VECTOR_KEY);
             hitSource.remove(VECTOR_KEY);
             hitSource.remove(HASHES_KEY);
@@ -132,20 +164,23 @@ public class AknnRestAction extends BaseRestHandler {
                 put("_index", hit.getIndex());
                 put("_id", hit.getId());
                 put("_type", hit.getType());
-                put("_score", euclideanDistance(baseVector, hitVector));
+                put("_score", euclideanDistance(queryVector, hitVector));
                 put("_source", hitSource);
             }});
         }
-        timing.add(Tuple.tuple("Computing distances", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
+        stopWatch.stop();
 
-        timestamp = System.nanoTime();
+        logger.info("Sort search hits by exact distance");
+        stopWatch.start("Sort search hits by exact distance");
         modifiedSortedHits.sort(Comparator.comparingDouble(x -> (Double) x.get("_score")));
-        timing.add(Tuple.tuple("Sorting by distance", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
+        stopWatch.stop();
+
+        logger.info("Timing summary\n {}", stopWatch.prettyPrint());
 
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-            builder.field("took", 0);
+            builder.field("took", stopWatch.totalTime().getMillis());
             builder.field("timed_out", false);
             builder.startObject("hits");
             builder.field("total", k2);
@@ -157,15 +192,16 @@ public class AknnRestAction extends BaseRestHandler {
         };
     }
 
-    @SuppressWarnings("unchecked")
     private RestChannelConsumer handleCreateRequest(RestRequest restRequest, NodeClient client) throws IOException {
 
-        logger.info("params: " + restRequest.params().toString());
-        logger.info("content: " + restRequest.hasContent());
+        StopWatch stopWatch = new StopWatch("StopWatch to time create request");
+        logger.info("Parse request");
+        stopWatch.start("Parse request");
 
         XContentParser xContentParser = XContentHelper.createParser(
                 restRequest.getXContentRegistry(), restRequest.content(), restRequest.getXContentType());
         Map<String, Object> contentMap = xContentParser.mapOrdered();
+        @SuppressWarnings("unchecked")
         Map<String, Object> sourceMap = (Map<String, Object>) contentMap.get("_source");
 
         final String _index = (String) contentMap.get("_index");
@@ -175,111 +211,119 @@ public class AknnRestAction extends BaseRestHandler {
         final Integer nbTables = (Integer) sourceMap.get("_aknn_nb_tables");
         final Integer nbBitsPerTable = (Integer) sourceMap.get("_aknn_bits_per_table");
         final Integer nbDimensions = (Integer) sourceMap.get("_aknn_nb_dimensions");
+        @SuppressWarnings("unchecked")
         final List<List<Double>> vectorSample = (List<List<Double>>) contentMap.get("_aknn_vector_sample");
+        stopWatch.stop();
 
-        // Fit a set of normal hyperplanes from the given vectors
+        logger.info("Fit LSH model from sample vectors");
+        stopWatch.start("Fit LSH model from sample vectors");
         LshModel lshModel = new LshModel(nbTables, nbBitsPerTable, nbDimensions, description);
         lshModel.fitFromVectorSample(vectorSample);
+        stopWatch.stop();
 
+        logger.info("Serialize LSH model");
+        stopWatch.start("Serialize LSH model");
+        Map<String, Object> lshSerialized = lshModel.toMap();
+        stopWatch.stop();
+
+        logger.info("Index LSH model");
+        stopWatch.start("Index LSH model");
         IndexResponse indexResponse = client.prepareIndex(_index, _type, _id)
-                .setSource(lshModel.toMap()).get();
-        logger.info("indexResponse: " + indexResponse.toString());
+                .setSource(lshSerialized)
+                .get();
+        stopWatch.stop();
 
-        GetResponse getResponse = client.prepareGet(_index, _type, _id).get();
-        logger.info("getResponse: " + getResponse.toString());
+        logger.info("Timing summary\n {}", stopWatch.prettyPrint());
 
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-            builder.field("source_nb_bytes", getResponse.getSourceAsBytes().length);
+            builder.field("took", stopWatch.totalTime().getMillis());
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
         };
     }
 
-    @SuppressWarnings("unchecked")
     private RestChannelConsumer handleIndexRequest(RestRequest restRequest, NodeClient client) throws IOException {
 
-        Long timestamp = 0L;
-        List<Tuple<String, Double>> timing = new ArrayList<>();
+        StopWatch stopWatch = new StopWatch("StopWatch to time bulk indexing request");
 
-        timestamp = System.nanoTime();
+        logger.info("Parse request parameters");
+        stopWatch.start("Parse request parameters");
         XContentParser xContentParser = XContentHelper.createParser(
                 restRequest.getXContentRegistry(), restRequest.content(), restRequest.getXContentType());
         Map<String, Object> contentMap = xContentParser.mapOrdered();
-
-        final String _index = (String) contentMap.get("_index");
-        final String _type = (String) contentMap.get("_type");
-        final String _ann_uri = (String) contentMap.get("_aknn_uri");
+        final String index = (String) contentMap.get("_index");
+        final String type = (String) contentMap.get("_type");
+        final String aknnURI = (String) contentMap.get("_aknn_uri");
+        @SuppressWarnings("unchecked")
         final List<Map<String, Object>> docs = (List<Map<String, Object>>) contentMap.get("_aknn_docs");
-        logger.info(String.format("Received %d docs for indexing", docs.size()));
-        timing.add(Tuple.tuple("Parsing request", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
+        logger.info("Received {} docs for indexing", docs.size());
+        stopWatch.stop();
 
-        // Get the Aknn document.
-        timestamp = System.nanoTime();
-        logger.info(String.format("Getting AKNN model stored at %s", _ann_uri));
-        String[] annURITokens = _ann_uri.split("/");
-        GetResponse annGetResponse = client.prepareGet(annURITokens[0], annURITokens[1], annURITokens[2]).get();
-        logger.info("Done");
-        timing.add(Tuple.tuple("Retrieving AKNN model", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
-
-        // Instantiate LSH from the source map.
-        timestamp = System.nanoTime();
-        logger.info("Parsing AKNN model");
-        LshModel lshModel = LshModel.fromMap(annGetResponse.getSourceAsMap());
-        logger.info("Done");
-        timing.add(Tuple.tuple("Parsing AKNN model", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
-
-        // TODO: check if the index exists.. If it does not, create a mapping which does not index continuous values.
+        // TODO: check if the index exists. If not, create a mapping which does not index continuous values.
         // This is rather low priority, as I tried it via Python and it doesn't make much difference.
 
+        // Check if the LshModel has been cached. If not, retrieve the Aknn document and use it to populate the model.
+        LshModel lshModel;
+        if (! lshModelCache.containsKey(aknnURI)) {
+
+            // Get the Aknn document.
+            logger.info("Get Aknn model document from {}", aknnURI);
+            stopWatch.start("Get Aknn model document");
+            String[] annURITokens = aknnURI.split("/");
+            GetResponse aknnGetResponse = client.prepareGet(annURITokens[0], annURITokens[1], annURITokens[2]).get();
+            stopWatch.stop();
+
+            // Instantiate LSH from the source map.
+            logger.info("Parse Aknn model document");
+            stopWatch.start("Parse Aknn model document");
+            lshModel = LshModel.fromMap(aknnGetResponse.getSourceAsMap());
+            stopWatch.stop();
+
+            // Save for later.
+            lshModelCache.put(aknnURI, lshModel);
+
+        } else {
+            logger.info("Get Aknn model document from local cache");
+            stopWatch.start("Get Aknn model document from local cache");
+            lshModel = lshModelCache.get(aknnURI);
+            stopWatch.stop();
+        }
+
         // Prepare documents for batch indexing.
-        logger.info("Preparing documents for bulk indexing");
-        timestamp = System.nanoTime();
+        logger.info("Hash documents for indexing");
+        stopWatch.start("Hash documents for indexing");
         BulkRequestBuilder bulkIndexRequest = client.prepareBulk();
         for (Map<String, Object> doc: docs) {
-//            long timestampLoop = System.nanoTime();
-//            logger.info("Preparing document with ID: " + (String) doc.get("_id"));
+            @SuppressWarnings("unchecked")
             Map<String, Object> source = (Map<String, Object>) doc.get("_source");
+            @SuppressWarnings("unchecked")
             List<Double> vector = (List<Double>) source.get(VECTOR_KEY);
-//            System.out.println(System.nanoTime() - timestampLoop);
-//            timestampLoop = System.nanoTime();
-            List<Long> hashes = lshModel.getVectorHashes(vector);
-//            System.out.println(System.nanoTime() - timestampLoop);
-//            timestampLoop = System.nanoTime();
-            Map<String, Long> hashesAsMap = new HashMap<>();
-            for (Integer i = 0; i < hashes.size(); i++)
-                hashesAsMap.put(i.toString(), hashes.get(i));
-            source.put(HASHES_KEY, hashesAsMap);
-//            System.out.println(System.nanoTime() - timestampLoop);
+            source.put(HASHES_KEY, lshModel.getVectorHashes(vector));
             bulkIndexRequest.add(client
-                    .prepareIndex(_index, _type, (String) doc.get("_id"))
+                    .prepareIndex(index, type, (String) doc.get("_id"))
                     .setSource(source));
         }
-        timing.add(Tuple.tuple("Preparing documents", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
+        stopWatch.stop();
 
-        logger.info("Executing bulk indexing");
-        timestamp = System.nanoTime();
+        logger.info("Execute bulk indexing");
+        stopWatch.start("Execute bulk indexing");
         BulkResponse bulkIndexResponse = bulkIndexRequest.get();
-        logger.info("Done");
-        timing.add(Tuple.tuple("Indexing documents", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
+        stopWatch.stop();
+
+        logger.info("Timing summary\n {}", stopWatch.prettyPrint());
 
         if (bulkIndexResponse.hasFailures())
-            logger.error(String.format("Indexing failed after %.8f seconds with message: %s",
-                    (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND,
-                    bulkIndexResponse.buildFailureMessage()));
+            logger.error("Indexing failed with message: {}", bulkIndexResponse.buildFailureMessage());
         else
-            logger.info(String.format("Indexed %d docs in %.8f seconds", docs.size(),
-                    (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
-
-        for (Tuple<String, Double> t: timing) {
-            System.out.println(String.format("%s: %f", t.v1(), t.v2()));
-        }
+            logger.info("Indexed {} docs successfully", docs.size());
 
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-            builder.field("nb_docs_index", docs.size());
+            builder.field("size", docs.size());
+            builder.field("took", stopWatch.totalTime().getMillis());
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
         };
