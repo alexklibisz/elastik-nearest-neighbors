@@ -230,7 +230,8 @@ public class AknnRestAction extends BaseRestHandler {
         logger.info("Done");
         timing.add(Tuple.tuple("Parsing AKNN model", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
-        // TODO: check if the index exists.. If it does not, create a mapping which does not index the continuous vectors.
+        // TODO: check if the index exists.. If it does not, create a mapping which does not index continuous values.
+        // This is rather low priority, as I tried it via Python and it doesn't make much difference.
 
         // Prepare documents for batch indexing.
         logger.info("Preparing documents for bulk indexing");

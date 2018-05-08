@@ -1,5 +1,6 @@
 from __future__ import print_function
 from pprint import pprint
+from time import time
 import json
 import re
 import requests
@@ -42,12 +43,12 @@ for line in open(RAW_GLOVE_PATH):
     if len(data["_aknn_docs"]) == BATCH_SIZE:
 
         print("Posting %d docs to Elasticsearch" % BATCH_SIZE)
+        t0 = time()
         response = requests.post(ES_POST_URL, json=data)
-        pprint(response.json())
+        print(response.json(), time() - t0)
         data["_aknn_docs"] = []
 
         print("Getting neighbors for word %s" % word)
         response = requests.get("%s/%s/%s/%s/_aknn_search?k2=3" % (
             ES_BASE_URL, data['_index'], data['_type'], word))
         print("%s -> %s" % (word, ", ".join([x["_id"] for x in response.json().get("hits").get("hits")])))
-

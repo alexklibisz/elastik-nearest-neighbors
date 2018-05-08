@@ -20,6 +20,7 @@ public class LshModel {
     private String description;
     private List<RealMatrix> midpoints;
     private List<RealMatrix> normals;
+    private List<RealMatrix> normalsTransposed;
     private List<RealVector> thresholds;
 
     public LshModel(Integer nbTables, Integer nbBitsPerTable, Integer nbDimensions, String description) {
@@ -29,6 +30,7 @@ public class LshModel {
         this.description = description;
         this.midpoints = new ArrayList<>();
         this.normals = new ArrayList<>();
+        this.normalsTransposed = new ArrayList<>();
         this.thresholds = new ArrayList<>();
     }
 
@@ -40,7 +42,6 @@ public class LshModel {
         for (int i = 0; i < vectorSample.size(); i++)
             for (int j = 0; j < this.nbDimensions; j++)
                 vectorSampleMatrix.setEntry(i, j, vectorSample.get(i).get(j));
-
 
         for (int i = 0; i < vectorSampleMatrix.getRowDimension(); i += (nbBitsPerTable * 2)) {
             // Select two subsets of nbBitsPerTable vectors.
@@ -60,6 +61,8 @@ public class LshModel {
 
     public List<Long> getVectorHashes(List<Double> vector) {
 
+        RealMatrix normalTranspose, xDotNT;
+        RealVector threshold;
         List<Long> hashes = new ArrayList<>();
 
 //        long timestamp = System.nanoTime();
@@ -71,15 +74,21 @@ public class LshModel {
 //        timestamp = System.nanoTime();
         // Compute the hash for this vector with respect to each table.
         for (int i = 0; i < nbTables; i++) {
-            RealMatrix normal = normals.get(i);
-            RealVector threshold = thresholds.get(i);
-            RealMatrix xDotNT = vectorAsMatrix.multiply(normal.transpose());
+//            timestamp = System.nanoTime();
+            normalTranspose = normalsTransposed.get(i);
+            xDotNT = vectorAsMatrix.multiply(normalTranspose);
+            System.out.println(String.format("(%d %d) (%d %d)",
+                    xDotNT.getRowDimension(), xDotNT.getColumnDimension(),
+                    normalTranspose.getRowDimension(), normalTranspose.getColumnDimension()));
+//            System.out.println(String.format("  0   %d", System.nanoTime() - timestamp));
+//            timestamp = System.nanoTime();
+            threshold = thresholds.get(i);
             Long hash = 0L;
             for (int j = 0; j < nbBitsPerTable; j++)
                 if (xDotNT.getEntry(0, j) >= threshold.getEntry(j))
                     hash += (long) Math.pow(2, j);
-
             hashes.add(hash);
+//            System.out.println(String.format("  1   %d", System.nanoTime() - timestamp));
         }
 //        System.out.println(String.format("   %d", System.nanoTime() - timestamp));
 
@@ -107,6 +116,7 @@ public class LshModel {
             }
             lshModel.midpoints.add(midpoint);
             lshModel.normals.add(normal);
+            lshModel.normalsTransposed.add(normal.transpose());
         }
 
         for (int i = 0; i < lshModel.nbTables; i++) {
