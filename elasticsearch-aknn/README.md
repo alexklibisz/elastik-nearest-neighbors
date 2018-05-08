@@ -1,6 +1,18 @@
 # Elasticsearch-Aknn
 
-Elasticsearch plugin for approximate K-nearest-neighbor queries on dense vectors.
+Elasticsearch plugin for approximate K-nearest-neighbor queries on dense vectors using locality sensitive hashing.
+
+## Usage
+
+### Build and Install
+
+For now, see commands in `testplugin.sh` script.
+
+### Create Aknn Model
+
+### Index a new Vector
+
+### Nearest-neighbors Query
 
 ## TODO
 

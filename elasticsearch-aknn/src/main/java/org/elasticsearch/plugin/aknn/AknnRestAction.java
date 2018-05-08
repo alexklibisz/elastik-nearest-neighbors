@@ -39,7 +39,6 @@ public class AknnRestAction extends BaseRestHandler {
     // TODO: make these actual parameters.
     private final String HASHES_KEY = "_aknn_hashes";
     private final String VECTOR_KEY = "_aknn_vector";
-    private final String DISTANCE_KEY = "_aknn_distance";
     private final Integer K1_DEFAULT = 99;     // Number of documents returned based on hashes only.
     private final Integer K2_DEFAULT = 10;     // Number of documents returned based on exact KNN.
 
@@ -201,6 +200,10 @@ public class AknnRestAction extends BaseRestHandler {
     @SuppressWarnings("unchecked")
     private RestChannelConsumer handleIndexRequest(RestRequest restRequest, NodeClient client) throws IOException {
 
+        Long timestamp = 0L;
+        List<Tuple<String, Double>> timing = new ArrayList<>();
+
+        timestamp = System.nanoTime();
         XContentParser xContentParser = XContentHelper.createParser(
                 restRequest.getXContentRegistry(), restRequest.content(), restRequest.getXContentType());
         Map<String, Object> contentMap = xContentParser.mapOrdered();
@@ -210,41 +213,55 @@ public class AknnRestAction extends BaseRestHandler {
         final String _ann_uri = (String) contentMap.get("_aknn_uri");
         final List<Map<String, Object>> docs = (List<Map<String, Object>>) contentMap.get("_aknn_docs");
         logger.info(String.format("Received %d docs for indexing", docs.size()));
+        timing.add(Tuple.tuple("Parsing request", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
-        // Get the ANN document.
+        // Get the Aknn document.
+        timestamp = System.nanoTime();
         logger.info(String.format("Getting AKNN model stored at %s", _ann_uri));
         String[] annURITokens = _ann_uri.split("/");
         GetResponse annGetResponse = client.prepareGet(annURITokens[0], annURITokens[1], annURITokens[2]).get();
         logger.info("Done");
+        timing.add(Tuple.tuple("Retrieving AKNN model", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         // Instantiate LSH from the source map.
+        timestamp = System.nanoTime();
         logger.info("Parsing AKNN model");
         LshModel lshModel = LshModel.fromMap(annGetResponse.getSourceAsMap());
         logger.info("Done");
+        timing.add(Tuple.tuple("Parsing AKNN model", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         // TODO: check if the index exists.. If it does not, create a mapping which does not index the continuous vectors.
 
         // Prepare documents for batch indexing.
         logger.info("Preparing documents for bulk indexing");
-        long timestamp = System.nanoTime();
+        timestamp = System.nanoTime();
         BulkRequestBuilder bulkIndexRequest = client.prepareBulk();
         for (Map<String, Object> doc: docs) {
-            logger.info("Preparing document with ID: " + (String) doc.get("_id"));
+//            long timestampLoop = System.nanoTime();
+//            logger.info("Preparing document with ID: " + (String) doc.get("_id"));
             Map<String, Object> source = (Map<String, Object>) doc.get("_source");
             List<Double> vector = (List<Double>) source.get(VECTOR_KEY);
+//            System.out.println(System.nanoTime() - timestampLoop);
+//            timestampLoop = System.nanoTime();
             List<Long> hashes = lshModel.getVectorHashes(vector);
+//            System.out.println(System.nanoTime() - timestampLoop);
+//            timestampLoop = System.nanoTime();
             Map<String, Long> hashesAsMap = new HashMap<>();
             for (Integer i = 0; i < hashes.size(); i++)
                 hashesAsMap.put(i.toString(), hashes.get(i));
             source.put(HASHES_KEY, hashesAsMap);
+//            System.out.println(System.nanoTime() - timestampLoop);
             bulkIndexRequest.add(client
                     .prepareIndex(_index, _type, (String) doc.get("_id"))
                     .setSource(source));
         }
+        timing.add(Tuple.tuple("Preparing documents", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         logger.info("Executing bulk indexing");
+        timestamp = System.nanoTime();
         BulkResponse bulkIndexResponse = bulkIndexRequest.get();
         logger.info("Done");
+        timing.add(Tuple.tuple("Indexing documents", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
         if (bulkIndexResponse.hasFailures())
             logger.error(String.format("Indexing failed after %.8f seconds with message: %s",
@@ -254,10 +271,13 @@ public class AknnRestAction extends BaseRestHandler {
             logger.info(String.format("Indexed %d docs in %.8f seconds", docs.size(),
                     (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND));
 
+        for (Tuple<String, Double> t: timing) {
+            System.out.println(String.format("%s: %f", t.v1(), t.v2()));
+        }
+
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
-            builder.field("nb_seconds_elapsed", (System.nanoTime() - timestamp) / NANOSECONDS_PER_SECOND);
             builder.field("nb_docs_index", docs.size());
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));

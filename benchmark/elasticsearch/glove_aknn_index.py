@@ -47,6 +47,7 @@ for line in open(RAW_GLOVE_PATH):
         data["_aknn_docs"] = []
 
         print("Getting neighbors for word %s" % word)
-        response = requests.get("%s/%s/%s/%s/_aknn_search" % (
+        response = requests.get("%s/%s/%s/%s/_aknn_search?k2=3" % (
             ES_BASE_URL, data['_index'], data['_type'], word))
-        pprint(response.json())
+        print("%s -> %s" % (word, ", ".join([x["_id"] for x in response.json().get("hits").get("hits")])))
+

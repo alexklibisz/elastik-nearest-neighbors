@@ -20,6 +20,7 @@ public class LshModel {
     private String description;
     private List<RealMatrix> midpoints;
     private List<RealMatrix> normals;
+    private List<RealVector> thresholds;
 
     public LshModel(Integer nbTables, Integer nbBitsPerTable, Integer nbDimensions, String description) {
         this.nbTables = nbTables;
@@ -28,6 +29,7 @@ public class LshModel {
         this.description = description;
         this.midpoints = new ArrayList<>();
         this.normals = new ArrayList<>();
+        this.thresholds = new ArrayList<>();
     }
 
     public void fitFromVectorSample(List<List<Double>> vectorSample) {
@@ -60,28 +62,26 @@ public class LshModel {
 
         List<Long> hashes = new ArrayList<>();
 
+//        long timestamp = System.nanoTime();
         RealMatrix vectorAsMatrix = MatrixUtils.createRealMatrix(1, nbDimensions);
         for (int i = 0; i < nbDimensions; i++)
             vectorAsMatrix.setEntry(0, i, vector.get(i));
+//        System.out.println(String.format("   %d", System.nanoTime() - timestamp));
 
+//        timestamp = System.nanoTime();
         // Compute the hash for this vector with respect to each table.
         for (int i = 0; i < nbTables; i++) {
-
             RealMatrix normal = normals.get(i);
-            RealMatrix midpoint = midpoints.get(i);
-
-            RealVector thresholds = new ArrayRealVector(this.nbBitsPerTable);
-            for (int j = 0; j < this.nbBitsPerTable; j++)
-                thresholds.setEntry(j, normal.getRowVector(j).dotProduct(midpoint.getRowVector(j)));
-
+            RealVector threshold = thresholds.get(i);
             RealMatrix xDotNT = vectorAsMatrix.multiply(normal.transpose());
             Long hash = 0L;
             for (int j = 0; j < nbBitsPerTable; j++)
-                if (xDotNT.getEntry(0, j) >= thresholds.getEntry(j))
+                if (xDotNT.getEntry(0, j) >= threshold.getEntry(j))
                     hash += (long) Math.pow(2, j);
 
             hashes.add(hash);
         }
+//        System.out.println(String.format("   %d", System.nanoTime() - timestamp));
 
         return hashes;
     }
@@ -108,6 +108,16 @@ public class LshModel {
             lshModel.midpoints.add(midpoint);
             lshModel.normals.add(normal);
         }
+
+        for (int i = 0; i < lshModel.nbTables; i++) {
+            RealMatrix normal = lshModel.normals.get(i);
+            RealMatrix midpoint = lshModel.midpoints.get(i);
+            RealVector threshold = new ArrayRealVector(lshModel.nbBitsPerTable);
+            for (int j = 0; j < lshModel.nbBitsPerTable; j++)
+                threshold.setEntry(j, normal.getRowVector(j).dotProduct(midpoint.getRowVector(j)));
+            lshModel.thresholds.add(threshold);
+        }
+
         return lshModel;
     }
 
