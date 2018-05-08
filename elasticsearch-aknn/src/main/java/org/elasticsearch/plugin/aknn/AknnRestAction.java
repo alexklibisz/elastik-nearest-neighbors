@@ -209,7 +209,7 @@ public class AknnRestAction extends BaseRestHandler {
         final String _id = (String) contentMap.get("_id");
         final String description = (String) sourceMap.get("_aknn_description");
         final Integer nbTables = (Integer) sourceMap.get("_aknn_nb_tables");
-        final Integer nbBitsPerTable = (Integer) sourceMap.get("_aknn_bits_per_table");
+        final Integer nbBitsPerTable = (Integer) sourceMap.get("_aknn_nb_bits_per_table");
         final Integer nbDimensions = (Integer) sourceMap.get("_aknn_nb_dimensions");
         @SuppressWarnings("unchecked")
         final List<List<Double>> vectorSample = (List<List<Double>>) contentMap.get("_aknn_vector_sample");

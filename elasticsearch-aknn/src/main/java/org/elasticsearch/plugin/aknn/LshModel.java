@@ -105,7 +105,7 @@ public class LshModel {
     public static LshModel fromMap(Map<String, Object> serialized) {
 
         LshModel lshModel = new LshModel(
-                (Integer) serialized.get("_aknn_nb_tables"), (Integer) serialized.get("_aknn_bits_per_table"),
+                (Integer) serialized.get("_aknn_nb_tables"), (Integer) serialized.get("_aknn_nb_bits_per_table"),
                 (Integer) serialized.get("_aknn_nb_dimensions"), (String) serialized.get("_aknn_description"));
 
         // TODO: figure out how to cast directly to List<double[][]> or double[][][] and use MatrixUtils.createRealMatrix.
@@ -140,7 +140,7 @@ public class LshModel {
     public Map<String, Object> toMap() {
         return new HashMap<String, Object>() {{
             put("_aknn_nb_tables", nbTables);
-            put("_aknn_bits_per_table", nbBitsPerTable);
+            put("_aknn_nb_bits_per_table", nbBitsPerTable);
             put("_aknn_nb_dimensions", nbDimensions);
             put("_aknn_description", description);
             put("_aknn_midpoints", midpoints.stream().map(realMatrix -> realMatrix.getData()).collect(Collectors.toList()));
