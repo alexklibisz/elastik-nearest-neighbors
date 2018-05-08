@@ -24,9 +24,6 @@
             #imgs > div {
                 float: left;
             }
-            /*#imgs > div:first-of-type {
-                float: none;
-            }*/
         </style>
 
     </head>
@@ -49,7 +46,26 @@
                     to store the feature vectors and run the approximate
                     nearest neighbors computation.</p>
             </div>
-            <div id="imgs"></div>
+            <hr/>
+            <div>
+                <p>Some examples:
+                    <a href="/?image_id=988057738172387328">Dogs</a>,
+                    <a href="/?image_id=988059982124871680">Cats</a>,
+                    <a href="/?image_id=988057805285277696">Food</a>,
+                    <a href="/?image_id=988059977922293760">Male Athletes</a>,
+                    <a href="/?image_id=988057775908507649">TV Show</a>,
+                    <a href="/?image_id=988386617747431424">Comics</a>,
+                    <a href="/?image_id=988402744829636608">Greenery</a>,
+                    <a href="/?image_id=988059994691006464">Performers</a>,
+                    <a href="/?image_id=random">Random</a>
+                </p>
+            </div>
+            <hr/>
+
+            <div id="imgs">
+                <p>Please select an example above.</p>
+            </div>
+
         </main>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/elasticsearch/14.2.2/elasticsearch.min.js" type="text/javascript"></script>
@@ -57,7 +73,19 @@
         <script src="/sample_ids.js"></script>
 
         <script>
+
+        // Get the param value with the given name from the URL.
+        function getURLParam(name) {
+            var url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
         
+
         var ES_URL = "http://localhost:9200/twitter_images/twitter_image/"
         var S3_URL = "https://s3.amazonaws.com/klibisz-twitter-stream/"
 
@@ -68,29 +96,34 @@
                 document.getElementById("corpus_count").innerHTML = count
             })
 
-        var random_index = Math.floor(Math.random() * SAMPLE_IDS.length)
-        var random_id = SAMPLE_IDS[random_index]
+        var image_id = getURLParam("image_id")
+        if (image_id == "random") {
+            var random_index = Math.floor(Math.random() * SAMPLE_IDS.length)
+            image_id = SAMPLE_IDS[random_index]
+        }
 
-        var search_URL = ES_URL
-        search_URL +=  random_id + "/_aknn_search"
-        search_URL += "?k1=1000&k2=10"
+        if (image_id != null) {
 
-        axios.get(search_URL)
-            .then(response => {
-                var hits = response.data.hits.hits
-                var html = hits.map(hit => {
-                    var s = '<div>'
-                    s += '<img src="' + hit._source.s3_url + '"/>'
-                    s += '<p><a href="' + hit._source.twitter_url + '">'
-                    s += 'Twitter Status</a>'
-                    s += ', ' + Math.round(hit._score * 100) / 100 + '</p>'
-                    return s + '</div>'
-                }).join("\n")
-                document.getElementById("imgs").innerHTML = html
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+            var search_URL = ES_URL + image_id + "/_aknn_search?k1=1000&k2=10"
+
+            axios.get(search_URL)
+                .then(response => {
+                    var hits = response.data.hits.hits
+                    var html = hits.map(hit => {
+                        var s = '<div>'
+                        s += '<img src="' + hit._source.s3_url + '"/>'
+                        s += '<p><a href="' + hit._source.twitter_url + '">'
+                        s += 'Twitter Status</a>'
+                        s += ', ' + Math.round(hit._score * 100) / 100 + '</p>'
+                        return s + '</div>'
+                    }).join("\n")
+                    document.getElementById("imgs").innerHTML = html
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+        }
 
         </script> 
 
