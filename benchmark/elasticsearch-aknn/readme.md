@@ -8,30 +8,58 @@
 python glove_preprocess.py glove.840B.300d.txt > glove.840B.300d.docs.txt
 ```
 
-## Create a new AKNN model from Glove vectors
+You can also use your own and vectors, but to use this CLI, the vectors must be 
+contained in a single text document with format:
 
 ```
-python -m aknn -e http://localhost:9200 create glove.840B.300d.docs.txt \
-	--index aknn_models \
-	--type aknn_model \
-	--id glove_840B_300d \
+{"_id": "elasticsearch_compatible_document_id_0", "_source": {"_aknn_vector": [0.1, 0.2, ...], "any": "other", "key-value": "pairs you need"}}\n
+```
+
+For example, the preprocessed Glove vectors look like this:
+
+```
+{"_id": "I", "_source": {"description": "Word vector for: I", "_aknn_vector": [0.1941, 0.22603, ..., 0.11736]}}
+{"_id": "that", "_source": {"description": "Word vector for: that", "_aknn_vector": [0.09852, 0.25001, ..., 0.17779]}}
+
+```
+
+## Create a new Aknn model from preprocessed Glove vectors
+
+```
+python -m aknn --es_hosts http://localhost:9200 create \
+	glove.840B.300d.docs.txt \
+	--es_index aknn_models \
+	--es_type aknn_model \
+	--es_id glove_840B_300d \
 	--description "Aknn model for glove.840B.300d.txt" \
-	--dimensions 300 \
-	--tables 32 \
-	--bits 16
+	--nb_dimensions 300 \
+	--nb_tables 32 \
+	--nb_bits 16
 ```
 
-## Index Glove vectors
+## Index a large collection of Glove vectors
 
 ```
-python -m aknn -e http://localhost:9200 index \
+python -m aknn --es_hosts http://localhost:9200 index \
 	glove.840B.300d.docs.txt \
 	index_metrics.csv \
 	--aknn_uri aknn_models/aknn_model/glove_840B_300d \
-	--index glove_word_vectors \
-	--type glove_word_vector \
-	--batch_size 1000 \
-	--count 10000
+	--es_index glove_word_vectors \
+	--es_type glove_word_vector \
+	--nb_batch 10000
+
+```
+
+## Test recall
+
+```
+python -m aknn --es_hosts http://localhost:9200 recall \
+	glove.840B.300d.docs.txt \
+	./metrics \
+	--es_index glove_word_vectors \
+	--es_type glove_word_vector \
+	--k1 1000 \
+	--k2 100
 
 ```
 
