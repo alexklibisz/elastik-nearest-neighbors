@@ -77,10 +77,12 @@ def aknn_create(docs_path, es_hosts, es_index, es_type, es_id, description,
     try:
         t0 = time()
         req = requests.post(req_url, json=body)
+        pdb.set_trace()
         req.raise_for_status()
         print("Request completed in %.3lf seconds" % (time() - t0))
         pprint(req.json())
     except requests.exceptions.HTTPError as ex:
+        pdb.set_trace()
         print("Request failed", ex, file=sys.stderr)
         print(ex, file=sys.stderr)
         sys.exit(1)
@@ -130,6 +132,7 @@ def aknn_index(docs_path, metrics_path, es_hosts, es_index, es_type, aknn_uri,
             t0 = time()
             try:
                 req_url = "%s/_aknn_index" % next(es_hosts)
+                pdb.set_trace()
                 req = requests.post(req_url, json=body)
                 req.raise_for_status()
             except requests.exceptions.HTTPError as ex:

@@ -44,11 +44,12 @@ python -m aknn --es_hosts http://localhost:9200 create \
 ```
 python -m aknn --es_hosts http://localhost:9200 index \
 	glove.840B.300d.docs.txt \
-	index_metrics.csv \
+	metrics/indexing.csv \
 	--aknn_uri aknn_models/aknn_model/glove_840B_300d \
 	--es_index glove_word_vectors \
 	--es_type glove_word_vector \
-	--nb_batch 10000
+	--nb_batch 10000 \
+	--nb_total_max 500000
 
 ```
 
