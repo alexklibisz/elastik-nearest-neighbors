@@ -1,6 +1,8 @@
 
 # Elasticsearch-Aknn Benchmarks
 
+<img src="metrics/recall_boxplot.png" height="200px" width="auto"/>
+
 ## Preprocess Glove Vectors
 
 ```
@@ -52,23 +54,27 @@ python -m aknn --es_hosts http://localhost:9200 index \
 
 ## Test recall
 
+This produces the plot shown above.
+
 ```
 python -m aknn --es_hosts http://localhost:9200 recall \
 	glove.840B.300d.docs.txt \
 	./metrics \
 	--es_index glove_word_vectors \
 	--es_type glove_word_vector \
-	--k1 1000 \
-	--k2 100
+	--k1 10,100,1000 \
+	--k2 10 \
+	--nb_measured 1000
 
 ```
 
 ## Test concurrent search queries
 
 ```
-python -m aknn -h http://localhost:9200,http://localhost:9202 search \
-	--index glove_word_vectors \
-	--type glove_word_vector \
-	--time 5 \
-	--threads 10
+# Not implemented yet.
+# python -m aknn -h http://localhost:9200,http://localhost:9202 search \
+# 	--index glove_word_vectors \
+#	--type glove_word_vector \
+#	--time 5 \
+#	--threads 10
 ```

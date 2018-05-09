@@ -4,6 +4,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, wait
 from csv import DictWriter
 from itertools import cycle
+from math import log10
 from numpy import array, mean, std, vstack, zeros_like, median
 from pprint import pformat, pprint
 from sklearn.neighbors import NearestNeighbors
@@ -146,9 +147,8 @@ def aknn_index(docs_path, metrics_path, es_hosts, es_index, es_type, aknn_uri,
 
 def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type, nb_measured,
                 k1, k2, sample_seed):
-    """Compare the distribution of true euclidean distance to neighbors for the 
-    first *count* vectors to the distribution of approximated euclidean distance
-    to neighbors retrieved from Aknn."""
+    """Compare the distribution of euclidean distances returned for an exact
+    KNN and for various settings of Elasticsearch-Aknn."""
 
     import matplotlib.pyplot as plt
     random.seed(sample_seed)
@@ -163,7 +163,7 @@ def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type, nb_measured
         print("Request for existing count failed", ex, file=sys.stderr)
         nb_existing = 0
 
-    print("Found %d existing documents" % nb_existing)
+    print("Found %d documents in Elasticsearch" % nb_existing)
     assert nb_measured <= nb_existing
 
     # Compile all ids and vectors from elasticsearch into a numpy array.
@@ -178,18 +178,7 @@ def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type, nb_measured
     measured_ind = random.sample(range(nb_existing), nb_measured)
     measured_ids = [ids[i] for i in measured_ind]
 
-    print("Computing exact KNN")
-    knn = NearestNeighbors(k2, algorithm='brute', metric='euclidean').fit(vecs)
-    dists_exact, _ = knn.kneighbors(vecs[measured_ind], return_distance=True)
-    dists_exact = dists_exact.ravel().tolist()
-    print("Exact mean, std =  (%.3lf, %.3lf)" %
-          (mean(dists_exact), std(dists_exact)))
-
-    plt.figure(figsize=(20, 10))
-    p = plt.plot(*values_to_cdf(dists_exact),
-                 label="Exact, n=%d" % nb_existing, lw=6)
-    plt.axvline(median(dists_exact), color=p[0].get_color())
-
+    boxplot_data = []
     thread_pool = ThreadPoolExecutor(max_workers=20)
 
     for k1_ in map(int, k1.split(",")):
@@ -202,27 +191,46 @@ def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type, nb_measured
                     es_hosts, es_index, es_type, quote_plus(id_), k1_, k2))
 
         reqs = list(thread_pool.map(requests.get, search_urls))
-        dists_approx = []
+        dd = []
         for i, req in enumerate(reqs):
-            dists_approx += [x["_score"] for x in req.json()["hits"]["hits"]]
+            dd += [x["_score"] for x in req.json()["hits"]["hits"][1:]]
 
-        print("Approx mean, std = (%.3lf, %.3lf)" %
-              (mean(dists_approx), std(dists_approx)))
+        print("Approx mean, std = (%.3lf, %.3lf)" % (mean(dd), std(dd)))
+        boxplot_data.append(dd)
 
-        p = plt.plot(*values_to_cdf(dists_approx),
-                     label="Approx, k1=%d" % k1_, lw=6)
-        plt.axvline(median(dists_approx), color=p[0].get_color())
+    print("Computing exact KNN")
+    knn = NearestNeighbors(k2, algorithm='brute', metric='euclidean').fit(vecs)
+    dd, _ = knn.kneighbors(vecs[measured_ind], return_distance=True)
+    dd = dd[:, 1:].ravel().tolist()
+    print("Exact mean, std =  (%.3lf, %.3lf)" % (mean(dd), std(dd)))
+    boxplot_data.append(dd)
 
-    fig_path = "%s/recall_cdf_%d_%d_%d.png" % (
-        metrics_dir, nb_existing, nb_measured, k2)
-
+    plt.figure(figsize=(20, 10))
     plt.grid(True)
-    plt.legend(prop={"size": 16})
-    plt.title("CDF over Euclidean Distances for Exact and Approximate KNN. \n For %d sample vectors, find %d nearest neighbors from %d candidates." %
-              (nb_measured, k2, nb_existing), size=24, y=1.01)
-    plt.xlabel("Euclidean distance", size=20)
-    plt.ylabel("CDF", size=20)
-    plt.savefig(fig_path)
+    bp = plt.boxplot(boxplot_data, notch=True, patch_artist=True)
+
+    colors = ['#FF595E', '#FFCA3A', '#1982C4', '#8AC926', '#57E2E5', '#6A4C93']
+    assert len(boxplot_data) <= len(colors), "Add more colors..."
+    for patch, color in zip(bp['boxes'], colors):
+        patch.set_facecolor(color)
+
+    for x in bp["medians"]:
+        x.set(color="black")
+
+    for k in ["boxes", "medians", "whiskers", "caps"]:
+        for x in bp[k]:
+            x.set(linewidth=4)
+
+    xticks = ["$10^%d$" % log10(int(x)) for x in k1.split(",") + [nb_existing]]
+    plt.xticks(range(1, len(boxplot_data) + 1), xticks, fontsize=15)
+    plt.yticks(fontsize=15)
+    plt.xlabel("\nNumber of Distance Computations", size=18)
+    plt.ylabel("Euclidean Distance to Neighbors", size=18)
+    plt.title("For each of %d vectors, find the %d nearest neighbors in a corpus of $10^%d$ vectors" % (
+        nb_measured, k2, log10(nb_existing)), size=22, y=1.03)
+
+    fig_path = "%s/recall_boxplot.png" % metrics_dir
+    plt.savefig(fig_path, bbox_inches='tight', pad_inches=0.1)
     print("Saved figure at %s" % fig_path)
 
 if __name__ == "__main__":
