@@ -25,14 +25,14 @@ echo "node.name: $(cat /etc/hostname)" >> $cnf
 echo "path.data: $HOME/esdata" >> $cnf
 echo "path.logs: $HOME/eslogs" >> $cnf
 echo "network.host: 0.0.0.0" >> $cnf
-# echo "discovery.zen.hosts_provider: ec2" >> $cnf
 echo "action.destructive_requires_name: true" >> $cnf
 echo "http.cors.enabled: true" >> $cnf
 echo "http.cors.allow-origin: /(null)|(https?:\/\/localhost(:[0-9]+)?)/" >> $cnf
 
-echo "discovery.zen.ping.unicast.hosts: [\"ip-172-31-93-93.ec2.internal\", \"ip-172-31-88-105.ec2.internal\", \"ip-172-31-84-21.ec2.internal\", \"ip-172-31-87-186.ec2.internal\"]" >> $cnf
-
-
+# Note: to get ec2 discovery working, either assign an IAM role with EC2 permissions
+# to the instances running elasticsearch, or set the AWS_ACCESS_KEY_ID and 
+# AWS_SECRET_ACCESS_KEY environment variables on the instance.
+echo "discovery.zen.hosts_provider: ec2" >> $cnf
 bash $esdir/bin/elasticsearch-plugin install -b discovery-ec2
 
 ls ~/.aws
