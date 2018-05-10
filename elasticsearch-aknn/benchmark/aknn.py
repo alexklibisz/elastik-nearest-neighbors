@@ -141,6 +141,11 @@ def aknn_index(docs_path, es_hosts, es_index, es_type, aknn_uri,
         if doc["_id"] in ids_in_index:
             continue
 
+        # There are some oddball words in there... ES technically has
+        # a limit at strings with length 512 being used for IDs.
+        if len(doc["_id"]) > 50:
+            continue
+
         # Add a new doc to the next hosts payload and decrement counters.
         bodies[next(es_hosts_iter)]["_aknn_docs"].append(doc)
         nb_round_robin_rem -= 1
@@ -161,9 +166,12 @@ def aknn_index(docs_path, es_hosts, es_index, es_type, aknn_uri,
         # Iterate over the futures and print each host's response.
         # Error if any of the hosts return non-200 status.
         for f, h in zip(as_completed(futures), es_hosts):
-            print("Response from host %s:" % h, f.result().json())
-            assert f.result().status_code == 200, "Error at host %s" % h
-
+            res = f.result()
+            if res.status_code != 200:
+                print("Error at host %s" % h, res.json(), file=sys.stderr)
+                sys.exit(1)
+            print("Response from host %s:" % h, res.json())
+            
         # Reset counter and empty payloads.
         nb_round_robin_rem = len(es_hosts) * nb_batch
         for h in es_hosts:
