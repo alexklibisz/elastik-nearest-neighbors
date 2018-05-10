@@ -17,7 +17,7 @@ rm elasticsearch-6.2.4.tar.gz
 mv elasticsearch-6.2.4 $esdir
 
 sudo apt-get update -y
-sudo apt-get install -y default-jre
+sudo apt-get install -y default-jre htop
 
 echo "" > $cnf
 echo "cluster.name: $clustername" >> $cnf

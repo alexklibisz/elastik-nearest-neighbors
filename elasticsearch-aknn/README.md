@@ -16,6 +16,7 @@ For now, see commands in `testplugin.sh` script.
 
 ## TODO
 
+- Double and triple check type overflows for the hashes... I found an overflow bug when using a 32-bit hash. Maybe should just switch hash types to larger type than Integer by defualt (e.g. Long). Not sure if that makes a difference in terms of elasticsearch storage overhead.
 - Document API endpoints in the README. There are only three, and they are already implicitly documented in the Python scripts in the benchmarks directory above this directory.
 - Clean up the many different conversions from JSON lists of lists of floating point numbers, to Java `List<List<Double>>`, to Java `double[][]`, to Apache Commons Math `RealMatrix`.
 - Clean up code to pass default compilation checks for Elasticsearch gradle plugin.

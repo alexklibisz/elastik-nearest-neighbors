@@ -25,6 +25,14 @@ For example, the preprocessed Glove vectors look like this:
 
 ```
 
+## Set your Elasticsearch hosts as an environment variable
+
+This makes the rest of the benchmarks a little less verbose.
+
+```
+export ESHOSTS=http://localhost:9200
+```
+
 ## Create a new Aknn model from preprocessed Glove vectors
 
 ```
@@ -42,7 +50,7 @@ python3 aknn.py --es_hosts $ESHOSTS create \
 ## Index a large collection of Glove vectors
 
 ```
-python -m aknn --es_hosts http://localhost:9200 index \
+python3 aknn.py --es_hosts $ESHOSTS index \
 	glove.840B.300d.docs.txt \
 	metrics/indexing.csv \
 	--aknn_uri aknn_models/aknn_model/glove_840B_300d \
@@ -50,7 +58,28 @@ python -m aknn --es_hosts http://localhost:9200 index \
 	--es_type glove_word_vector \
 	--nb_batch 10000 \
 	--nb_total_max 500000
+```
 
+```
+...
+Sending 10000 docs to host http://<es-host-0>:9200
+Sending 10000 docs to host http://<es-host-1>:9200
+Sending 10000 docs to host http://<es-host-2>:9200
+Sending 10000 docs to host http://<es-host-3>:9200
+Response from host http://<es-host-0>:9200: {'took': 12743, 'size': 10000}
+Response from host http://<es-host-1>:9200: {'took': 12994, 'size': 10000}
+Response from host http://<es-host-2>:9200: {'took': 14044, 'size': 10000}
+Response from host http://<es-host-3>:9200: {'took': 14127, 'size': 10000}
+Total indexed docs = 480000, seconds elapsed = 287
+Sending 5000 docs to host http://<es-host-0>:9200
+Sending 5000 docs to host http://<es-host-1>:9200
+Sending 5000 docs to host http://<es-host-2>:9200
+Sending 5000 docs to host http://<es-host-3>:9200
+Response from host http://<es-host-0>:9200: {'took': 5836, 'size': 5000}
+Response from host http://<es-host-1>:9200: {'took': 6058, 'size': 5000}
+Response from host http://<es-host-2>:9200: {'took': 6302, 'size': 5000}
+Response from host http://<es-host-3>:9200: {'took': 6941, 'size': 5000}
+Total indexed docs = 500000, seconds elapsed = 303
 ```
 
 ## Test recall
@@ -58,7 +87,7 @@ python -m aknn --es_hosts http://localhost:9200 index \
 This produces the plot shown above.
 
 ```
-python -m aknn --es_hosts http://localhost:9200 recall \
+python3 aknn.py --es_hosts $ESHOSTS recall \
 	glove.840B.300d.docs.txt \
 	./metrics \
 	--es_index glove_word_vectors \
@@ -66,16 +95,15 @@ python -m aknn --es_hosts http://localhost:9200 recall \
 	--k1 10,100,1000 \
 	--k2 10 \
 	--nb_measured 1000
-
 ```
 
 ## Test concurrent search queries
 
 ```
-# Not implemented yet.
-# python -m aknn -h http://localhost:9200,http://localhost:9202 search \
-# 	--index glove_word_vectors \
-#	--type glove_word_vector \
-#	--time 5 \
-#	--threads 10
+python3 aknn.py --es_hosts $ESHOSTS search \
+	metrics/search_glove_500k.csv \
+ 	--index glove_word_vectors \
+	--type glove_word_vector \
+	--nb_workers 100 \
+	--nb_requests 100
 ```

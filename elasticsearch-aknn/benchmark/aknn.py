@@ -1,6 +1,6 @@
 """"""
 from argparse import ArgumentParser
-from collections import Counter
+from collections import Counter, OrderedDict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from csv import DictWriter
 from itertools import cycle
@@ -94,7 +94,7 @@ def aknn_create(docs_path, es_hosts, es_index, es_type, es_id, description,
         sys.exit(1)
 
 
-def aknn_index(docs_path, metrics_path, es_hosts, es_index, es_type, aknn_uri,
+def aknn_index(docs_path, es_hosts, es_index, es_type, aknn_uri,
                nb_batch, nb_total_max, skip_existing):
 
     assert es_index.lower() == es_index, "Index must be lowercase."
@@ -171,6 +171,64 @@ def aknn_index(docs_path, metrics_path, es_hosts, es_index, es_type, aknn_uri,
 
         print("Total indexed docs = %d, seconds elapsed = %d" % (
             nb_total_max - nb_total_rem, time() - T0))
+
+
+def aknn_search(metrics_path, es_hosts, es_index, es_type, k1, k2,
+                nb_requests, nb_workers):
+
+    print("Starting thread pool with %d concurrent workers" % nb_workers)
+    tpool = ThreadPoolExecutor(max_workers=nb_workers)
+
+    es_hosts = es_hosts.split(",")
+    es_hosts_iter = cycle(es_hosts)
+
+    print("Using %d elasticsearch hosts" % len(es_hosts), es_hosts)
+
+    print("Retrieving IDs in %s/%s for random queries" % (es_index, es_type))
+    ids = [doc["_id"] for doc in iter_es_docs(es_hosts[0], es_index, es_type)]
+
+    metrics_fp = open(metrics_path, "w")
+    metrics_row = OrderedDict(
+        nb_docs=len(ids), nb_workers=nb_workers, nb_requests=nb_requests,
+        percent_failed=0, response_min=0, response_max=0,
+        response_mean=0, response_median=0, response_stdv=0)
+    metrics_writer = DictWriter(metrics_fp, metrics_row.keys())
+    metrics_writer.writeheader()
+
+    while True:
+
+        print("Submitting %d searches, k1=%d, k2=%d" % (nb_requests, k1, k2))
+        futures, search_urls = [], []
+        for id_ in random.sample(ids, nb_requests):
+            search_urls.append("%s/%s/%s/%s/_aknn_search" % (
+                next(es_hosts_iter), es_index, es_type, quote_plus(id_)))
+            futures.append(tpool.submit(requests.get, search_urls[-1]))
+
+        nb_failed = 0
+        response_times = []
+        for i, f in enumerate(as_completed(futures)):
+            res = f.result()
+            if res.status_code != 200:
+                nb_failed += 1
+                print("Error at search: %s" % search_urls[i], res.json(),
+                      file=sys.stderr)
+                continue
+            if i == 0:
+                sim_ids = [h["_id"] for h in res.json()["hits"]["hits"]]
+                print("Example response: %s" % ", ".join(sim_ids))
+            response_times.append(res.json()["took"])
+
+        # Popualte and print metrics.
+        metrics_row["percent_failed"] = nb_failed / nb_requests * 100
+        metrics_row["response_min"] = min(response_times)
+        metrics_row["response_max"] = max(response_times)
+        metrics_row["response_mean"] = mean(response_times)
+        metrics_row["response_median"] = median(response_times)
+        metrics_row["response_stdv"] = std(response_times)
+        print("Request metrics....\n%s" % pformat(metrics_row))
+        metrics_writer.writerow(metrics_row)
+
+        assert nb_failed < len(futures) * 0.1, "Too many failures, stopping."
 
 
 def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type,
@@ -294,20 +352,12 @@ if __name__ == "__main__":
     sp_i = sp_base.add_parser("index")
     sp_i.set_defaults(which="index")
     sp_i.add_argument("docs_path", type=str)
-    sp_i.add_argument("metrics_path", type=str)
     sp_i.add_argument("--aknn_uri", type=str, required=True)
     sp_i.add_argument("--es_index", type=str, required=True)
     sp_i.add_argument("--es_type", type=str, required=True)
     sp_i.add_argument("--nb_batch", type=int, default=5000)
     sp_i.add_argument("--nb_total_max", type=int, default=100000)
     sp_i.add_argument("--skip_existing", action="store_true")
-
-    sp_s = sp_base.add_parser("search")
-    sp_s.set_defaults(which="search")
-    sp_s.add_argument("--index", type=str, required=True)
-    sp_s.add_argument("--type", type=str, required=True)
-    sp_s.add_argument("--time", type=int, default=10)
-    sp_s.add_argument("--threads", type=int, default=10)
 
     sp_r = sp_base.add_parser("recall")
     sp_r.set_defaults(which="recall")
@@ -319,6 +369,16 @@ if __name__ == "__main__":
     sp_r.add_argument("--k1", default="10,100,1000")
     sp_r.add_argument("--k2", type=int, default=10)
     sp_r.add_argument("--sample_seed", type=int, default=865)
+
+    sp_s = sp_base.add_parser("search")
+    sp_s.set_defaults(which="search")
+    sp_s.add_argument("metrics_path", type=str)
+    sp_s.add_argument("--es_index", type=str, required=True)
+    sp_s.add_argument("--es_type", type=str, required=True)
+    sp_s.add_argument("--k1", type=int, default=100)
+    sp_s.add_argument("--k2", type=int, default=10)
+    sp_s.add_argument("--nb_workers", type=int, default=20)
+    sp_s.add_argument("--nb_requests", type=int, default=100)
 
     args = vars(ap.parse_args())
     pprint(args)
@@ -333,7 +393,7 @@ if __name__ == "__main__":
         aknn_index(**args)
 
     if action == "search":
-        raise NotImplementedException("TODO: implement parallelized searching")
+        aknn_search(**args)
 
     if action == "recall":
         aknn_recall(**args)
