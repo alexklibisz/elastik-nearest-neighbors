@@ -24,3 +24,4 @@ For now, see commands in `testplugin.sh` script.
 - Enforce an explicit mapping for new Aknn models stored in Elasticsearch. For example, the continuous hyperplanes should not be indexed. 
 - Enforce an explicit mapping for new vector documents stored in Elasticsearch. For example, the continuous vectors should not be indexed.
 - Cache the Aknn model by its URI, so that it doesn't have to be requested and deserialized for every new batch of documents. Perhaps add a `bust_cache` flag to the `_aknn_index` endpoint which would force the server to re-GET the Aknn model document.
+- Error check the indexing to prevent silent failures. For example, I tried to create a document with a non-lowercase index; Elasticsearch failed to index the document, but it still returned 200.

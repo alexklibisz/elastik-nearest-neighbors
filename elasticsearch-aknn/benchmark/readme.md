@@ -28,7 +28,7 @@ For example, the preprocessed Glove vectors look like this:
 ## Create a new Aknn model from preprocessed Glove vectors
 
 ```
-python -m aknn --es_hosts http://localhost:9200 create \
+python3 aknn.py --es_hosts $ESHOSTS create \
 	glove.840B.300d.docs.txt \
 	--es_index aknn_models \
 	--es_type aknn_model \
@@ -36,7 +36,7 @@ python -m aknn --es_hosts http://localhost:9200 create \
 	--description "Aknn model for glove.840B.300d.txt" \
 	--nb_dimensions 300 \
 	--nb_tables 32 \
-	--nb_bits 16
+	--nb_bits 32
 ```
 
 ## Index a large collection of Glove vectors

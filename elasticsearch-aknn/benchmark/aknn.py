@@ -1,13 +1,12 @@
 """"""
 from argparse import ArgumentParser
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor, wait
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from csv import DictWriter
 from itertools import cycle
 from math import log10
 from numpy import array, mean, std, vstack, zeros_like, median
 from pprint import pformat, pprint
-from sklearn.neighbors import NearestNeighbors
 from time import time
 from urllib.parse import quote_plus
 import json
@@ -30,7 +29,7 @@ def values_to_cdf(values):
     return values_unique_sorted, prlt
 
 
-def iter_over_docs(docs_path, skip=0, stop=sys.maxsize):
+def iter_local_docs(docs_path, skip=0, stop=sys.maxsize):
     for i, line in enumerate(open(docs_path)):
         if i < skip:
             continue
@@ -40,12 +39,21 @@ def iter_over_docs(docs_path, skip=0, stop=sys.maxsize):
             break
 
 
+def iter_es_docs(es_host, es_index, es_type, query={"_source": False}):
+    from elasticsearch import Elasticsearch, helpers
+    es = Elasticsearch(es_host)
+    scroll = helpers.scan(es, query=query, index=es_index, doc_type=es_type)
+    for x in scroll:
+        yield x
+    del es  # No close() method. Guess this works.
+
+
 def aknn_create(docs_path, es_hosts, es_index, es_type, es_id, description,
                 nb_dimensions, nb_tables, nb_bits, sample_prob, sample_seed):
 
     random.seed(sample_seed)
 
-    doc_iterator = iter_over_docs(docs_path)
+    doc_iterator = iter_local_docs(docs_path)
 
     es_url = es_hosts.split(",")[0]
     req_url = "%s/_aknn_create" % es_url
@@ -77,87 +85,108 @@ def aknn_create(docs_path, es_hosts, es_index, es_type, es_id, description,
     try:
         t0 = time()
         req = requests.post(req_url, json=body)
-        pdb.set_trace()
         req.raise_for_status()
         print("Request completed in %.3lf seconds" % (time() - t0))
         pprint(req.json())
     except requests.exceptions.HTTPError as ex:
-        pdb.set_trace()
         print("Request failed", ex, file=sys.stderr)
         print(ex, file=sys.stderr)
         sys.exit(1)
 
 
 def aknn_index(docs_path, metrics_path, es_hosts, es_index, es_type, aknn_uri,
-               nb_batch, nb_total_max):
+               nb_batch, nb_total_max, skip_existing):
+
+    assert es_index.lower() == es_index, "Index must be lowercase."
+    assert es_type.lower() == es_type, "Type must be lowercase."
 
     T0 = time()
-    body = {
-        "_index": es_index,
-        "_type": es_type,
-        "_aknn_uri": aknn_uri,
-        "_aknn_docs": []
-    }
 
-    es_hosts = cycle(es_hosts.split(","))
+    es_hosts = es_hosts.split(",")
+    es_hosts_iter = cycle(es_hosts)
+    print("Using %d elasticsearch hosts" % len(es_hosts), es_hosts)
 
-    # Prepare metrics csv writer.
-    fp_metrics = open(metrics_path, "w")
-    metrics_cols = ["nb_total", "nb_batch", "request_sec", "elapsed_sec"]
-    metrics_writer = DictWriter(fp_metrics, metrics_cols)
-    metrics_writer.writeheader()
-    metrics_row = {x: 0 for x in metrics_cols}
+    # Get the existing ids from the
+    ids_in_index = set([])
+    if skip_existing:
+        for doc in iter_es_docs(next(es_hosts_iter), es_index, es_type):
+            ids_in_index.add(doc["_id"])
+        print("Found %d existing ids" % len(ids_in_index))
 
-    # Get number of documents for this index/type.
-    nb_existing_url = "%s/%s/%s/_count" % (next(es_hosts), es_index, es_type)
-    try:
-        req = requests.get(nb_existing_url)
-        req.raise_for_status()
-        nb_existing = req.json()["count"]
-    except requests.exceptions.HTTPError as ex:
-        print("Request for existing count failed", ex, file=sys.stderr)
-        nb_existing = 0
+    # Based on number already in index, determine how many more to index.
+    nb_total_rem = nb_total_max - len(ids_in_index)
+    print("Indexing %d new documents" % nb_total_rem)
 
-    # Skip the existing documents in the file.
-    print("Skipping %d existing docs" % nb_existing)
-    print("Indexing %d new docs" % (nb_total_max - nb_existing))
-    doc_iterator = iter_over_docs(docs_path, nb_existing, nb_total_max)
+    # Simple iterator over local documents.
+    doc_iterator = iter_local_docs(docs_path)
 
-    for doc in doc_iterator:
-        body["_aknn_docs"].append(doc)
+    # Keep a body for each host.
+    bodies = {
+        h: {
+            "_index": es_index,
+            "_type": es_type,
+            "_aknn_uri": aknn_uri,
+            "_aknn_docs": []
+        } for h in es_hosts}
 
-        if len(body["_aknn_docs"]) == nb_batch:
-            print("Posting %d docs: [%s ... %s]" % (
-                nb_batch, body["_aknn_docs"][0]["_id"], body["_aknn_docs"][-1]["_id"]))
-            t0 = time()
-            try:
-                req_url = "%s/_aknn_index" % next(es_hosts)
-                pdb.set_trace()
-                req = requests.post(req_url, json=body)
-                req.raise_for_status()
-            except requests.exceptions.HTTPError as ex:
-                print("Request failed", file=sys.stderr)
-                print(ex, file=sys.stderr)
-                sys.exit(1)
-            body["_aknn_docs"] = []
-            metrics_row["nb_total"] += nb_batch
-            metrics_row["nb_batch"] = nb_batch
-            metrics_row["request_sec"] = round(time() - t0, 5)
-            metrics_row["elapsed_sec"] = round(time() - T0, 5)
-            metrics_writer.writerow(metrics_row)
-            print(metrics_row)
+    nb_round_robin_rem = len(es_hosts) * nb_batch
+
+    # Thread pool for parallelized round-robin requests.
+    tpool = ThreadPoolExecutor(max_workers=len(es_hosts))
+
+    while nb_total_rem > 0:
+
+        # Skip include duplicate docs.
+        doc = next(doc_iterator)
+        if doc["_id"] in ids_in_index:
+            continue
+
+        # Add a new doc to the next hosts payload and decrement counters.
+        bodies[next(es_hosts_iter)]["_aknn_docs"].append(doc)
+        nb_round_robin_rem -= 1
+        nb_total_rem -= 1
+
+        # Keep populating payloads if satisfying...
+        if nb_round_robin_rem > 0 and nb_total_rem > 0:
+            continue
+
+        # Send each host the payload that it accumulated. Keep result as future.
+        futures = []
+        for h in es_hosts:
+            body = bodies[h]
+            url = "%s/_aknn_index" % h
+            print("Sending %d docs to host %s" % (len(body["_aknn_docs"]), h))
+            futures.append(tpool.submit(requests.post, url, json=body))
+
+        # Iterate over the futures and print each host's response.
+        # Error if any of the hosts return non-200 status.
+        for f, h in zip(as_completed(futures), es_hosts):
+            print("Response from host %s:" % h, f.result().json())
+            assert f.result().status_code == 200, "Error at host %s" % h
+
+        # Reset counter and empty payloads.
+        nb_round_robin_rem = len(es_hosts) * nb_batch
+        for h in es_hosts:
+            bodies[h]["_aknn_docs"] = []
+
+        print("Total indexed docs = %d, seconds elapsed = %d" % (
+            nb_total_max - nb_total_rem, time() - T0))
 
 
-def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type, nb_measured,
-                k1, k2, sample_seed):
-    """Compare the distribution of euclidean distances returned for an exact
-    KNN and for various settings of Elasticsearch-Aknn."""
+def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type,
+                nb_measured, k1, k2, sample_seed):
+    """Compute recall for exact KNN and several settings of approximate KNN."""
 
+    from sklearn.neighbors import NearestNeighbors
+    import matplotlib
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     random.seed(sample_seed)
 
+    es_hosts = cycle(es_hosts.split(","))
+
     # Get number of documents for this index/type.
-    nb_existing_url = "%s/%s/%s/_count" % (es_hosts, es_index, es_type)
+    nb_existing_url = "%s/%s/%s/_count" % (next(es_hosts), es_index, es_type)
     try:
         req = requests.get(nb_existing_url)
         req.raise_for_status()
@@ -172,7 +201,7 @@ def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type, nb_measured
     # Compile all ids and vectors from elasticsearch into a numpy array.
     print("Reading first %d ids and vectors into memory" % nb_existing)
     ids, vecs = [], []
-    for doc in iter_over_docs(docs_path, 0, nb_existing):
+    for doc in iter_local_docs(docs_path, 0, nb_existing):
         ids.append(doc["_id"])
         vecs.append(array(doc["_source"]["_aknn_vector"]).astype('float32'))
     vecs = vstack(vecs)
@@ -184,29 +213,34 @@ def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type, nb_measured
     boxplot_data = []
     thread_pool = ThreadPoolExecutor(max_workers=20)
 
+    print("Computing exact KNN")
+    knn = NearestNeighbors(k2, algorithm='brute',
+                           metric='euclidean').fit(vecs)
+    nbrs_inds = knn.kneighbors(vecs[measured_ind], return_distance=False)
+    id_to_nbr_ids = {}
+    for id_, nbrs_inds_ in zip(measured_ids, nbrs_inds):
+        id_to_nbr_ids[id_] = [ids[i] for i in nbrs_inds_]
+
+    boxplot_data = []
+
     for k1_ in map(int, k1.split(",")):
 
-        print("Computing approximate KNN for k1=%d" % k1_)
+        print("Searching approximate KNN for k1=%d" % k1_)
         search_urls = []
         for i, id_ in enumerate(measured_ids):
             search_urls.append(
                 "%s/%s/%s/%s/_aknn_search?k1=%d&k2=%d" % (
-                    es_hosts, es_index, es_type, quote_plus(id_), k1_, k2))
+                    next(es_hosts), es_index, es_type, quote_plus(id_), k1_, k2))
 
         reqs = list(thread_pool.map(requests.get, search_urls))
-        dd = []
-        for i, req in enumerate(reqs):
-            dd += [x["_score"] for x in req.json()["hits"]["hits"][1:]]
+        recalls = []
+        for id_, req in zip(measured_ids, reqs):
+            nbr_ids_exact = id_to_nbr_ids[id_]
+            nbr_ids_approx = [x["_id"] for x in req.json()["hits"]["hits"]]
+            nb_intersect = len(set(nbr_ids_exact).intersection(nbr_ids_approx))
+            recalls.append(nb_intersect / k2)
 
-        print("Approx mean, std = (%.3lf, %.3lf)" % (mean(dd), std(dd)))
-        boxplot_data.append(dd)
-
-    print("Computing exact KNN")
-    knn = NearestNeighbors(k2, algorithm='brute', metric='euclidean').fit(vecs)
-    dd, _ = knn.kneighbors(vecs[measured_ind], return_distance=True)
-    dd = dd[:, 1:].ravel().tolist()
-    print("Exact mean, std =  (%.3lf, %.3lf)" % (mean(dd), std(dd)))
-    boxplot_data.append(dd)
+        boxplot_data.append(recalls)
 
     plt.figure(figsize=(20, 10))
     plt.grid(True)
@@ -224,17 +258,16 @@ def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type, nb_measured
         for x in bp[k]:
             x.set(linewidth=4)
 
-    xticks = ["$10^%d$" % log10(int(x)) for x in k1.split(",") + [nb_existing]]
+    xticks = ["$10^%d$" % log10(int(x)) for x in k1.split(",")]
     plt.xticks(range(1, len(boxplot_data) + 1), xticks, fontsize=15)
     plt.yticks(fontsize=15)
     plt.xlabel("\nNumber of Distance Computations", size=18)
-    plt.ylabel("Euclidean Distance to Neighbors", size=18)
-    plt.title("For each of %d vectors, find the %d nearest neighbors in a corpus of $10^%d$ vectors" % (
-        nb_measured, k2, log10(nb_existing)), size=22, y=1.03)
+    plt.ylabel("Recall @ %d" % k2, size=18)
 
     fig_path = "%s/recall_boxplot.png" % metrics_dir
     plt.savefig(fig_path, bbox_inches='tight', pad_inches=0.1)
     print("Saved figure at %s" % fig_path)
+
 
 if __name__ == "__main__":
 
@@ -242,7 +275,8 @@ if __name__ == "__main__":
     ap.add_argument("-e", "--es_hosts", default="http://localhost:9200",
                     help="comma-separated list of elasticsearch endpoints")
 
-    sp_base = ap.add_subparsers(title='actions', description='Choose an action')
+    sp_base = ap.add_subparsers(
+        title='actions', description='Choose an action')
 
     sp_c = sp_base.add_parser("create")
     sp_c.set_defaults(which="create")
@@ -266,6 +300,7 @@ if __name__ == "__main__":
     sp_i.add_argument("--es_type", type=str, required=True)
     sp_i.add_argument("--nb_batch", type=int, default=5000)
     sp_i.add_argument("--nb_total_max", type=int, default=100000)
+    sp_i.add_argument("--skip_existing", action="store_true")
 
     sp_s = sp_base.add_parser("search")
     sp_s.set_defaults(which="search")
