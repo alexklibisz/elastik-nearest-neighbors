@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Math.min;
 import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
 
@@ -117,14 +118,14 @@ public class AknnRestAction extends BaseRestHandler {
         stopWatch.start("Parse query document hashes");
         Map<String, Object> baseSource = queryGetResponse.getSource();
         @SuppressWarnings("unchecked")
-        Map<String, Integer> queryHashes = (Map<String, Integer>) baseSource.get(HASHES_KEY);
+        Map<String, Long> queryHashes = (Map<String, Long>) baseSource.get(HASHES_KEY);
         stopWatch.stop();
 
         // Retrieve the documents with most matching hashes. https://stackoverflow.com/questions/10773581
         logger.info("Build boolean query from hashes");
         stopWatch.start("Build boolean query from hashes");
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        for (Map.Entry<String, Integer> entry : queryHashes.entrySet()) {
+        for (Map.Entry<String, Long> entry : queryHashes.entrySet()) {
             String termKey = HASHES_KEY + "." + entry.getKey();
             ((BoolQueryBuilder) queryBuilder).should(QueryBuilders.termQuery(termKey, entry.getValue()));
         }
@@ -183,9 +184,12 @@ public class AknnRestAction extends BaseRestHandler {
             builder.field("took", stopWatch.totalTime().getMillis());
             builder.field("timed_out", false);
             builder.startObject("hits");
-            builder.field("total", k2);
             builder.field("max_score", 0);
-            builder.field("hits", modifiedSortedHits.subList(0, k2));
+
+            // In some cases there will not be enough approximate matches to return *k2* hits. For example, this could
+            // be the case if the number of bits per table in the LSH model is too high, over-partioning the space.
+            builder.field("total", min(k2, modifiedSortedHits.size()));
+            builder.field("hits", modifiedSortedHits.subList(0, min(k2, modifiedSortedHits.size())));
             builder.endObject();
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
@@ -314,11 +318,19 @@ public class AknnRestAction extends BaseRestHandler {
 
         logger.info("Timing summary\n {}", stopWatch.prettyPrint());
 
-        if (bulkIndexResponse.hasFailures())
+        if (bulkIndexResponse.hasFailures()) {
             logger.error("Indexing failed with message: {}", bulkIndexResponse.buildFailureMessage());
-        else
-            logger.info("Indexed {} docs successfully", docs.size());
+            return channel -> {
+                XContentBuilder builder = channel.newBuilder();
+                builder.startObject();
+                builder.field("took", stopWatch.totalTime().getMillis());
+                builder.field("error", bulkIndexResponse.buildFailureMessage());
+                builder.endObject();
+                channel.sendResponse(new BytesRestResponse(RestStatus.INTERNAL_SERVER_ERROR, builder));
+            };
+        }
 
+        logger.info("Indexed {} docs successfully", docs.size());
         return channel -> {
             XContentBuilder builder = channel.newBuilder();
             builder.startObject();
@@ -327,6 +339,11 @@ public class AknnRestAction extends BaseRestHandler {
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
         };
+
+
+
+
+
     }
 
 

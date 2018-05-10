@@ -74,12 +74,13 @@ public class LshModel {
 
     }
 
-    public Map<String, Integer> getVectorHashes(List<Double> vector) {
+    public Map<String, Long> getVectorHashes(List<Double> vector) {
 
         RealMatrix xDotNT, vectorAsMatrix;
         RealVector threshold;
-        Map<String, Integer> hashes = new HashMap<>();
-        Integer hash, i, j;
+        Map<String, Long> hashes = new HashMap<>();
+        Long hash;
+        Integer i, j;
 
         // Have to convert the vector to a matrix to support multiplication below.
         // TODO: if the List<Double> vector argument can be changed to an Array double[] or float[], this would be faster.
@@ -91,10 +92,10 @@ public class LshModel {
         for (i = 0; i < nbTables; i++) {
             xDotNT = vectorAsMatrix.multiply(normalsTransposed.get(i));
             threshold = thresholds.get(i);
-            hash = 0;
+            hash = 0L;
             for (j = 0; j < nbBitsPerTable; j++)
                 if (xDotNT.getEntry(0, j) > threshold.getEntry(j))
-                    hash += (int) Math.pow(2, j);
+                    hash += (long) Math.pow(2, j);
             hashes.put(i.toString(), hash);
         }
 
