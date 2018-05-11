@@ -12,18 +12,15 @@ if "ESHOSTS" in os.environ:
 
 SAFE_RANDOM_IDS = cycle([
     "991422991845163009",
+    "988567576799272960",
+    "992424335796125697",
+    "990177895921344514",
     "988992585619259392",
-    "990847227139588098",
-    "988679879297122305",
-    "990464966661521408",
-    "992340839773941760",
-    "988406272255934464",
-    "989808423880437762",
-    "991128769820753921",
-    "989191500478070784",
-    "990250721638604801",
-    "990105758103580673",
-    "988766621685637122"
+    "990790859904794626",
+    "989815445132750849",
+    "991408722823000065",
+    "990656344377167872",
+    "988552330512687104"
 ])
 
 app = Flask(__name__)
@@ -64,7 +61,7 @@ def images(es_index, es_type, es_id):
 
     # Get the nearest neighbors for the query image, which includes the image.
     image_id = request.args.get("image_id")
-    req_url = "%s/%s/%s/%s/_aknn_search?k1=500&k2=10" % (
+    req_url = "%s/%s/%s/%s/_aknn_search?k1=100&k2=10" % (
         next(ESHOSTS), es_index, es_type, es_id)
     req = requests.get(req_url)
     hits = req.json()["hits"]["hits"]
