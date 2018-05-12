@@ -171,7 +171,7 @@ def aknn_index(docs_path, es_hosts, es_index, es_type, aknn_uri,
                 print("Error at host %s" % h, res.json(), file=sys.stderr)
                 sys.exit(1)
             print("Response from host %s:" % h, res.json())
-            
+
         # Reset counter and empty payloads.
         nb_round_robin_rem = len(es_hosts) * nb_batch
         for h in es_hosts:
@@ -338,7 +338,7 @@ def aknn_recall(docs_path, metrics_dir, es_hosts, es_index, es_type,
 if __name__ == "__main__":
 
     ap = ArgumentParser(description="Elasticsearch-Aknn CLI")
-    ap.add_argument("-e", "--es_hosts", default="http://localhost:9200",
+    ap.add_argument("--es_hosts", default="http://localhost:9200",
                     help="comma-separated list of elasticsearch endpoints")
 
     sp_base = ap.add_subparsers(
@@ -354,7 +354,7 @@ if __name__ == "__main__":
     sp_c.add_argument("--es_id", type=str, required=True)
     sp_c.add_argument("--description", type=str, required=True)
     sp_c.add_argument("--nb_dimensions", type=int, required=True)
-    sp_c.add_argument("--nb_tables", type=int, default=16)
+    sp_c.add_argument("--nb_tables", type=int, default=50)
     sp_c.add_argument("--nb_bits", type=int, default=16)
 
     sp_i = sp_base.add_parser("index")
