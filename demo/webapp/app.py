@@ -10,17 +10,33 @@ ESHOSTS = cycle(["http://localhost:9200"])
 if "ESHOSTS" in os.environ:
     ESHOSTS = cycle(os.environ["ESHOSTS"].split(","))
 
-SAFE_RANDOM_IDS = cycle([
-    "991422991845163009",
-    "988567576799272960",
-    "992424335796125697",
-    "990177895921344514",
-    "988992585619259392",
-    "990790859904794626",
-    "989815445132750849",
-    "991408722823000065",
-    "990656344377167872",
-    "988552330512687104"
+DEMO_IDS = cycle([
+
+    "988221425063530502",       # Mountain scenery
+    "990013386929917953",       # Car
+    "991780208138055681",       # Screenshot
+    "989646964148133889",       # Male actors (DiCaprio)
+    "988889393158115329",       # Male athlete (C. Ronaldo)
+    "988487255877718017",       # Signs
+    "991004064748978177",       # Female selfie
+    "988237522810503168",       # Cartoon character
+    "989808637773135873",       # North/south Korean politicians
+    "989144784341229568",       # Leo Messi
+    "989655776363921409",       # Dog
+    "991484266415443968",       # Some kids playing with a racoon
+
+
+    # "991422991845163009",
+    # "988567576799272960",
+    # "992424335796125697",
+    # "990177895921344514",
+    # "988992585619259392",
+    # "990790859904794626",
+    # "989815445132750849",
+    # "991408722823000065",
+    # "990656344377167872",
+    # "988552330512687104",
+
 ])
 
 app = Flask(__name__)
@@ -33,9 +49,6 @@ def index():
 
 @app.route("/<es_index>/<es_type>/<es_id>")
 def images(es_index, es_type, es_id):
-
-    if es_id.lower() == "random":
-        es_id = next(SAFE_RANDOM_IDS)
 
     # Fetch 10 random images for bottom carousel.
     body = {
@@ -53,6 +66,11 @@ def images(es_index, es_type, es_id):
     req_url = "%s/%s/%s/_search" % (next(ESHOSTS), es_index, es_type)
     req = requests.get(req_url, json=body)
     random_imgs = req.json()["hits"]["hits"]
+
+    if es_id.lower() == "random":
+        es_id = random_imgs[0]["_id"]
+    elif es_id.lower() == "demo":
+        es_id = next(DEMO_IDS)
 
     # Get number of docs in corpus.
     req_url = "%s/%s/%s/_count" % (next(ESHOSTS), es_index, es_type)
