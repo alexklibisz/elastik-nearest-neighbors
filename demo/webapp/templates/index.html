@@ -28,10 +28,10 @@
 		}
 
 		#random_imgs img {
-			float: left;
 			object-fit: cover;
-			width:28px;
-			height:28px;	
+			width:30px;
+			height:30px;
+			padding:1px;
 		}
 
     </style>
@@ -84,13 +84,13 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<hr>
-				<small>Random images...</small>
 				<div id="random_imgs">
 					{% for img in random_imgs %}
 					<a href='/{{es_index}}/{{es_type}}/{{img["_id"]}}'>
 						<img src='{{img["_source"]["s3_url"]}}'/>
 					</a>
 					{% endfor %}
+					<a href='/{{es_index}}/{{es_type}}/random'>Random</a>
 				</div>
 			</div>
 		</div>
