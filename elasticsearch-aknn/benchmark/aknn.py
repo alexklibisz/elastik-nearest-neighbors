@@ -1,17 +1,14 @@
-""""""
+"""
+This is a driver script for interacting with the Elasticsearch-Aknn plugin.
+"""
 from argparse import ArgumentParser
-from collections import Counter, OrderedDict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from csv import DictWriter
 from elasticsearch import Elasticsearch, helpers
 from itertools import cycle, product
 from more_itertools import chunked
-from math import log10
-from numpy import array, mean, std, vstack, zeros_like, median
 from pprint import pformat, pprint
 from sklearn.neighbors import NearestNeighbors
 from time import time, sleep
-from tqdm import tqdm
 from urllib.parse import quote_plus
 import elasticsearch
 import json
@@ -24,6 +21,8 @@ import sys
 
 
 def iter_local_docs(docs_path, skip=0, stop=sys.maxsize):
+    """Iterate over docs stored in a local file.
+    Docs should be JSON formatted, one per line in the file."""
     for i, line in enumerate(open(docs_path)):
         if i < skip:
             continue
@@ -34,6 +33,7 @@ def iter_local_docs(docs_path, skip=0, stop=sys.maxsize):
 
 
 def iter_es_docs(es_host, es_index, es_type, query={"_source": False}):
+    """Iterate over docs stored in elasticsearch."""
     es = Elasticsearch(es_host)
     scroll = helpers.scan(es, query=query, index=es_index, doc_type=es_type)
     try:
@@ -84,7 +84,7 @@ def aknn_create(docs_path, es_hosts, es_index, es_type, es_id, description, nb_d
             body["_aknn_vector_sample"].append(doc["_source"]["_aknn_vector"])
 
     print("Collected samples with mean %.3lf, standard deviation %.3lf" % (
-        mean(body["_aknn_vector_sample"]), std(body["_aknn_vector_sample"])))
+        np.mean(body["_aknn_vector_sample"]), np.std(body["_aknn_vector_sample"])))
 
     print("Posting to Elasticsearch")
     try:
@@ -186,7 +186,7 @@ def aknn_index(docs_path, es_hosts, es_index, es_type, aknn_uri, nb_batch, nb_to
     count_url = "%s/%s/%s/_count" % (next(es_hosts_c), es_index, es_type)
     count, t0 = 0, time()
     while count < nb_total_max:
-        if time() - t0 > 20:
+        if time() - t0 > 30:
             print("Timed out", sys.stderr)
             sys.exit(1)
         count = requests.get(count_url).json()["count"]
@@ -229,7 +229,7 @@ def aknn_search(es_hosts, es_index, es_type, es_ids, k1, k2, nb_requests, nb_wor
     return times, hits
 
 
-def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_eval, k2, confirm_destructive):
+def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_batch, nb_eval, k2, confirm_destructive):
 
     # Running this part of the script requires deleting and re-creating multiple indexes.
     # This could mess up the user's existing indexes and documents, so make
@@ -241,6 +241,8 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_eval, k2,
             print("Exiting", file=sys.stderr)
             sys.exit(1)
 
+    T0 = time()
+
     # Define structure for metrics file.
     metrics = {
         "nb_docs": 0,
@@ -248,7 +250,7 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_eval, k2,
         "nb_bits": 0,
         "k1": 0,
         "k2": k2,
-        "index_nb_batch": 10000,
+        "nb_batch": nb_batch,
         "index_times": [],
         "search_times": [],
         "search_ious": []
@@ -261,15 +263,19 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_eval, k2,
     # Define model index/type and vectors' index/type.
     model_index = "bench_aknn_models"
     model_type = "aknn_model"
-    vecs_index = None  # Set below..
+    vecs_index = "vecs"  # Set below..
     vecs_type = "vec"
 
     # Define the space of parameters to test. If you change any of these
     # parameters, it's safest to delete all of the metrics files.
-    nb_docs_space = [10 ** 4, 10 ** 5, 10 ** 6, int(1.5 * (10 ** 6))]
+    nb_docs_space = [10 ** 4, 10 ** 5, int(5 * 10**5), 10 ** 6]
     nb_tables_space = [10, 50, 100, 200]
-    nb_bits_space = [8, 12, 16, 22]
+    nb_bits_space = [8, 14, 19]
     k1_space = [int(k2 * 1.5), k2 * 10, k2 * 100]
+
+    # One test for each combination of parameters.
+    nb_tests_total = len(nb_tables_space) * len(nb_bits_space) * len(nb_docs_space) * len(k1_space)
+    nb_tests_done = 0
 
     # For efficiency nb_docs should be sorted.
     assert nb_docs_space == sorted(nb_docs_space)
@@ -280,7 +286,6 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_eval, k2,
     for nb_tables, nb_bits in product(nb_tables_space, nb_bits_space):
 
         # Delete all of the existing vectors for this (tables, bits) config.
-        vecs_index = "vecs_%d_%d" % (nb_tables, nb_bits)
         rq = requests.delete("%s/%s" % (next(es_hosts_c), vecs_index))
 
         # Create an aknn model for this config.
@@ -313,6 +318,7 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_eval, k2,
                 skip = skip and os.path.exists(get_metrics_path(metrics))
 
             if skip:
+                nb_tests_done += len(k1_space)
                 continue
 
             # Incremental indexing.
@@ -322,11 +328,11 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_eval, k2,
                 es_index=vecs_index,
                 es_type=vecs_type,
                 aknn_uri="%s/%s/%s" % (model_index, model_type, model_id),
-                nb_batch=metrics["index_nb_batch"],
+                nb_batch=metrics["nb_batch"],
                 nb_total_max=nb_docs,
                 skip_existing=True)
 
-            print("Collecting %d ids and vectors" % (nb_docs))
+            print("Collecting %d ids and vectors for exact KNN" % (nb_docs))
             ids, vecs = [], np.zeros((nb_docs, nb_dimensions), dtype="float32")
             for doc in iter_es_docs(
                     es_host=next(es_hosts_c),
@@ -371,10 +377,15 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_eval, k2,
                         len(a.intersection(b)) / len(a.union(b)))
 
                 # Write results to file.
-                s = "Saving metrics to %s" % get_metrics_path(metrics)
-                print("%s\n%s\n%s" % ("-" * len(s), s, "-" * len(s)))
+                s1 = "Saving metrics to %s" % get_metrics_path(metrics)
+                print("%s\n%s" % ("-" * len(s1), s1))
                 with open(get_metrics_path(metrics), "w") as fp:
                     json.dump(metrics, fp)
+
+                nb_tests_done += 1
+                s2 = "Completed %d of %d tests in %d minutes" % (
+                    nb_tests_done, nb_tests_total, (time() - T0) / 60)
+                print("%s\n%s" % (s2, "-" * len(s1)))
 
 
 if __name__ == "__main__":
@@ -413,8 +424,9 @@ if __name__ == "__main__":
     sp.set_defaults(which="benchmark")
     sp.add_argument("docs_path", type=str)
     sp.add_argument("--metrics_dir", type=str, default="metrics")
-    sp.add_argument("--nb_dimensions", type=int, default=300)
+    sp.add_argument("--nb_dimensions", type=int, default=25)
     sp.add_argument("--nb_eval", type=int, default=500)
+    sp.add_argument("--nb_batch", type=int, default=25000)
     sp.add_argument("--k2", type=int, default=10)
     sp.add_argument("--confirm_destructive", action="store_true")
 
