@@ -1,2 +1,2 @@
 # Ignore scratch files for repo language statistics.
-scratch linguist-detectable=false
+scratch/* linguist-detectable=false
