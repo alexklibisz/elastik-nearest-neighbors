@@ -179,9 +179,14 @@ EsAknn's speed is generally characterized:
 1. Create a new LSH model: < 1 minute.
 2. Index new vectors: hundreds to low thousands per second.
 3. Search for a vector's neighbors: < 500 milliseconds. Search time scales 
-sub-linearly with the size of the corpus.
+sub-linearly with the size of the corpus. 
 
-Beyond that, speed depends on:
+The corpus vs. search time is shaped like this across all configurations:
+
+<img src="elasticsearch-aknn/benchmark/metrics/corpus_vs_time.png"
+height=300 width=auto/>
+
+Beyond that, speed is a function of:
 
 1. The vectors' dimensionality.
 2. The number of tables (a.k.a. hash functions or trees) in the LSH model.
@@ -198,9 +203,17 @@ Recall is defined as the proportion of true nearest neighbors returned for
 a search and can be evaluated at various values of `k2`. Similar to speed, 
 recall depends on the data and LSH configuration. Increasing `k1` is typically 
 the best way to increase recall, but the number of tables and bits also play 
-a subtle but important role. Finding a configuration that satisfies both recall
+an important role. Finding a configuration that satisfies both recall
 and search time requirements can be considered a hyperparameter optimization
-problem.
+problem. 
+
+The figure below demonstrates that it is possible to find a high-recall,
+low search-time configuration for various sized corpuses. Note that the
+figure actually measures Intersection over Union, not recall. This is a 
+similar metric, but the figure will be updated to show recall ASAP.
+
+<img src="elasticsearch-aknn/benchmark/metrics/recall_vs_time.png"
+height=300 width=auto/>
 
 ## Image Processing Pipeline
 

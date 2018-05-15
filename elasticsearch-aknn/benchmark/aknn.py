@@ -145,11 +145,6 @@ def aknn_index(docs_path, es_hosts, es_index, es_type, aknn_uri, nb_batch, nb_to
         if doc["_id"] in skip_ids:
             continue
 
-        # There are some oddball words in there... ES technically has
-        # a limit at strings with length 512 being used for IDs.
-        if len(doc["_id"]) > 50:
-            continue
-
         # Add a new doc to the payload and decrement counters.
         docs_batch.append(doc)
         nb_total_rem -= 1
@@ -221,8 +216,7 @@ def aknn_search(es_hosts, es_index, es_type, es_ids, k1, k2, nb_requests, nb_wor
                   file=sys.stderr)
             continue
         if i == 0:
-            sim_ids = [h["_id"] for h in res.json()["hits"]["hits"]]
-            print("Example response: %s" % ", ".join(sim_ids))
+            print("Example response: %s" % pformat(res.json()["hits"]["hits"]))
         times.append(res.json()["took"])
         hits.append(res.json()["hits"]["hits"])
 

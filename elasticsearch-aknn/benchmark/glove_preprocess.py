@@ -10,14 +10,12 @@ re_letters_only = re.compile("[^a-zA-Z]")
 
 for i, line in enumerate(open(sys.argv[1])):
     tkns = line.split(" ")
-    word = quote_plus(unidecode(tkns[0]))
-    if word != tkns[0]:
-        word = "word-%d" % i
+    word = tkns[0] 
     vector = list(map(lambda x: round(float(x), 5), tkns[1:]))
     doc = {
-        "_id": word,
+        "_id": "word_%d" % i,
         "_source": {
-            "description": "Word vector for: %s" % word,
+            "word": word,
             "_aknn_vector": vector
         }
     }
