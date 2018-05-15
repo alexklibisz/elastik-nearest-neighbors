@@ -5,7 +5,7 @@ against an external Elasticsearch node and serves a web page containing the
 results for that search, as well as several random images from the index so
 the user can continue browsing.
 
-Usage:
+## Usage
 
 ```
 # Install Flask
