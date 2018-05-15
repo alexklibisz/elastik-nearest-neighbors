@@ -1,3 +1,2 @@
 # Ignore scratch files for repo language statistics.
-scratch/* linguist-detectable=false
 **/*.ipynb linguist-detectable=false
