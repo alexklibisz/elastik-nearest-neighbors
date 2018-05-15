@@ -7,7 +7,6 @@ from flask import Flask, request, render_template
 from itertools import cycle
 from pprint import pprint
 import os
-import pdb
 import requests
 
 # Get elasticsearch hosts from environment variable.
