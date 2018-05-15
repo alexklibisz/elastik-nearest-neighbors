@@ -211,10 +211,9 @@ def aknn_search(es_hosts, es_index, es_type, es_ids, k1, k2, nb_requests, nb_wor
     for i, f in enumerate(as_completed(futures)):
         res = f.result()
         if res.status_code != 200:
-            nb_failed += 1
             print("Error at search: %s" % search_urls[i], res.json(),
                   file=sys.stderr)
-            continue
+            sys.exit(1)
         if i == 0:
             print("Example response: %s" % pformat(res.json()["hits"]["hits"]))
         times.append(res.json()["took"])
@@ -247,7 +246,7 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_batch, nb
         "nb_batch": nb_batch,
         "index_times": [],
         "search_times": [],
-        "search_ious": []
+        "search_recalls": []
     }
 
     def get_metrics_path(m):
@@ -264,11 +263,12 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_batch, nb
     # parameters, it's safest to delete all of the metrics files.
     nb_docs_space = [10 ** 4, 10 ** 5, int(5 * 10**5), 10 ** 6]
     nb_tables_space = [10, 50, 100, 200]
-    nb_bits_space = [8, 14, 19]
+    nb_bits_space = [8, 12, 16, 20]
     k1_space = [int(k2 * 1.5), k2 * 10, k2 * 100]
 
     # One test for each combination of parameters.
-    nb_tests_total = len(nb_tables_space) * len(nb_bits_space) * len(nb_docs_space) * len(k1_space)
+    nb_tests_total = len(nb_tables_space) * \
+        len(nb_bits_space) * len(nb_docs_space) * len(k1_space)
     nb_tests_done = 0
 
     # For efficiency nb_docs should be sorted.
@@ -341,7 +341,8 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_batch, nb
             vecs_sample = vecs[ii]
 
             print("Running exact KNN")
-            model = NearestNeighbors(k2 + 1, metric="euclidean", algorithm="brute")
+            model = NearestNeighbors(
+                k2 + 1, metric="euclidean", algorithm="brute")
             model.fit(vecs)
             nbrs_exact = model.kneighbors(vecs_sample, return_distance=False)
 
@@ -363,12 +364,15 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_batch, nb
                     nb_workers=1)
 
                 # Compute recall for each set of hits.
-                metrics["search_ious"] = []
+                metrics["search_recalls"] = []
                 for i in range(len(ids_sample)):
-                    a = set([ids[i] for i in nbrs_exact[i]])
-                    b = set([h["_id"] for h in search_hits[i]])
-                    metrics["search_ious"].append(
-                        len(a.intersection(b)) / len(a.union(b)))
+                    a = [ids[i] for i in nbrs_exact[i]]
+                    b = [h["_id"] for h in search_hits[i]]
+                    assert a[0] == b[0] == ids_sample[i], \
+                        "Zeroth values not matching: %s, %s, %s" % (
+                        a[0], b[0], ids_sample[i])
+                    metrics["search_recalls"].append(
+                        len(np.intersect1d(a[1:], b[1:])) / k2)
 
                 # Write results to file.
                 s1 = "Saving metrics to %s" % get_metrics_path(metrics)

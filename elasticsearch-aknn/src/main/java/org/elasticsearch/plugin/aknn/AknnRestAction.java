@@ -110,15 +110,19 @@ public class AknnRestAction extends BaseRestHandler {
 
         logger.info("Get query document at {}/{}/{}", index, type, id);
         stopWatch.start("Get query document");
-        GetResponse queryGetResponse = client.prepareGet(index, type, id)
-                .setFetchSource(HASHES_KEY, "").get();
+        GetResponse queryGetResponse = client.prepareGet(index, type, id).get();
+        Map<String, Object> baseSource = queryGetResponse.getSource();
         stopWatch.stop();
 
         logger.info("Parse query document hashes");
         stopWatch.start("Parse query document hashes");
-        Map<String, Object> baseSource = queryGetResponse.getSource();
         @SuppressWarnings("unchecked")
         Map<String, Long> queryHashes = (Map<String, Long>) baseSource.get(HASHES_KEY);
+        stopWatch.stop();
+
+        stopWatch.start("Parse query document vector");
+        @SuppressWarnings("unchecked")
+        List<Double> queryVector = (List<Double>) baseSource.get(VECTOR_KEY);
         stopWatch.stop();
 
         // Retrieve the documents with most matching hashes. https://stackoverflow.com/questions/10773581
@@ -140,14 +144,6 @@ public class AknnRestAction extends BaseRestHandler {
                 .setQuery(queryBuilder)
                 .setSize(k1)
                 .get();
-        stopWatch.stop();
-
-        // The zeroth search hit is going to be the query document; parse its vector.
-        logger.info("Parse query document vector");
-        stopWatch.start("Parse query document vector");
-        @SuppressWarnings("unchecked")
-        List<Double> queryVector = (List<Double>) approximateSearchResponse.getHits()
-                .getAt(0).getSourceAsMap().get(VECTOR_KEY);
         stopWatch.stop();
 
         // Compute exact KNN on the approximate neighbors.

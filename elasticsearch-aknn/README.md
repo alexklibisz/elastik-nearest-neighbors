@@ -1,28 +1,27 @@
 # Elasticsearch-Aknn
 
-Elasticsearch plugin for approximate K-nearest-neighbor queries on dense vectors using locality sensitive hashing.
+Elasticsearch plugin for approximate K-nearest-neighbor queries on dense vectors 
+using locality sensitive hashing.
 
-## Usage
-
-### Build and Install
-
-For now, see commands in `testplugin.sh` script.
-
-### Create Aknn Model
-
-### Index a new Vector
-
-### Nearest-neighbors Query
+This plugin is still very much a work in progress. See the `testplugin.sh`
+script for an outline of building/installing the plugin.
 
 ## TODO
 
-- Double and triple check type overflows for the hashes... I found an overflow bug when using a 32-bit hash. Maybe should just switch hash types to larger type than Integer by defualt (e.g. Long). Not sure if that makes a difference in terms of elasticsearch storage overhead.
-- Document API endpoints in the README. There are only three, and they are already implicitly documented in the Python scripts in the benchmarks directory above this directory.
-- Clean up the many different conversions from JSON lists of lists of floating point numbers, to Java `List<List<Double>>`, to Java `double[][]`, to Apache Commons Math `RealMatrix`.
-- Clean up code to pass default compilation checks for Elasticsearch gradle plugin.
-- Add abstractions that remove some of the bloat from `AknnRestAction.java` class.
-- Consider switching the `_aknn_index` endpoint to an ingest processor. When inserting large batches, the POST request can take tens of seconds. E.g., for 10K new 300-dimensional vectors, it takes ~25 seconds. 
-- Enforce an explicit mapping for new Aknn models stored in Elasticsearch. For example, the continuous hyperplanes should not be indexed. 
-- Enforce an explicit mapping for new vector documents stored in Elasticsearch. For example, the continuous vectors should not be indexed.
-- Cache the Aknn model by its URI, so that it doesn't have to be requested and deserialized for every new batch of documents. Perhaps add a `bust_cache` flag to the `_aknn_index` endpoint which would force the server to re-GET the Aknn model document.
-- Error check the indexing to prevent silent failures. For example, I tried to create a document with a non-lowercase index; Elasticsearch failed to index the document, but it still returned 200.
+1. Implement integration tests. It looks like Elasticsearch has some nice
+integration testing functionality. I initially didn't have time to learn it 
+while I was prototyping.
+2. Add proper error checking and error responses to the endpoints to prevent
+silent/ambiguous errors. For example, Elasticsearch prevents lowercase index
+names and fails to index such a document, but the endpoint still returns 200.
+3. Clean up the JSON <-> POJO serialization and deserialization, especially
+the conversion of JSON lists of lists to Java `List<List<double>>` to 
+Java `Double [][]` to `RealMatrix`.
+4. Enforce an explicit mapping and types for new Aknn LSH models. For example, the LSH
+hyperplanes should not be indexed and can likely be stored as `half_float` / Java `float`)
+to save space / network latency.
+5. Enforce an explicit mapping and types for `_aknn_vector` and `_aknn_hashes`
+entries. For example, `_aknn_vector` should not be indexed and can likley be
+stored as a `half_float` / Java `float`.
+6. Determine a proper place for defining/changing plugin configurations. For
+example, the name of the vector and hashes items.
