@@ -7,32 +7,32 @@
 	<link rel="stylesheet" href="https://bootswatch.com/4/journal/bootstrap.css">
 
 	<style>
-		.container {
-			padding: 1em 0;
-		}
-		img {
-			border: 2px solid black;
-			padding: 1px;
-		}
-		#query_img img {
-			object-fit: cover;
-			max-width: 90%;
-			height: 500px;
-		}
-		#neighbor_imgs img {
-			object-fit: cover;
-			width:180px;
-			height:180px;
-		}
+	.container {
+		padding: 1em 0;
+	}
+	img {
+		border: 2px solid black;
+		padding: 1px;
+	}
+	#query_img img {
+		object-fit: cover;
+		max-width: 90%;
+		height: 500px;
+	}
+	#neighbor_imgs img {
+		object-fit: cover;
+		width:180px;
+		height:180px;
+	}
 
-		#random_imgs img {
-			object-fit: cover;
-			width:30px;
-			height:30px;
-			padding:1px;
-		}
+	#random_imgs img {
+		object-fit: cover;
+		width:30px;
+		height:30px;
+		padding:1px;
+	}
 
-    </style>
+</style>
 
 </head>
 
@@ -42,67 +42,66 @@
 			<div class="row">
 				<div class="col-lg-7">
 					<h1>Twitter Image Similarity Search</h1>
-                </div>
-                <div class="col-lg-5">
-                    <p>Built by Alex Klibisz at Insight Data Engineering
-                    <br/>
-                    <a href="https://github.com/alexklibisz/elastik-nearest-neighbors#elastik-nearest-neighbors">
-                    View Project on Github</a></p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <hr>
-					<h3>Searched <span class="badge badge-primary">{{count}} images</span> in 
-                    <span class="badge badge-primary">{{took_ms}} milliseconds</span></h3>
-                    <hr>
 				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-lg-6">
-				<h3>Query Image</h3>
-				<small><a href='{{query_img["_source"]["twitter_url"]}}' target="_blank">
-					View the original Tweet</a></small>
-				<hr>
-				<div id="query_img">
-					<img src='{{query_img["_source"]["s3_url"]}}'/>
-				</div>
-			</div>
-			<div class="col-lg-6">
-				<h3>Nearest Neighbors</h3>
-                <small>Click an image to retrieve its nearest neighbors</small>
-				<hr>
-				<div class="row" id="neighbor_imgs">
-				{% for img in neighbor_imgs %}
-					<div class="col-lg-4">
-						<a href='/{{es_index}}/{{es_type}}/{{img["_id"]}}'>
-							<img src='{{img["_source"]["s3_url"]}}'/>
-						</a>
+				<div class="col-lg-5">
+					<p>Built by Alex Klibisz at Insight Data Engineering
+						<br/>
+						<a href="https://github.com/alexklibisz/elastik-nearest-neighbors#elastik-nearest-neighbors">
+						View Project on Github</a></p>
 					</div>
-				{% endfor %}
 				</div>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col-lg-12">
-				<hr>
-                <p>Random sample of images from the index.
-                <a href="/{{es_index}}/{{es_type}}/random">Show me another random image!</a></p>
-				<div id="random_imgs">
-					{% for img in random_imgs %}
-					<a href='/{{es_index}}/{{es_type}}/{{img["_id"]}}'>
-						<img src='{{img["_source"]["s3_url"]}}'/>
-					</a>
-					{% endfor %}
+				<div class="row">
+					<div class="col-lg-12">
+						<hr>
+						<h3>Searched <span class="badge badge-primary">{{count}} images</span> in 
+							<span class="badge badge-primary">{{took_ms}} milliseconds</span></h3>
+							<hr>
+						</div>
+					</div>
 				</div>
+
+				<div class="row">
+					<div class="col-lg-6">
+						<h3>Query Image</h3>
+						<small><a href='{{query_img["_source"]["twitter_url"]}}' target="_blank">
+						View the original Tweet</a></small>
+						<hr>
+						<div id="query_img">
+							<img src='{{query_img["_source"]["s3_url"]}}'/>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<h3>Nearest Neighbors</h3>
+						<small>Click an image to retrieve its nearest neighbors</small>
+						<hr>
+						<div class="row" id="neighbor_imgs">
+							{% for img in neighbor_imgs %}
+							<div class="col-lg-4">
+								<a href='/{{es_index}}/{{es_type}}/{{img["_id"]}}'>
+									<img src='{{img["_source"]["s3_url"]}}'/>
+								</a>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-12">
+						<hr>
+						<p>Random sample of images from the index. <a href="/{{es_index}}/{{es_type}}/random">Show me another random image!</a></p>
+						<div id="random_imgs">
+							{% for img in random_imgs %}
+							<a href='/{{es_index}}/{{es_type}}/{{img["_id"]}}'>
+								<img src='{{img["_source"]["s3_url"]}}'/>
+							</a>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+
 			</div>
-		</div>
 
-	</div>
+		</body>
 
-</body>
-
-</html>
+		</html>
