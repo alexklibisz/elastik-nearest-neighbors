@@ -4,14 +4,14 @@
 
 ***
 
-<img src="demo/screencast.gif" height=320 width="auto"/>
-
-<small>Image similarity search demo running queries on a cluster of 4 Elasticsearch nodes</small>
+| <img src="demo/screencast.gif" height=320 width="auto"/> | 
+|---| 
+| *Image similarity search demo running searches on a cluster of 4 Elasticsearch nodes* |
 
 ## Overview
 
 I built Elasticsearch-Aknn (EsAknn), an Elasticsearch plugin which implements 
-approximate nearest neighbors search over dense, floating-point vectors in 
+approximate K-nearest-neighbors search for dense, floating-point vectors in 
 Elasticsearch. This allows data engineers to avoid rebuilding an infrastructure 
 for large-scale KNN and instead leverage Elasticsearch's proven distributed 
 infrastructure.
