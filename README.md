@@ -1,4 +1,4 @@
-# Approximate Vector Search
+# Elastic Nearest Neighbors
 
 [Insight Data Engineering](https://www.insightdataengineering.com/) Project, Boston, April - June 2018
 
