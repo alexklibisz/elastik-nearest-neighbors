@@ -1,4 +1,5 @@
-"""Create Elasticsearch-aknn model from feature documents on disk or S3.
+"""
+Create an Elasticsearch-Aknn model from feature documents stored on disk or S3.
 """
 
 from argparse import ArgumentParser
@@ -11,7 +12,6 @@ import boto3
 import json
 import gzip
 import os
-import pdb
 import random
 import requests
 

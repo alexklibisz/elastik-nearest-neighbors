@@ -1,9 +1,18 @@
 """
-Compute features from images.
-Reads pointers to images in S3 from a Kafka Topic.
-Computes their features (labels, continuous feature vector).
-Uploads features to S3.
-Publishes pointer to features to Kafka.
+Worker to compute features from images.
+
+Input: pointers to images in S3, consumed from a Kafka topic.
+Compute: download and preprocess images, compute their features (imagenet
+    labels and 1000-dimensional floating-point feature vectors).
+Output: Upload features to S3, publish a pointer to the features to a Kafka topic.
+
+Note that this worker is heavily optimized for concurrency/parallelism:
+1. Threadpool to download images from S3 in parallel.
+2. MultiProcessing pool to resize and preprocess images for compatibility with Keras.
+3. Compute features in large batches via Keras/Tensorflow.
+4. Many instances of this worker can be run in parallel, as long as they all
+    use the same Kafka group ID.
+
 """
 
 from argparse import ArgumentParser
@@ -20,7 +29,6 @@ import boto3
 import gzip
 import json
 import numpy as np
-import pdb
 
 from keras.models import Model
 from keras.applications import MobileNet
