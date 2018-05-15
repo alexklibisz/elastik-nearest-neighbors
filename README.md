@@ -13,19 +13,20 @@
 I built Elasticsearch-Aknn (EsAknn), an Elasticsearch plugin which implements 
 approximate nearest neighbors search over dense, floating-point vectors in 
 Elasticsearch. This allows data engineers to avoid rebuilding an infrastructure 
-for large-scale KNN and instead leverage Elasticsearch's proven infrastructure.
+for large-scale KNN and instead leverage Elasticsearch's proven distributed 
+infrastructure.
 
 To demonstrate the plugin, I used it to implement an image similarity search 
-engine for a corpus of 6.7 million Twitter images. Each image was transformed 
+engine for a corpus of 6.7 million Twitter images. I transformed each image 
 into a 1000-dimensional floating-point feature vector using a convolutional 
-neural network. Elasticsearch-Aknn was used to store the vectors and search 
-for nearest neighbors on an Elasticsearch cluster.
+neural network. I used EsAknn to store the vectors and search for nearest 
+neighbors on an Elasticsearch cluster.
 
 The repository is structured:
 
-- `demo` directory: Twitter Image Similarity search pipeline and web-application.
-- `elasticsearch-aknn` directory: EsAknn implementation and benchmarks.
-- `scratch` directory: several smaller projects implemented while prototyping.
+- `demo` directory: Twitter Image Similarity search pipeline and web-application
+- `elasticsearch-aknn` directory: EsAknn implementation and benchmarks
+- `scratch` directory: several smaller projects implemented while prototyping
 
 ## Demo
 
@@ -148,8 +149,6 @@ This returns:
 }
 ```
 
-
-
 ### Implementation
 
 The key things to know about the implementation are:
@@ -166,6 +165,8 @@ efficiently indexed and retrieved in Elasticsearch.
 to find `k1` approximate nearest neighbors based on discrete hashes. It then 
 computes the exact distance to each of these approximate neighbors and returns 
 the `k2` closest. For example, you might set `k1 = 1000` and `k2 = 10`.
+6. EsAknn currently only implements euclidean distance, but any distance
+function compatible with LSH can be added.
 
 ### Performance
 
@@ -205,49 +206,51 @@ bits also play an important role. Finding a configuration to maximize
 recall and minimize search time can be considered a form of hyper-parameter 
 optimization.
 
-The figure below demonstrates that it is possible to find a high-recall,
-low search-time configuration for various sized corpuses. The points plotted
+The figure below demonstrates that it is possible to find a configuration 
+with high-recall and low search-time at various corpus sizes. The points plotted
 represent the "frontier" of recall/search-time. That is, I ran benchmarks on
 many configurations and chose the configurations with the lowest median search 
-time for each median recall.
+time for each median recall across three corpus sizes.
 
 <img src="elasticsearch-aknn/benchmark/metrics/fig_recall_vs_time.png"
 height=350 width=auto/>
 
-The table below shows the configurations that achieved the three best recalls
-for each corpus size.
+The table below shows the best configuration for each combination of corpus size, 
+median recall, median search time.
 
-|    |   Corpus size |   Med. recall |   Med. search time |   k1 |   nb_tables |   nb_bits |
-|----|---------------|---------------|--------------------|------|-------------|-----------|
-|  0 |       1000000 |          1    |                197 |  500 |         200 |        12 |
-|  1 |       1000000 |          0.9  |                110 |  500 |         100 |        12 |
-|  2 |       1000000 |          0.8  |                 65 | 1000 |          50 |        12 |
-|  3 |       1000000 |          0.7  |                 53 |  500 |          50 |        12 |
-|  4 |       1000000 |          0.6  |                 55 |  500 |          50 |        20 |
-|  5 |       1000000 |          0.4  |                 43 |  100 |          50 |        12 |
-|  6 |       1000000 |          0.3  |                 36 | 1000 |          10 |         8 |
-|  7 |       1000000 |          0.2  |                 20 |  500 |          10 |        12 |
-|  8 |       1000000 |          0.1  |                  9 |  100 |          10 |        12 |
-|  9 |       1000000 |          0    |                  7 |   15 |          10 |        12 |
-| 10 |        100000 |          1    |                 36 | 1000 |          50 |        16 |
-| 11 |        100000 |          0.9  |                 23 |  500 |          50 |        16 |
-| 12 |        100000 |          0.8  |                 26 |  500 |          50 |        20 |
-| 13 |        100000 |          0.7  |                 13 |  100 |          50 |        16 |
-| 14 |        100000 |          0.6  |                 16 |  100 |          50 |        20 |
-| 15 |        100000 |          0.5  |                 14 |  500 |          10 |         8 |
-| 16 |        100000 |          0.45 |                 24 |   15 |         100 |        16 |
-| 17 |        100000 |          0.4  |                 13 |   15 |          50 |        12 |
-| 18 |        100000 |          0.3  |                  4 |  100 |          10 |        12 |
-| 19 |        100000 |          0.2  |                  5 |  100 |          10 |        16 |
-| 20 |        100000 |          0.1  |                  2 |   15 |          10 |        16 |
-| 21 |         10000 |          1    |                  8 |  100 |         100 |        12 |
-| 22 |         10000 |          0.9  |                  5 |  100 |          50 |        12 |
-| 23 |         10000 |          0.8  |                  5 |  100 |          50 |        20 |
-| 24 |         10000 |          0.7  |                  7 |  500 |          10 |        20 |
-| 25 |         10000 |          0.6  |                  6 |   15 |         100 |        16 |
-| 26 |         10000 |          0.5  |                  3 |  100 |          10 |        12 |
-| 27 |         10000 |          0.4  |                  3 |   15 |          50 |         8 |
-| 28 |         10000 |          0.2  |                  1 |   15 |          10 |        20 |
+|    |   Corpus size |   Med. recall |   Med. search time |   k1 |   _aknn_nb_tables |   _aknn_nb_bits_per_table |
+|----|---------------|---------------|--------------------|------|-------------------|---------------------------|
+|  0 |       1000000 |          1    |                197 |  500 |               200 |                        12 |
+|  1 |       1000000 |          0.9  |                110 |  500 |               100 |                        12 |
+|  2 |       1000000 |          0.8  |                 65 | 1000 |                50 |                        12 |
+|  3 |       1000000 |          0.7  |                 53 |  500 |                50 |                        12 |
+|  4 |       1000000 |          0.6  |                 55 |  500 |                50 |                        20 |
+|  5 |       1000000 |          0.4  |                 43 |  100 |                50 |                        12 |
+|  6 |       1000000 |          0.3  |                 36 | 1000 |                10 |                         8 |
+|  7 |       1000000 |          0.2  |                 20 |  500 |                10 |                        12 |
+|  8 |       1000000 |          0.1  |                  9 |  100 |                10 |                        12 |
+|  9 |       1000000 |          0    |                  7 |   15 |                10 |                        12 |
+| 10 |        100000 |          1    |                 36 | 1000 |                50 |                        16 |
+| 11 |        100000 |          0.9  |                 23 |  500 |                50 |                        16 |
+| 12 |        100000 |          0.8  |                 26 |  500 |                50 |                        20 |
+| 13 |        100000 |          0.7  |                 13 |  100 |                50 |                        16 |
+| 14 |        100000 |          0.6  |                 16 |  100 |                50 |                        20 |
+| 15 |        100000 |          0.5  |                 14 |  500 |                10 |                         8 |
+| 16 |        100000 |          0.45 |                 24 |   15 |               100 |                        16 |
+| 17 |        100000 |          0.4  |                 13 |   15 |                50 |                        12 |
+| 18 |        100000 |          0.3  |                  4 |  100 |                10 |                        12 |
+| 19 |        100000 |          0.2  |                  5 |  100 |                10 |                        16 |
+| 20 |        100000 |          0.1  |                  2 |   15 |                10 |                        16 |
+| 21 |         10000 |          1    |                  8 |  100 |               100 |                        12 |
+| 22 |         10000 |          0.9  |                  5 |  100 |                50 |                        12 |
+| 23 |         10000 |          0.8  |                  5 |  100 |                50 |                        20 |
+| 24 |         10000 |          0.7  |                  7 |  500 |                10 |                        20 |
+| 25 |         10000 |          0.6  |                  6 |   15 |               100 |                        16 |
+| 26 |         10000 |          0.5  |                  3 |  100 |                10 |                        12 |
+| 27 |         10000 |          0.4  |                  3 |   15 |                50 |                         8 |
+| 28 |         10000 |          0.2  |                  1 |   15 |                10 |                        20 |
+
+
 ## Image Processing Pipeline
 
 ### Implementation
