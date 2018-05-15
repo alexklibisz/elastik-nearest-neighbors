@@ -1,4 +1,4 @@
-# Elastic Nearest Neighbors
+# ElastiK Nearest Neighbors
 
 [Insight Data Engineering](https://www.insightdataengineering.com/) Project, Boston, April - June 2018
 
