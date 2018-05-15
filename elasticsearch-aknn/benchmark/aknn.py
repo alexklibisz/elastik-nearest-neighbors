@@ -261,10 +261,10 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_batch, nb
 
     # Define the space of parameters to test. If you change any of these
     # parameters, it's safest to delete all of the metrics files.
-    nb_docs_space = [10 ** 4, 10 ** 5, int(5 * 10**5), 10 ** 6]
+    nb_docs_space = [10 ** 4, 10 ** 5, 10 ** 6]
     nb_tables_space = [10, 50, 100, 200]
     nb_bits_space = [8, 12, 16, 20]
-    k1_space = [int(k2 * 1.5), k2 * 10, k2 * 100]
+    k1_space = [int(k2 * 1.5), k2 * 10, k2 * 50, k2 * 100]
 
     # One test for each combination of parameters.
     nb_tests_total = len(nb_tables_space) * \
@@ -366,13 +366,13 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_batch, nb
                 # Compute recall for each set of hits.
                 metrics["search_recalls"] = []
                 for i in range(len(ids_sample)):
-                    a = [ids[i] for i in nbrs_exact[i]]
-                    b = [h["_id"] for h in search_hits[i]]
-                    assert a[0] == b[0] == ids_sample[i], \
-                        "Zeroth values not matching: %s, %s, %s" % (
-                        a[0], b[0], ids_sample[i])
-                    metrics["search_recalls"].append(
-                        len(np.intersect1d(a[1:], b[1:])) / k2)
+                    a = set([ids[i] for i in nbrs_exact[i]])
+                    b = set([h["_id"] for h in search_hits[i]])
+                    if ids_sample[i] in a and ids_sample[i] in b:
+                        a.remove(ids_sample[i])
+                        b.remove(ids_sample[i])
+                        metrics["search_recalls"].append(
+                            len(a.intersection(b)) / k2)
 
                 # Write results to file.
                 s1 = "Saving metrics to %s" % get_metrics_path(metrics)

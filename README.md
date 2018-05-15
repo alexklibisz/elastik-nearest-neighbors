@@ -169,9 +169,6 @@ the `k2` closest. For example, you might set `k1 = 1000` and `k2 = 10`.
 
 ### Performance
 
-Note: I am working on a more comprehensive benchmark for both speed and recall 
-and will update this section when it's ready.
-
 #### Speed
 
 EsAknn's speed is generally characterized:
@@ -181,9 +178,9 @@ EsAknn's speed is generally characterized:
 3. Search for a vector's neighbors: < 500 milliseconds. Search time scales 
 sub-linearly with the size of the corpus. 
 
-The corpus vs. search time is shaped like this across all configurations:
+The corpus vs. search time generally follows a sub-linear pattern like this:
 
-<img src="elasticsearch-aknn/benchmark/metrics/corpus_vs_time.png"
+<img src="elasticsearch-aknn/benchmark/metrics/fig_corpus_vs_time.png"
 height=300 width=auto/>
 
 Beyond that, speed is a function of:
@@ -200,21 +197,57 @@ index of 6.7 million 1000-dimensional vectors rarely exceed 200 milliseconds.
 #### Recall
 
 Recall is defined as the proportion of true nearest neighbors returned for
-a search and can be evaluated at various values of `k2`. Similar to speed, 
-recall depends on the data and LSH configuration. Increasing `k1` is typically 
-the best way to increase recall, but the number of tables and bits also play 
-an important role. Finding a configuration that satisfies both recall
-and search time requirements can be considered a hyperparameter optimization
-problem. 
+a search and can be evaluated at various values of `k2`. 
+
+Similar to speed, recall depends on the LSH configuration. Increasing `k1` 
+is typically the easiest way to increase recall, but the number of tables and 
+bits also play an important role. Finding a configuration to maximize 
+recall and minimize search time can be considered a form of hyper-parameter 
+optimization.
 
 The figure below demonstrates that it is possible to find a high-recall,
-low search-time configuration for various sized corpuses. Note that the
-figure actually measures Intersection over Union, not recall. This is a 
-similar metric, but the figure will be updated to show recall ASAP.
+low search-time configuration for various sized corpuses. The points plotted
+represent the "frontier" of recall/search-time. That is, I ran benchmarks on
+many configurations and chose the configurations with the lowest median search 
+time for each median recall.
 
-<img src="elasticsearch-aknn/benchmark/metrics/recall_vs_time.png"
-height=300 width=auto/>
+<img src="elasticsearch-aknn/benchmark/metrics/fig_recall_vs_time.png"
+height=350 width=auto/>
 
+The table below shows the configurations that achieved the three best recalls
+for each corpus size.
+
+|    |   Corpus size |   Med. recall |   Med. search time |   k1 |   nb_tables |   nb_bits |
+|----|---------------|---------------|--------------------|------|-------------|-----------|
+|  0 |       1000000 |          1    |                197 |  500 |         200 |        12 |
+|  1 |       1000000 |          0.9  |                110 |  500 |         100 |        12 |
+|  2 |       1000000 |          0.8  |                 65 | 1000 |          50 |        12 |
+|  3 |       1000000 |          0.7  |                 53 |  500 |          50 |        12 |
+|  4 |       1000000 |          0.6  |                 55 |  500 |          50 |        20 |
+|  5 |       1000000 |          0.4  |                 43 |  100 |          50 |        12 |
+|  6 |       1000000 |          0.3  |                 36 | 1000 |          10 |         8 |
+|  7 |       1000000 |          0.2  |                 20 |  500 |          10 |        12 |
+|  8 |       1000000 |          0.1  |                  9 |  100 |          10 |        12 |
+|  9 |       1000000 |          0    |                  7 |   15 |          10 |        12 |
+| 10 |        100000 |          1    |                 36 | 1000 |          50 |        16 |
+| 11 |        100000 |          0.9  |                 23 |  500 |          50 |        16 |
+| 12 |        100000 |          0.8  |                 26 |  500 |          50 |        20 |
+| 13 |        100000 |          0.7  |                 13 |  100 |          50 |        16 |
+| 14 |        100000 |          0.6  |                 16 |  100 |          50 |        20 |
+| 15 |        100000 |          0.5  |                 14 |  500 |          10 |         8 |
+| 16 |        100000 |          0.45 |                 24 |   15 |         100 |        16 |
+| 17 |        100000 |          0.4  |                 13 |   15 |          50 |        12 |
+| 18 |        100000 |          0.3  |                  4 |  100 |          10 |        12 |
+| 19 |        100000 |          0.2  |                  5 |  100 |          10 |        16 |
+| 20 |        100000 |          0.1  |                  2 |   15 |          10 |        16 |
+| 21 |         10000 |          1    |                  8 |  100 |         100 |        12 |
+| 22 |         10000 |          0.9  |                  5 |  100 |          50 |        12 |
+| 23 |         10000 |          0.8  |                  5 |  100 |          50 |        20 |
+| 24 |         10000 |          0.7  |                  7 |  500 |          10 |        20 |
+| 25 |         10000 |          0.6  |                  6 |   15 |         100 |        16 |
+| 26 |         10000 |          0.5  |                  3 |  100 |          10 |        12 |
+| 27 |         10000 |          0.4  |                  3 |   15 |          50 |         8 |
+| 28 |         10000 |          0.2  |                  1 |   15 |          10 |        20 |
 ## Image Processing Pipeline
 
 ### Implementation
