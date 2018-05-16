@@ -23,33 +23,9 @@ public class AknnSimpleTests extends ESTestCase {
 
     // Note: tests must start with the word "test"...
 
-    public void testThatAnythingWorks() {
-//        System.out.println(logger.getLevel().toString());
-//        logger.debug("Testing logger config....");
-//        logger.debug("Testing logger config....");
-//        logger.debug("Testing logger config....");
-//        logger.debug("Testing logger config....");
-//        logger.debug("Testing logger config....");
-//        logger.debug("Testing logger config....");
+    public void testSomethingTrivial() {
         long i = 99L;
         assertEquals(i, 99L);
     }
-
-    public void testThatSomethingElseWorks() {
-        long i = 98L;
-        assertEquals(i, 98L);
-    }
-
-    public void testSomethingWorks() {
-        long i = 97L;
-        assertEquals(i, 97L);
-    }
-
-    public void testSomethingElse() {
-        long i = 96L;
-        assertEquals(i, 96L);
-    }
-
-
 
 }

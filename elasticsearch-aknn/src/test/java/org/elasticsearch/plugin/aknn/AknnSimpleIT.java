@@ -44,13 +44,9 @@ public class AknnSimpleIT extends ESIntegTestCase {
             ).get();
     }
 
-    public void testTweet1() {
+    public void testTweetContents() {
         GetResponse gr = client.prepareGet("twitter", "tweet", "1").get();
         assertEquals(gr.getSource().get("user"), "kimchy");
-    }
-
-    public void testTweet2() {
-        GetResponse gr = client.prepareGet("twitter", "tweet", "1").get();
         assertEquals(gr.getSource().get("message"), "trying out Elasticsearch");
     }
 
