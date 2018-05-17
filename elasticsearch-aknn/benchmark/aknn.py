@@ -262,9 +262,9 @@ def aknn_benchmark(es_hosts, docs_path, metrics_dir, nb_dimensions, nb_batch, nb
     # Define the space of parameters to test. If you change any of these
     # parameters, it's safest to delete all of the metrics files.
     nb_docs_space = [10 ** 4, 10 ** 5, 10 ** 6]
-    nb_tables_space = [10, 50, 100, 200]
-    nb_bits_space = [8, 12, 16, 20]
-    k1_space = [int(k2 * 1.5), k2 * 10, k2 * 50, k2 * 100]
+    nb_tables_space = [10, 50, 100, 200, 250, 300]
+    nb_bits_space = [8, 12, 14, 16, 18, 19]
+    k1_space = [int(k2 * 1.5), k2 * 10, k2 * 25, k2 * 50, k2 * 100]
 
     # One test for each combination of parameters.
     nb_tests_total = len(nb_tables_space) * \
