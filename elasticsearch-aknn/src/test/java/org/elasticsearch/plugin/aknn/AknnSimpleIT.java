@@ -17,40 +17,36 @@
 
 package org.elasticsearch.plugin.aknn;
 
-import org.elasticsearch.action.get.GetResponse;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.test.ESIntegTestCase;
 import org.junit.Before;
 
-import java.util.Date;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import java.io.IOException;
 
 public class AknnSimpleIT extends ESIntegTestCase {
 
     private Client client;
+    private RestClient restClient;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        client = ESIntegTestCase.client();
-        client.prepareIndex("twitter", "tweet", "1")
-            .setSource(jsonBuilder()
-                    .startObject()
-                    .field("user", "kimchy")
-                    .field("postDate", new Date())
-                    .field("message", "trying out Elasticsearch")
-                    .endObject()
-            ).get();
+        client = client();
+        restClient = getRestClient();
     }
 
-    public void testTweetContents() {
-        logger.info("....................");
-        logger.info("AknnSimpleIT");
-        logger.info("....................");
-
-        GetResponse gr = client.prepareGet("twitter", "tweet", "1").get();
-        assertEquals(gr.getSource().get("user"), "kimchy");
-        assertEquals(gr.getSource().get("message"), "trying out Elasticsearch");
+    /**
+     * Test that the plugin was installed correctly by hitting the _cat/plugins endpoint.
+     * @throws IOException
+     */
+    public void testPluginInstallation() throws IOException {
+        Response response = restClient.performRequest("GET", "_cat/plugins");
+        String body = EntityUtils.toString(response.getEntity());
+        logger.info(body);
+        assertTrue(body.contains("elasticsearch-aknn"));
     }
+
 }
