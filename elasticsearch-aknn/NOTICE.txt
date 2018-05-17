@@ -1,2 +1,6 @@
-Alex
-Copyright 2017- Alex
+Elasticsearch-Aknn
+
+Copyright 2018 Alex Klibisz
+
+This product includes software developed by The Apache Software
+Foundation (http://www.apache.org/).

@@ -19,6 +19,7 @@ apply plugin: 'idea'
 
 // license of this project
 licenseFile = rootProject.file('LICENSE.txt')
+
 // copyright notices
 noticeFile = rootProject.file('NOTICE.txt')
 
@@ -33,13 +34,13 @@ esplugin {
 }
 
 // In this section you declare the dependencies for your production and test code
-// Note, the two dependencies are not really needed as the buildscript dependency gets them in already
-// they are just here as an example
 dependencies {
-    compile 'org.elasticsearch:elasticsearch:6.2.4'
     compile 'org.apache.commons:commons-math3:3.6.1'
-    testCompile 'org.elasticsearch.test:framework:6.2.4'
 }
+
+// FIXME figure out good way to test the plugin endpoints and then re-enable tests.
+//test.enabled = false
+//integTestRunner.enabled = false
 
 // Set to false to not use elasticsearch checkstyle rules
 checkstyleMain.enabled = true
@@ -50,7 +51,3 @@ dependencyLicenses.enabled = false
 
 // FIXME thirdparty audit needs to be enabled
 thirdPartyAudit.enabled = false
-
-// Uncomment this to skip license header checks
-// licenseHeaders.enabled = false
-

@@ -335,12 +335,5 @@ public class AknnRestAction extends BaseRestHandler {
             builder.endObject();
             channel.sendResponse(new BytesRestResponse(RestStatus.OK, builder));
         };
-
-
-
-
-
     }
-
-
 }
