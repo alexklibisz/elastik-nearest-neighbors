@@ -153,7 +153,9 @@ This returns:
 
 The key things to know about the implementation are:
 
-1. EsAknn runs entirely in an existing Elasticsearch cluster/node.
+1. EsAknn runs entirely in an existing Elasticsearch cluster/node. It operates
+effectively as a set of HTTP endpoint handlers and talks to Elasticsearch via
+the [Java Client API.](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/client.html)
 2. Searches can run in parallel. New vectors can be indexed on multiple nodes 
 in parallel using a round-robin strategy. Parallel indexing on a single node has
 not been tested extensively.
