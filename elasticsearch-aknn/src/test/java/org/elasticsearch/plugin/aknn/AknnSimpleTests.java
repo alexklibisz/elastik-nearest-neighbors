@@ -24,6 +24,9 @@ public class AknnSimpleTests extends ESTestCase {
     // Note: tests must start with the word "test"...
 
     public void testSomethingTrivial() {
+        logger.info("....................");
+        logger.info("AknnSimpleTests");
+        logger.info("....................");
         long i = 99L;
         assertEquals(i, 99L);
     }
