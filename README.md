@@ -198,7 +198,9 @@ index of 6.7 million 1000-dimensional vectors rarely exceed 200 milliseconds.
 #### Recall
 
 Recall is defined as the proportion of true nearest neighbors returned for
-a search and can be evaluated at various values of `k2`. 
+a search and can be evaluated at various values of `k2`. For example, if 
+you know your application needs to retrieve the top ten most similar items,
+you should evaluate recall at `k2 = 10`. 
 
 Similar to speed, recall depends on the LSH configuration. Increasing `k1` 
 is typically the easiest way to increase recall, but the number of tables and 
