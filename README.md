@@ -47,6 +47,42 @@ EsAknn is useful for problems roughly characterized:
 when a new vector is created/ingested, it should be available for searching in 
 less than 10 minutes.
 
+### How does it compare to other approximate-nearest-neighbors libraries?
+
+Tldr: If you need to quickly run KNN on an extremely large corpus in an offline 
+job, use one of the libraries from [Ann-Benchmarks](https://github.com/erikbern/ann-benchmarks). 
+If you need KNN in an online setting with support for horizontally-scalable searching and 
+indexing new vectors in near-real-time, consider EsAknn (especially if you already
+use Elasticsearch).
+
+There are about a dozen high-quality open-source approximate-nearest-neighbors libraries.
+The [Ann-Benchmarks](https://github.com/erikbern/ann-benchmarks) project is a great place to 
+compare them. Most of them take a large corpus of vectors, build an index, and 
+expose an interface to run very fast nearest-neighbors search on that fixed corpus.
+
+Unfortunately they offer very little infrastructure for deploying your 
+nearest-neighbors search in an online setting. Specifically, you still have to consider:
+
+1. Where do you store millions of vectors and the index?
+2. How do you handle many concurrent searches?
+3. How do you handle a growing corpus? See [this issue](https://github.com/erikbern/ann-benchmarks/issues/36) 
+on the lack of support for adding to an index.
+4. How do you distribute the index and make searches fault tolerant?
+5. Who manages all the infrastructure you've built for such a simple algorithm?
+
+Elasticsearch already solves the non-trivial infrastrcture problems, and
+EsAknn implements approximate nearest-neighbors indexing and search atop
+this proven infrastructure.
+
+EsAknn's LSH implementation is very simplistic in the grand scheme of 
+approximate-nearest-neighbors approaches, but it maps well to Elasticsearch and still 
+yields high recall. EsAknn's speed for serial queries is much slower than other 
+approximate nearest-neighbor libraries, but it's also not designed for serial 
+querying. Instead it's designed to serve many concurrent searches over a convenient
+HTTP endpoint, index new vectors in near-real-time, and scale horizontally
+with Elasticsearch. For specific performance numbers, see the performance section
+below and the slides linked in the demo section.
+
 ### API
 
 #### Create LSH Model
