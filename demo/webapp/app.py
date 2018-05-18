@@ -3,7 +3,7 @@ Minimal Flask web app to demonstrate Elasticsearch-Aknn functionality
 on corpus of Twitter image features.
 """
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 from itertools import cycle
 from pprint import pprint
 import os
@@ -28,15 +28,23 @@ DEMO_IDS = cycle([
     "989144784341229568",  # Leo Messi
     "989655776363921409",  # Dog
     "991484266415443968",  # Some kids playing with a racoon
+    "989836022384156672",  # Mountain scenery
+    "990578938505146368",  # Race cars
+    "988526279665205248",  # Store fronts
 ])
 
 app = Flask(__name__)
 
 
-@app.route("/")
-def index():
-    return "Hello, Internet"
+@app.route("/slides")
+def slides():
+    return redirect("https://docs.google.com/presentation/d/1AyIyBqzCqKhytZWcQfSEhtBRN-iHUldBQn14MGGKpr8/present", 
+                    code=302)
 
+@app.route("/")
+@app.route("/demo")
+def demo():
+    return redirect("/twitter_images/twitter_image/demo", code=302)
 
 @app.route("/<es_index>/<es_type>/<es_id>")
 def images(es_index, es_type, es_id):
