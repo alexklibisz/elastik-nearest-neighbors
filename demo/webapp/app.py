@@ -7,6 +7,7 @@ from flask import Flask, request, render_template, redirect
 from itertools import cycle
 from pprint import pprint
 import os
+import random
 import requests
 
 # Get elasticsearch hosts from environment variable.
@@ -15,7 +16,7 @@ if "ESHOSTS" in os.environ:
     ESHOSTS = cycle(os.environ["ESHOSTS"].split(","))
 
 # Define a set of images to cycle through for the /demo endpoint.
-DEMO_IDS = cycle([
+DEMO_IDS = [
     "988221425063530502",  # Mountain scenery
     "990013386929917953",  # Car
     "991780208138055681",  # Screenshot
@@ -31,7 +32,34 @@ DEMO_IDS = cycle([
     "989836022384156672",  # Mountain scenery
     "990578938505146368",  # Race cars
     "988526279665205248",  # Store fronts
-])
+    "989477367486672896",
+    "988531509954011139",
+    "990159780726665216",
+    "990678809081823232",
+    "992379356071825410",
+    "988788327217119233",
+    "989065251919458304",
+    "989617448843403264",
+    "990863324890869760",
+    "989664366319484928",
+    "989951906809344001",
+    "988674636417249281",
+    "988426706888216576",
+    "991450758120902656",
+    "990226717607415808",
+    "988902080923529217",
+    "990372146735087616",
+    "989678396274814976",
+    "988867339516022784",
+    "990713839892119552",
+    "992056122050662400",
+    "989161016280875008",
+    "990594050557231104",
+    "992186954941980673",
+    "988825283204558848",
+    "989350699472490497",
+    "990430615324450816"
+]
 
 app = Flask(__name__)
 
@@ -49,29 +77,28 @@ def demo():
 @app.route("/<es_index>/<es_type>/<es_id>")
 def images(es_index, es_type, es_id):
 
-    # Fetch 10 random images for bottom carousel.
-    body = {
-        "_source": ["s3_url"],
-        "size": 20,
-        "query": {
-            "function_score": {
-                "query": {"match_all": {}},
-                "boost": 5,
-                "random_score": {},
-                "boost_mode": "multiply"
+    
+
+    # Parse elasticsearch ID. If "demo", pick a random demo image ID.
+    if es_id.lower() == "demo":
+        es_id = random.choice(DEMO_IDS)
+
+    elif es_id.lower() == "random":
+        body = {
+            "_source": ["s3_url"],
+            "size": 1,
+            "query": {
+                "function_score": {
+                    "query": {"match_all": {}},
+                    "boost": 5,
+                    "random_score": {},
+                    "boost_mode": "multiply"
+                }
             }
         }
-    }
-    req_url = "%s/%s/%s/_search" % (next(ESHOSTS), es_index, es_type)
-    req = requests.get(req_url, json=body)
-    random_imgs = req.json()["hits"]["hits"]
-
-    # Parse elasticsearch ID. If "random", pick one of the random images
-    # that were returned. If "demo", pick the next demo image ID.
-    if es_id.lower() == "random":
-        es_id = random_imgs[0]["_id"]
-    elif es_id.lower() == "demo":
-        es_id = next(DEMO_IDS)
+        req_url = "%s/%s/%s/_search" % (next(ESHOSTS), es_index, es_type)
+        req = requests.get(req_url, json=body)
+        es_id = req.json()["hits"]["hits"][0]["_id"]
 
     # Get number of docs in corpus.
     req_url = "%s/%s/%s/_count" % (next(ESHOSTS), es_index, es_type)
@@ -95,5 +122,4 @@ def images(es_index, es_type, es_id):
         took_ms=took_ms,
         count=count,
         query_img=query_img,
-        neighbor_imgs=neighbor_imgs,
-        random_imgs=random_imgs)
+        neighbor_imgs=neighbor_imgs)

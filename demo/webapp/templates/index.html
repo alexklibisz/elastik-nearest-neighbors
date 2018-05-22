@@ -25,13 +25,6 @@
 		height:180px;
 	}
 
-	#random_imgs img {
-		object-fit: cover;
-		width:30px;
-		height:30px;
-		padding:1px;
-	}
-
 </style>
 
 </head>
@@ -54,8 +47,8 @@
 					<div class="col-lg-12">
 						<hr>
 						<h3>Searched <span class="badge badge-primary">{{count}} images</span> in 
-							<span class="badge badge-primary">{{took_ms}} milliseconds</span></h3>
-							<hr>
+							<span class="badge badge-primary">{{took_ms}} milliseconds.</span></h3>
+						<hr>
 						</div>
 					</div>
 				</div>
@@ -71,35 +64,28 @@
 						</div>
 					</div>
 					<div class="col-lg-6">
-						<h3>Nearest Neighbors</h3>
-						<small>Click an image to retrieve its nearest neighbors</small>
+						<h3>Most Visually Similar Nearest Neighbors</h3>
+                                                <p>Click an image to view its original tweet.</p>
 						<hr>
 						<div class="row" id="neighbor_imgs">
 							{% for img in neighbor_imgs %}
 							<div class="col-lg-4">
-								<a href='/{{es_index}}/{{es_type}}/{{img["_id"]}}'>
-									<img src='{{img["_source"]["s3_url"]}}'/>
-								</a>
+							        <a href='{{img["_source"]["twitter_url"]}}' target="_blank">
+                                                                        <img src='{{img["_source"]["s3_url"]}}'/>
+                                                                </a>
 							</div>
 							{% endfor %}
 						</div>
 					</div>
 				</div>
-
-				<div class="row">
-					<div class="col-lg-12">
-						<hr>
-						<p>Random sample of images from the index. <a href="/{{es_index}}/{{es_type}}/random">Show me another random image!</a></p>
-						<div id="random_imgs">
-							{% for img in random_imgs %}
-							<a href='/{{es_index}}/{{es_type}}/{{img["_id"]}}'>
-								<img src='{{img["_source"]["s3_url"]}}'/>
-							</a>
-							{% endfor %}
-						</div>
-					</div>
-				</div>
-
+                                <div class="row">
+                                        <div class="col-lg-12">
+                                                <hr>
+                                                <center>
+                                                        <a class="btn btn-primary btn-lg" href="/{{es_index}}/{{es_type}}/demo">View another demo image</a>
+                                                </center>
+                                        </div>
+                                </div>
 			</div>
 
 		</body>
