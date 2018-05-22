@@ -12,7 +12,8 @@ See the `benchmarks` directory for examples on interacting with the plugin
 programmatically via Python and the requests library.
 
 The long-term plan for this plugin is to extract it to polish it up and move
-it to its own repository.
+it to its own repository. I've begun doing this on the [dev branch of the
+elasticsearch-aknn repository.](https://github.com/alexklibisz/elasticsearch-aknn/tree/dev)
 
 ## Planned Improvements
 
