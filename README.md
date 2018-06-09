@@ -30,7 +30,7 @@ The repository is structured:
 
 ## Demo
 
-- [Web-application](http://elastiknn.klibisz.com/twitter_images/twitter_image/demo) 
+- ~[Web-application](http://elastiknn.klibisz.com/twitter_images/twitter_image/demo)~ (Taken down at the end of the Insight program)
 - [Screencast demo on Youtube](https://www.youtube.com/watch?v=HqvbbwmY-0c)
 - [Presentation on Google Slides](https://docs.google.com/presentation/d/1AyIyBqzCqKhytZWcQfSEhtBRN-iHUldBQn14MGGKpr8/edit?usp=sharing)
 
