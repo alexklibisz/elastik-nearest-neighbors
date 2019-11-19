@@ -2,6 +2,10 @@
 
 [Insight Data Engineering](https://www.insightdataengineering.com/) Project, Boston, April - June 2018
 
+## Update (November 2019)
+
+I am actively working on an improved implementation of this plugin. I hope to open-source and release it late 2019 or early 2020
+
 ***
 
 | <img src="demo/screencast.gif" height=320 width="auto"/> | 
