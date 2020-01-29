@@ -2,9 +2,15 @@
 
 [Insight Data Engineering](https://www.insightdataengineering.com/) Project, Boston, April - June 2018
 
-## Update (November 2019)
+## Updates 
+
+**November 2019**
 
 I am actively working on an improved implementation of this plugin. I hope to open-source and release it late 2019 or early 2020
+
+**January 2020**
+
+I've made the improved implementation public: https://github.com/alexklibisz/elastiknn
 
 ***
 
