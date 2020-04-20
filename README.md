@@ -4,13 +4,17 @@
 
 ## Updates 
 
-**November 2019**
+**April 2020**
 
-I am actively working on an improved implementation of this plugin. I hope to open-source and release it late 2019 or early 2020
+DEPRECATED -- please see the improved implemenation: https://github.com/alexklibisz/elastiknn
 
 **January 2020**
 
 I've made the improved implementation public: https://github.com/alexklibisz/elastiknn
+
+**November 2019**
+
+I am actively working on an improved implementation of this plugin. I hope to open-source and release it late 2019 or early 2020
 
 ***
 
