@@ -302,7 +302,7 @@ public class AknnRestAction extends BaseRestHandler {
             List<Double> vector = (List<Double>) source.get(VECTOR_KEY);
             source.put(HASHES_KEY, lshModel.getVectorHashes(vector));
             bulkIndexRequest.add(client
-                    .prepareIndex(index, type, (String) doc.get("_id"))
+                    .prepareIndex(index, type, doc.get("_id").toString())
                     .setSource(source));
         }
         stopWatch.stop();
