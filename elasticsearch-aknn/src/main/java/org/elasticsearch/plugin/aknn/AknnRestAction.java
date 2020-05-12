@@ -31,6 +31,7 @@ import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.WrapperQueryBuilder;
 import org.elasticsearch.rest.BaseRestHandler;
 import org.elasticsearch.rest.BytesRestResponse;
 import org.elasticsearch.rest.RestController;
@@ -61,6 +62,7 @@ public class AknnRestAction extends BaseRestHandler {
     private final String VECTOR_KEY = "_aknn_vector";
     private final Integer K1_DEFAULT = 99;
     private final Integer K2_DEFAULT = 10;
+    private final String FILTER_DEFAULT = "{}";
 
     // TODO: add an option to the index endpoint handler that empties the cache.
     private Map<String, LshModel> lshModelCache = new HashMap<>();
@@ -95,6 +97,30 @@ public class AknnRestAction extends BaseRestHandler {
         return Math.sqrt(squaredDistance);
     }
 
+    public static Double cosineDistance(List<Double> A, List<Double> B) {
+        Double dotProduct = 0.;
+        Double magnitude1 = 0.;
+        Double magnitude2 = 0.;
+        Double cosineSimilarity = 0.;
+
+        for (Integer i = 0; i < A.size(); i++){
+            dotProduct += A.get(i) * B.get(i);  //a.b
+            magnitude1 += Math.pow(A.get(i), 2);  //(a^2)
+            magnitude2 += Math.pow(B.get(i), 2); //(b^2)
+        }
+
+        magnitude1 = Math.sqrt(magnitude1);//sqrt(a^2)
+        magnitude2 = Math.sqrt(magnitude2);//sqrt(b^2)
+
+        if (magnitude1 != 0.0 | magnitude2 != 0.0) {
+            cosineSimilarity = dotProduct / (magnitude1 * magnitude2);
+        } else {
+            return 0.0;
+        }
+        return cosineSimilarity;
+
+    }
+
     private RestChannelConsumer handleSearchRequest(RestRequest restRequest, NodeClient client) throws IOException {
 
         StopWatch stopWatch = new StopWatch("StopWatch to Time Search Request");
@@ -106,6 +132,7 @@ public class AknnRestAction extends BaseRestHandler {
         final String id = restRequest.param("id");
         final Integer k1 = restRequest.paramAsInt("k1", K1_DEFAULT);
         final Integer k2 = restRequest.paramAsInt("k2", K2_DEFAULT);
+        final String f = restRequest.param("filter", FILTER_DEFAULT);
         stopWatch.stop();
 
         logger.info("Get query document at {}/{}/{}", index, type, id);
@@ -126,12 +153,13 @@ public class AknnRestAction extends BaseRestHandler {
         stopWatch.stop();
 
         // Retrieve the documents with most matching hashes. https://stackoverflow.com/questions/10773581
+        // http://javadoc.kyubu.de/elasticsearch/HEAD/org/elasticsearch/index/query/WrapperQueryBuilder.html
         logger.info("Build boolean query from hashes");
         stopWatch.start("Build boolean query from hashes");
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
         for (Map.Entry<String, Long> entry : queryHashes.entrySet()) {
             String termKey = HASHES_KEY + "." + entry.getKey();
-            ((BoolQueryBuilder) queryBuilder).should(QueryBuilders.termQuery(termKey, entry.getValue()));
+            ((BoolQueryBuilder) queryBuilder).filter(new WrapperQueryBuilder(f)).should(QueryBuilders.termQuery(termKey, entry.getValue()));
         }
         stopWatch.stop();
 
@@ -161,7 +189,7 @@ public class AknnRestAction extends BaseRestHandler {
                 put("_index", hit.getIndex());
                 put("_id", hit.getId());
                 put("_type", hit.getType());
-                put("_score", euclideanDistance(queryVector, hitVector));
+                put("_score", cosineDistance(queryVector, hitVector));
                 put("_source", hitSource);
             }});
         }
